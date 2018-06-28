@@ -4,7 +4,7 @@ fast_finish: true
 os:
   - linux
 
-env: FC=gfortran
+env: FC=gfortran-6
 
 group: travis_latest
 
@@ -13,8 +13,13 @@ git:
 
 addons:
   apt:
-    packages: 
-      - gfortran
+    sources: ubuntu-toolchain-r-test
+    packages: gfortran-6
+    
+before_install:
+  - mkdir -p ~/.local/bin
+  - ln -s /usr/bin/gfortran-6 ~/.local/bin/gfortran
+  - export PATH="$HOME/.local/bin/:$PATH"
 
 before_install:
   - if [[ $TRAVIS_OS_NAME == osx ]]; then
