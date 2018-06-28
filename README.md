@@ -2,17 +2,21 @@
 
 # RPN Reverse Polish Notation Calculator -- in Fortran
 
+The `funcs.90` module provides over 100 elemental functions not found in Fortran instrinsics.
+
 Legacy code Author: David G. Simpson
 
 ## Build
 
-    make
+    cd bin
+    cmake ..
+    cmake --build . --target install
     
 ## Usage
 
-    ./rpncalc
+    rpncalc
     
-  Usage:        Start the program, then enter numbers and operations separated by blanks or carriage returns.
+Enter numbers and operations separated by blanks or carriage returns.
 The contents of the X register will be printed after each carriage return.
 For example:
 
@@ -22,9 +26,9 @@ For example:
     6 *      30.0000
     SIN       0.5000
   
-To exit the program, type any of: 
+To exit the program, type: 
   
-    QUIT, Q, EXIT, OFF, BYE, STOP, or END.
+    q
 
 ### Functions
 

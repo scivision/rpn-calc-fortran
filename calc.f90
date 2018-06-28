@@ -18,8 +18,8 @@
       PROGRAM RPN
       use, intrinsic:: iso_fortran_env, only: stdout=>output_unit, stdin=>input_unit
       USE GLOBAL
-      use funcs, only: rprintx, cprintx, printx, eval, rpush_stack, cpush_stack, push_stack, isrational, isreal, iscomplex
-
+      use funcs, only:  isrational, isreal, iscomplex
+      use ui, only: rprintx, cprintx, printx, eval, rpush_stack, cpush_stack, push_stack
       IMPLICIT NONE
 
       real(wp), PARAMETER :: PI = 4._wp * atan(1._wp)

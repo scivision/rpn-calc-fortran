@@ -4,4435 +4,6 @@ implicit none
 
 contains
 
-!***********************************************************************************************************************************
-!  PUSH_STACK
-!
-!  Push a number onto the real stack.
-!***********************************************************************************************************************************
-
-SUBROUTINE PUSH_STACK (X)
-
-USE GLOBAL, only: stack_size, stack
-
-IMPLICIT NONE
-
-real(wp), INTENT(IN) :: X
-
-INTEGER :: I
-
-
-DO I = STACK_SIZE, 2, -1
-   STACK(I) = STACK(I-1)
-END DO
-
-STACK(1) = X
-
-END SUBROUTINE PUSH_STACK
-
-
-!***********************************************************************************************************************************
-!  CPUSH_STACK
-!
-!  Push a number onto the complex stack.
-!***********************************************************************************************************************************
-
-SUBROUTINE CPUSH_STACK (CX)
-
-USE GLOBAL, only: stack_size, cstack
-
-COMPLEX(wp), INTENT(IN) :: CX
-
-INTEGER :: I
-
-
-DO I = STACK_SIZE, 2, -1
-   CSTACK(I) = CSTACK(I-1)
-END DO
-
-CSTACK(1) = CX
-
-END SUBROUTINE CPUSH_STACK
-
-
-!***********************************************************************************************************************************
-!  RPUSH_STACK
-!
-!  Push a number onto the rational stack.
-!***********************************************************************************************************************************
-
-SUBROUTINE RPUSH_STACK (RN,RD)
-
-USE GLOBAL, only: stack_size, rnstack, rdstack
-
-INTEGER, INTENT(IN) :: RN,RD
-
-INTEGER :: I
-
-
-DO I = STACK_SIZE, 2, -1
-   RNSTACK(I) = RNSTACK(I-1)
-   RDSTACK(I) = RDSTACK(I-1)
-END DO
-
-RNSTACK(1) = RN
-RDSTACK(1) = RD
-
-END SUBROUTINE RPUSH_STACK
-
-
-!***********************************************************************************************************************************
-!  DROP_STACK
-!
-!  Drop a number from the real stack.
-!***********************************************************************************************************************************
-
-SUBROUTINE DROP_STACK (N)
-
-USE GLOBAL, only: stack_size, stack
-
-INTEGER, INTENT(IN) :: N
-
-INTEGER :: I
-
-DO I = N, STACK_SIZE-1
-   STACK(I) = STACK(I+1)
-END DO
-
-END SUBROUTINE DROP_STACK
-
-
-!***********************************************************************************************************************************
-!  CDROP_STACK
-!
-!  Drop a number from the complex stack.
-!***********************************************************************************************************************************
-
-SUBROUTINE CDROP_STACK (N)
-
-USE GLOBAL, only: stack_size, cstack
-
-INTEGER, INTENT(IN) :: N
-
-INTEGER :: I
-
-
-DO I = N, STACK_SIZE-1
-   CSTACK(I) = CSTACK(I+1)
-END DO
-
-END SUBROUTINE CDROP_STACK
-
-
-
-!***********************************************************************************************************************************
-!  RDROP_STACK
-!
-!  Drop a number from the rational stack.
-!***********************************************************************************************************************************
-
-SUBROUTINE RDROP_STACK (N)
-
-USE GLOBAL, only: stack_size, rnstack, rdstack
-
-INTEGER, INTENT(IN) :: N
-
-INTEGER :: I
-
-
-DO I = N, STACK_SIZE-1
-   RNSTACK(I) = RNSTACK(I+1)
-   RDSTACK(I) = RDSTACK(I+1)
-END DO
-
-END SUBROUTINE RDROP_STACK
-
-
-!***********************************************************************************************************************************
-!  PRINTX
-!
-!  Print a real number to a string.
-!***********************************************************************************************************************************
-
-SUBROUTINE PRINTX (X, NUMSTR)
-
-USE GLOBAL, only: base_mode, disp_mode, disp_digits
-
-real(wp), INTENT(IN) :: X
-CHARACTER(LEN=100), INTENT(OUT) :: NUMSTR
-
-real(wp) :: TMPX
-CHARACTER(LEN=100) :: FMTSTR
-
-IF (BASE_MODE .EQ. 10) THEN                                                   ! DEC mode
-   SELECT CASE (DISP_MODE)
-      CASE (1)                                                                ! print X (FIX)
-         WRITE (UNIT=FMTSTR, FMT='(1H(,4HF15.,I0,1H))') DISP_DIGITS
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
-         IF (INDEX(NUMSTR,'*') .NE. 0) THEN                                   !   disp. overflow
-            WRITE (UNIT=FMTSTR, FMT='(1H(,5HES15.,I0,1H))') DISP_DIGITS
-            WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
-         END IF
-         READ (UNIT=NUMSTR, FMT=*) TMPX
-         IF ((X .NE. 0.0D0) .AND. (TMPX .EQ. 0.0D0)) THEN                     !   disp. underflow
-            WRITE (UNIT=FMTSTR, FMT='(1H(,5HES15.,I0,1H))') DISP_DIGITS
-            WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
-         END IF
-      CASE (2)                                                                ! print X (SCI)
-         WRITE (UNIT=FMTSTR, FMT='(1H(,5HES15.,I0,1H))') DISP_DIGITS
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
-      CASE (3)                                                                ! print X (ENG)
-         WRITE (UNIT=FMTSTR, FMT='(1H(,5HEN15.,I0,1H))') DISP_DIGITS
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
-      CASE (4)                                                                ! print X (ALL)
-         WRITE (UNIT=FMTSTR, FMT='(A)') '(1PG23.15)'
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
-   END SELECT
-ELSE
-   SELECT CASE (BASE_MODE)
-      CASE (2)                                                                ! print X (BIN)
-         WRITE (UNIT=FMTSTR, FMT='(A)') '(B0)'
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) INT(X)
-      CASE (8)                                                                ! print X (OCT)
-         WRITE (UNIT=FMTSTR, FMT='(A)') '(O0)'
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) INT(X)
-      CASE (16)                                                               ! print X (HEX)
-         WRITE (UNIT=FMTSTR, FMT='(A)') '(Z0)'
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) INT(X)
-   END SELECT
-END IF
-
-END SUBROUTINE PRINTX
-
-
-
-!***********************************************************************************************************************************
-!  CPRINTX
-!
-!  Print a complex number to a string.
-!***********************************************************************************************************************************
-
-      SUBROUTINE CPRINTX (X, NUMSTR)
-
-      USE GLOBAL, only: disp_mode, disp_digits, base_mode
-
-      COMPLEX(wp), INTENT(IN) :: X
-      CHARACTER(LEN=100), INTENT(OUT) :: NUMSTR
-
-      COMPLEX(wp) :: TMPX
-      CHARACTER(LEN=100) :: FMTSTR
-
-      IF (BASE_MODE .EQ. 10) THEN                                                   ! DEC mode
-         SELECT CASE (DISP_MODE)
-            CASE (1)                                                                ! print X (FIX)
-               WRITE (UNIT=FMTSTR, FMT=800) DISP_DIGITS, DISP_DIGITS
-  800          FORMAT ("(ES25.",I0,",SP,4X,F25.",I0,",2H i)")
-               WRITE (UNIT=NUMSTR, FMT=FMTSTR) DBLE(X), AIMAG(X)
-               IF (INDEX(NUMSTR,'*') .NE. 0) THEN                                   !   disp. overflow
-                  WRITE (UNIT=FMTSTR, FMT=810)  DISP_DIGITS, DISP_DIGITS
-  810             FORMAT ("(EN25.",I0,",SP,4X,ES25.",I0,",2H i)")
-                  WRITE (UNIT=NUMSTR, FMT=FMTSTR) DBLE(X), AIMAG(X)
-               END IF
-               READ (UNIT=NUMSTR, FMT=*) TMPX
-               IF ((X .NE. 0.0D0) .AND. (TMPX .EQ. 0.0D0)) THEN                     !   disp. underflow
-                  WRITE (UNIT=FMTSTR, FMT=820) DISP_DIGITS, DISP_DIGITS
-  820             FORMAT ("(EN25.",I0,",SP,4X,ES25.",I0,",2H i)")
-                  WRITE (UNIT=NUMSTR, FMT=FMTSTR) DBLE(X), AIMAG(X)
-               END IF
-            CASE (2)                                                                ! print X (SCI)
-               WRITE (UNIT=FMTSTR, FMT=830) DISP_DIGITS, DISP_DIGITS
-  830          FORMAT ("(ES25.",I0,",SP,4X,ES25.",I0,",2H i)")
-               WRITE (UNIT=NUMSTR, FMT=FMTSTR) DBLE(X), AIMAG(X)
-            CASE (3)                                                                ! print X (ENG)
-               WRITE (UNIT=FMTSTR, FMT=840) DISP_DIGITS, DISP_DIGITS
-  840          FORMAT ("(EN25.",I0,",SP,4X,ES25.",I0,",2H i)")
-               WRITE (UNIT=NUMSTR, FMT=FMTSTR) DBLE(X), AIMAG(X)
-            CASE (4)                                                                ! print X (ALL)
-               WRITE (UNIT=FMTSTR, FMT='(A)') '(1PG23.15,SP,4X,G23.15,2H i)'
-               WRITE (UNIT=NUMSTR, FMT=FMTSTR) DBLE(X), AIMAG(X)
-         END SELECT
-      ELSE
-         SELECT CASE (BASE_MODE)
-            CASE (2)                                                                ! print X (BIN)
-               WRITE (UNIT=FMTSTR, FMT='(A)') '(B0,4X,B0,2H i)'
-               WRITE (UNIT=NUMSTR, FMT=FMTSTR) INT(DBLE(X)), INT(AIMAG(X))
-            CASE (8)                                                                ! print X (OCT)
-               WRITE (UNIT=FMTSTR, FMT='(A)') '(O0,4X,O0,2H i)'
-               WRITE (UNIT=NUMSTR, FMT=FMTSTR) INT(DBLE(X)), INT(AIMAG(X))
-            CASE (16)                                                               ! print X (HEX)
-               WRITE (UNIT=FMTSTR, FMT='(A)') '(Z0,4X,Z0,2H i)'
-               WRITE (UNIT=NUMSTR, FMT=FMTSTR) INT(DBLE(X)), INT(AIMAG(X))
-         END SELECT
-      END IF
-
-      RETURN
-
-      END SUBROUTINE CPRINTX
-
-
-
-
-
-!***********************************************************************************************************************************
-!  RPRINTX
-!
-!  Print a rational number to a string.
-!***********************************************************************************************************************************
-
-      SUBROUTINE RPRINTX (RN, RD, NUMSTR)
-
-      USE GLOBAL
-
-      IMPLICIT NONE
-
-      INTEGER, INTENT(IN) :: RN, RD
-      CHARACTER(LEN=100), INTENT(OUT) :: NUMSTR
-      INTEGER :: A1, A2, A3
-
-
-      SELECT CASE (BASE_MODE)
-         CASE (2)                                                                   ! print X (BIN)
-            IF (RD .EQ. 1) THEN
-               WRITE (UNIT=NUMSTR, FMT='(B0)') RN
-            ELSE
-               SELECT CASE (FRACTION_MODE)
-                  CASE (1)
-                     WRITE (UNIT=NUMSTR, FMT='(B0,3H / ,B0)') RN, RD
-                  CASE (2)
-                     CALL FRAC_TO_MIXED (RN, RD, A1, A2, A3)
-                     WRITE (UNIT=NUMSTR, FMT='(B0,3X,B0,3H / ,B0)') A1, A2, A3
-               END SELECT
-            END IF
-         CASE (8)                                                                   ! print X (OCT)
-            IF (RD .EQ. 1) THEN
-               WRITE (UNIT=NUMSTR, FMT='(O0)') RN
-            ELSE
-               SELECT CASE (FRACTION_MODE)
-                  CASE (1)
-                     WRITE (UNIT=NUMSTR, FMT='(O0,3H / ,O0)') RN, RD
-                  CASE (2)
-                     CALL FRAC_TO_MIXED (RN, RD, A1, A2, A3)
-                     WRITE (UNIT=NUMSTR, FMT='(O0,3X,O0,3H / ,O0)') A1, A2, A3
-               END SELECT
-            END IF
-         CASE (10)                                                                  ! print X (DEC)
-            IF (RD .EQ. 1) THEN
-               WRITE (UNIT=NUMSTR, FMT='(I0)') RN
-            ELSE
-               SELECT CASE (FRACTION_MODE)
-                  CASE (1)
-                     WRITE (UNIT=NUMSTR, FMT='(I0,3H / ,I0)') RN, RD
-                  CASE (2)
-                     CALL FRAC_TO_MIXED (RN, RD, A1, A2, A3)
-                     WRITE (UNIT=NUMSTR, FMT='(I0,3X,I0,3H / ,I0)') A1, A2, A3
-               END SELECT
-            END IF
-         CASE (16)                                                                  ! print X (HEX)
-            IF (RD .EQ. 1) THEN
-               WRITE (UNIT=NUMSTR, FMT='(Z0)') RN
-            ELSE
-               SELECT CASE (FRACTION_MODE)
-                  CASE (1)
-                     WRITE (UNIT=NUMSTR, FMT='(Z0,3H / ,Z0)') RN, RD
-                  CASE (2)
-                     CALL FRAC_TO_MIXED (RN, RD, A1, A2, A3)
-                     WRITE (UNIT=NUMSTR, FMT='(Z0,3X,Z0,3H / ,Z0)') A1, A2, A3
-               END SELECT
-            END IF
-!         CASE (16)                                                                  ! print X (HEX)
-!            IF (RD .EQ. 1) THEN
-!               WRITE (UNIT=NUMSTR, FMT='(Z0)') RN
-!            ELSE
-!               WRITE (UNIT=NUMSTR, FMT='(Z0,3H / ,Z0)') RN, RD
-!            END IF
-      END SELECT
-
-      RETURN
-
-      END SUBROUTINE RPRINTX
-
-
-
-
-
-!***********************************************************************************************************************************
-!  EVAL
-!
-!  Evaluate a operation.
-!***********************************************************************************************************************************
-
-      SUBROUTINE EVAL (STR)
-
-      USE GLOBAL
-
-      IMPLICIT NONE
-
-      CHARACTER(LEN=*), INTENT(IN) :: STR
-
-      real(wp), PARAMETER :: PI = 4._wp * atan(1._wp)
-      real(wp), PARAMETER :: TWOPI = 2*pi
-      real(wp), PARAMETER :: LN2 = 0.6931471805599453094172321214581765680755001343602552541206800094933936219696947156059D0
-      real(wp), PARAMETER :: EULER = 0.57721566490153286060651209008240243104215933593992359880576723488486772677766467094D0
-      real(wp), PARAMETER :: GOLDEN = 1.6180339887498948482045868343656381177203091798057628621354486227052604628189024497D0
-      COMPLEX(wp),  PARAMETER :: II = (0.0D0,1.0D0)
-      real(wp), PARAMETER :: KG_PER_LB = 0.45359237D0
-      real(wp), PARAMETER :: CM_PER_IN = 2.54D0
-      real(wp), PARAMETER :: L_PER_GAL = 3.785411784D0
-      real(wp), PARAMETER :: A0 = 0.5291772108D-10                          ! m
-      real(wp), PARAMETER :: AMU = 1.66053886D-27                           ! kg
-      real(wp), PARAMETER :: AU = 1.49597870D11                             ! m
-      real(wp), PARAMETER :: C = 299792458.0D0                              ! m/s
-      real(wp), PARAMETER :: ECHG = 1.60217653D-19                          ! C
-      real(wp), PARAMETER :: EPS0 = 8.8541878176203898505D-12               ! F/m
-      real(wp), PARAMETER :: G = 9.80665D0                                  ! m/s^2
-      real(wp), PARAMETER :: GRAV = 6.6742D-11                              ! m^3/kg s^2
-      real(wp), PARAMETER :: H = 6.6260693D-34                              ! J s
-      real(wp), PARAMETER :: HBAR = 1.05457168D-34                          ! J s
-      real(wp), PARAMETER :: KB = 1.3806505D-23                             ! J/K
-      real(wp), PARAMETER :: ME = 9.1093826D-31                             ! kg
-      real(wp), PARAMETER :: MN = 1.67492728D-27                            ! kg
-      real(wp), PARAMETER :: MP = 1.67262171D-27                            ! kg
-      real(wp), PARAMETER :: MU0 = 12.5663706143591729539D-7                ! N/A^2
-      real(wp), PARAMETER :: MUB = 927.400949D-26                           ! A m^2
-      real(wp), PARAMETER :: MUN = 5.05078343D-27                           ! A m^2
-      real(wp), PARAMETER :: NA = 6.0221415D23                              ! mol^-1
-      real(wp), PARAMETER :: REARTH = 6378140.0D0                           ! m
-      real(wp), PARAMETER :: RGAS = 8.314472D0                              ! J/mol K
-      real(wp), PARAMETER :: STEFAN = 5.670400D-8                           ! W/m^2 K^4
-
-      INTEGER :: I, J, ITMP, ITMP2, IERR, NUM, DEN, NUM2, DEN2, NUM3, DEN3, NUM4, DEN4, &
-         NUMM, DENM, NUMB, DENB
-      real(wp) :: TMP, TMP2, TMP3, TMPM, TMPB, TMPR, BES_X, BES_ALPHA
-      COMPLEX(wp) :: CTMP, CTMP2, CTMP3, CTMPM, CTMPB, CTMPR
-      CHARACTER(LEN=2) :: REGNAME
-      INTEGER :: DT(8)
-      INTEGER :: YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, BES_NB, BES_NCALC
-      CHARACTER(LEN=100) :: FMTSTR, NUMSTR
-      CHARACTER(LEN=10) :: TIME, DATE, ZONE
-
-      real(wp), ALLOCATABLE, DIMENSION(:) :: BES_B
-
-      IF (LEN_TRIM(STR) .EQ. 0) THEN
-         CONTINUE
-
-      ELSE IF (TRIM(STR) .EQ. '+') THEN                                             ! +
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(2) + STACK(1)
-               CALL DROP_STACK(2)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(2) + CSTACK(1)
-               CALL CDROP_STACK(2)
-            CASE (3)
-               CALL RADD (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = NUM
-               RDSTACK(1) = DEN
-               CALL RDROP_STACK(2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. '-') THEN                                             ! -
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(2) - STACK(1)
-               CALL DROP_STACK(2)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(2) - CSTACK(1)
-               CALL CDROP_STACK(2)
-            CASE (3)
-               CALL RSUB (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = NUM
-               RDSTACK(1) = DEN
-               CALL RDROP_STACK(2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. '*') THEN                                             ! *
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(2) * STACK(1)
-               CALL DROP_STACK(2)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(2) * CSTACK(1)
-               CALL CDROP_STACK(2)
-            CASE (3)
-               CALL RMUL (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = NUM
-               RDSTACK(1) = DEN
-               CALL RDROP_STACK(2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. '/') THEN                                             ! /
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .EQ. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Divide Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = STACK(2) / STACK(1)
-                  CALL DROP_STACK(2)
-               END IF
-            CASE (2)
-               IF (CSTACK(1) .EQ. (0.0,0.0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Divide Error'
-               ELSE
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = CSTACK(2) / CSTACK(1)
-                  CALL CDROP_STACK(2)
-               END IF
-            CASE (3)
-               CALL RDIV (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = NUM
-               RDSTACK(1) = DEN
-               CALL RDROP_STACK(2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. '^') THEN                                             ! ^
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(2) ** STACK(1)
-               CALL DROP_STACK(2)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(2) ** CSTACK(1)
-               CALL CDROP_STACK(2)
-            CASE (3)
-               IF (RDSTACK(1) .EQ. 1) THEN
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(1)
-                  RNSTACK(1) = RNSTACK(2) ** RNLASTX
-                  RDSTACK(1) = RDSTACK(2) ** RNLASTX
-                  CALL RDROP_STACK(2)
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = STACK(2) ** STACK(1)
-                  CALL DROP_STACK(2)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. '\') THEN                                             ! \
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .EQ. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Divide Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = 1.0D0 / STACK(1)
-               END IF
-            CASE (2)
-               IF (CSTACK(1) .EQ. (0.0,0.0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Divide Error'
-               ELSE
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = (1.0,0.0) / CSTACK(1)
-               END IF
-            CASE (3)
-               CALL RDIV (1,1,RNSTACK(1),RDSTACK(1),NUM,DEN)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = NUM
-               RDSTACK(1) = DEN
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. '%') THEN                                             ! %
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(2) * 1.0D-2*STACK(1)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(2) * 1.0D-2*CSTACK(1)
-            CASE (3)
-               NUM = RNSTACK(1)
-               DEN = RDSTACK(1)
-               NUM2 = RNSTACK(2)
-               DEN2 = RDSTACK(2)
-               CALL RMUL(NUM2,DEN2,NUM,DEN,ITMP,ITMP2)
-               CALL RMUL(ITMP,ITMP2,1,100,NUM,DEN)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = NUM
-               RDSTACK(1) = DEN
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. '%CHG') THEN                                          ! %CHG
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(2) .EQ. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Divide Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = 100.0D0*(STACK(1)-STACK(2))/STACK(2)
-               END IF
-            CASE (2)
-               IF (CSTACK(2) .EQ. (0.0D0,0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Divide Error'
-               ELSE
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = 100.0D0*(CSTACK(1)-CSTACK(2))/CSTACK(2)
-               END IF
-            CASE (3)
-               NUM = RNSTACK(1)
-               DEN = RDSTACK(1)
-               NUM2 = RNSTACK(2)
-               DEN2 = RDSTACK(2)
-               CALL RSUB(NUM,DEN,NUM2,DEN2,ITMP,ITMP2)
-               CALL RDIV(ITMP,ITMP2,NUM2,DEN2,NUM,DEN)
-               CALL RMUL(NUM,DEN,100,1,NUM2,DEN2)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = NUM2
-               RDSTACK(1) = DEN2
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. '!') THEN                                             ! !
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ISINT(STACK(1)).AND.(STACK(1).LT.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Factorial Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = DGAMMA(STACK(1)+1.0D0)
-               END IF
-            CASE (2)
-               IF (CSTACK(1) .EQ. (-1.0D0,0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Factorial Error'
-               ELSE
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = CGAMMA(CSTACK(1)+(1.0D0,0.0D0))
-               END IF
-            CASE (3)
-               IF ((RDSTACK(1).EQ.1).AND.(RNSTACK(1).LT.0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Factorial Error'
-               ELSE
-                  IF (RDSTACK(1).EQ.1) THEN
-                     ITMP = RNSTACK(1)
-                     IF (ITMP.LT.0) THEN
-                        WRITE (UNIT=*, FMT='(A)') '  Factorial Error'
-                     ELSE
-                        ITMP2 = 1
-                        DO I = 2, ITMP
-                           ITMP2 = ITMP2 * I
-                        END DO
-                        RNLASTX = RNSTACK(1)
-                        RDLASTX = RDSTACK(1)
-                        RNSTACK(1) = ITMP2
-                        RDSTACK(1) = 1
-                     END IF
-                  ELSE
-                     CALL SWITCH_RAT_TO_REAL
-                     IF (ISINT(STACK(1)).AND.(STACK(1).LT.0.0D0)) THEN
-                        WRITE (UNIT=*, FMT='(A)') '  Factorial Error'
-                     ELSE
-                        LASTX = STACK(1)
-                        STACK(1) = DGAMMA(STACK(1)+1.0D0)
-                     END IF
-                  END IF
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. '!!') THEN                                            ! !!
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .LT. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  !! Error'
-               ELSE IF (ISFRAC(STACK(1))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  !! Error'
-               ELSE IF (NINT(STACK(1)) .EQ. 0.0D0) THEN
-                  LASTX = STACK(1)
-                  STACK(1) = 1.0D0
-               ELSE
-                  LASTX = STACK(1)
-                  ITMP = NINT(STACK(1))
-                  STACK(1) = 1.0D0
-                  DO
-                     STACK(1) = STACK(1) * ITMP
-                     ITMP = ITMP - 2
-                     IF (ITMP .LE. 1) EXIT
-                  END DO
-               END IF
-            CASE (2)
-               IF (DBLE(CSTACK(1)) .LT. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  !! Error'
-               ELSE IF (AIMAG(CSTACK(1)) .NE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  !! Error'
-               ELSE IF (ISFRAC(DBLE(CSTACK(1)))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  !! Error'
-               ELSE IF (NINT(DBLE(CSTACK(1))) .EQ. 0.0D0) THEN
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = (1.0D0,0.0D0)
-               ELSE
-                  CLASTX = CSTACK(1)
-                  ITMP = NINT(DBLE(CSTACK(1)))
-                  TMP = 1.0D0
-                  DO
-                     TMP = TMP * ITMP
-                     ITMP = ITMP - 2
-                     IF (ITMP .LE. 1) EXIT
-                  END DO
-                  CSTACK(1) = CMPLX(TMP,0.0D0,8)
-               END IF
-            CASE (3)
-               IF (RNSTACK(1) .LT. 0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  !! Error'
-               ELSE IF (RDSTACK(1) .NE. 1) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  !! Error'
-               ELSE IF (RNSTACK(1) .EQ. 0) THEN
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(1)
-                  RNSTACK(1) = 1
-                  RDSTACK(1) = 1
-               ELSE
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(1)
-                  ITMP = RNSTACK(1)
-                  RNSTACK(1) = 1
-                  RDSTACK(1) = 1
-                  DO
-                     RNSTACK(1) = RNSTACK(1) * ITMP
-                     ITMP = ITMP - 2
-                     IF (ITMP .LE. 1) EXIT
-                  END DO
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. '10X') THEN                                           ! 10X
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = 10.0D0**(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = 10.0D0**(CSTACK(1))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = 10.0D0**(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. '2PI') THEN                                           ! 2PI
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (TWOPI)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(TWOPI,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (TWOPI)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. '2PII') THEN                                          ! 2PII
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               WRITE (UNIT=*, FMT='(A)') ' 2PIi not available in REAL mode'
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(0.0D0,TWOPI,8))
-            CASE (3)
-               WRITE (UNIT=*, FMT='(A)') ' 2PIi not available in RATIONAL mode'
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. '2X') THEN                                            ! 2X
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = 2.0D0**(CSTACK(1))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = 2.0D0**(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'A0') THEN                                            ! A0
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(A0,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (A0)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ABS') THEN                                           ! ABS
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = ABS(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CMPLX(ABS(CSTACK(1)),0.0D0,8)
-            CASE (3)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = ABS(RNSTACK(1))
-               RDSTACK(1) = ABS(RDSTACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ACOS') THEN                                          ! ACOS
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ABS(STACK(1)) .GT. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACOS Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = ACOS(STACK(1))/ANGLE_FACTOR
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CACOS(CSTACK(1))/ANGLE_FACTOR
-            CASE (3)
-               IF (ABS(RNSTACK(1)) .GT. ABS(RDSTACK(1))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACOS Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = ACOS(STACK(1))/ANGLE_FACTOR
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ACOSH') THEN                                         ! ACOSH
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .LT. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACOSH Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = ACOSH(STACK(1))
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CACOSH(CSTACK(1))
-            CASE (3)
-               IF (RNSTACK(1) .LT. RDSTACK(1)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACOSH Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = ACOSH(STACK(1))
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ACOT') THEN                                          ! ACOT
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = ACOT(STACK(1))/ANGLE_FACTOR
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CACOT(CSTACK(1))/ANGLE_FACTOR
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = ACOT(STACK(1))/ANGLE_FACTOR
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ACOT2') THEN                                         ! ACOT2
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = ACOT2(STACK(2),STACK(1))/ANGLE_FACTOR
-               CALL DROP_STACK(2)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CACOT(CSTACK(2)/CSTACK(1))/ANGLE_FACTOR
-               CALL CDROP_STACK(2)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = ACOT2(STACK(2),STACK(1))/ANGLE_FACTOR
-               CALL DROP_STACK(2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ACOTH') THEN                                         ! ACOTH
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .EQ. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACOTH Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = ACOTH(STACK(1))
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CACOTH(CSTACK(1))
-            CASE (3)
-               IF (RNSTACK(1) .EQ. 0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACOTH Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = ACOTH(STACK(1))
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ACOVERS') THEN                                       ! ACOVERS
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ABS(1.0D0-STACK(1)) .GT. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACOVERS Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = ACOVERS(STACK(1))/ANGLE_FACTOR
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CACOVERS(CSTACK(1))/ANGLE_FACTOR
-            CASE (3)
-               IF (ABS(RNSTACK(1)) .LT. 0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACOVERS Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = ACOVERS(STACK(1))/ANGLE_FACTOR
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ACRD') THEN                                          ! ACRD
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ABS(STACK(1)) .GT. 2.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACRD Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = ACRD(STACK(1))/ANGLE_FACTOR
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CACRD(CSTACK(1))/ANGLE_FACTOR
-            CASE (3)
-               IF (ABS(RNSTACK(1)) .GT. 2*ABS(RDSTACK(1))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACRD Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = ACRD(STACK(1))/ANGLE_FACTOR
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ACSC') THEN                                          ! ACSC
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ABS(STACK(1)) .LT. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACSC Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = ACSC(STACK(1))/ANGLE_FACTOR
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CACSC(CSTACK(1))/ANGLE_FACTOR
-            CASE (3)
-               IF (ABS(RNSTACK(1)) .LT. ABS(RDSTACK(1))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACSC Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = ACSC(STACK(1))/ANGLE_FACTOR
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ACSCH') THEN                                         ! ACSCH
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .EQ. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACSCH Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = ACSCH(STACK(1))
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CACSCH(CSTACK(1))
-            CASE (3)
-               IF (RNSTACK(1) .EQ. 0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ACSCH Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = ACSCH(STACK(1))
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'AEXSEC') THEN                                        ! AEXSEC
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ABS(STACK(1)+1.0D0) .LT. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  AEXSEC Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = AEXSEC(STACK(1))/ANGLE_FACTOR
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CAEXSEC(CSTACK(1))/ANGLE_FACTOR
-            CASE (3)
-               IF (ABS(RNSTACK(1)) .LT. 0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  AEXSEC Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = AEXSEC(STACK(1))/ANGLE_FACTOR
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'AHAV') THEN                                          ! AHAV
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF ((STACK(1).LT.0.0D0).OR.(STACK(1).GT.1.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  AHAV Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = AHAV(STACK(1))/ANGLE_FACTOR
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CAHAV(CSTACK(1))/ANGLE_FACTOR
-            CASE (3)
-               IF ((RNSTACK(1).LT.0).OR.(RNSTACK(1).GT.RDSTACK(1))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  AHAV Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = AHAV(STACK(1))/ANGLE_FACTOR
-               END IF
-         END SELECT
-
-      ELSE IF (STR(1:3) .EQ. 'ALL') THEN                                            ! ALL
-         DISP_MODE = 4
-
-      ELSE IF (TRIM(STR) .EQ. 'AMU') THEN                                           ! AMU
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (AMU)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(AMU,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (AMU)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'AND') THEN                                           ! AND
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = IAND (INT(STACK(2)), INT(STACK(1)))
-               CALL DROP_STACK(2)
-            CASE (2)
-               TMP = IAND (INT(DBLE(CSTACK(2))), INT(DBLE(CSTACK(1))))
-               TMP2 = IAND (INT(AIMAG(CSTACK(2))), INT(AIMAG(CSTACK(1))))
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CMPLX(TMP,TMP2,8)
-               CALL CDROP_STACK(2)
-            CASE (3)
-               ITMP = RNSTACK(1)/RDSTACK(1)
-               ITMP2 = RNSTACK(2)/RDSTACK(2)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = IAND (ITMP2, ITMP)
-               RDSTACK(1) = 1
-               CALL RDROP_STACK(2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ARG') THEN                                           ! ARG
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = 0.0D0
-            CASE (2)
-               TMP = ATAN2(AIMAG(CSTACK(1)),DBLE(CSTACK(1)))/ANGLE_FACTOR
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CMPLX(TMP,0.0D0,8)
-            CASE (3)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = 0
-               RDSTACK(1) = 1
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ASEC') THEN                                          ! ASEC
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ABS(STACK(1)) .LT. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ASEC Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = ASEC(STACK(1))/ANGLE_FACTOR
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CASEC(CSTACK(1))/ANGLE_FACTOR
-            CASE (3)
-               IF (ABS(RNSTACK(1)) .LT. ABS(RDSTACK(1))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ASEC Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(1)
-                  STACK(1) = ASEC(STACK(1))/ANGLE_FACTOR
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ASECH') THEN                                         ! ASECH
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF ((STACK(1).LE.0.0D0).OR.(STACK(1).GT.1.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ASECH Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = ASECH(STACK(1))
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CASECH(CSTACK(1))
-            CASE (3)
-               IF ((RNSTACK(1).LE.0).OR.(RNSTACK(1).GT.RDSTACK(1))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ASECH Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = ASECH(STACK(1))
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ASIN') THEN                                          ! ASIN
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ABS(STACK(1)) .GT. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ASIN Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = ASIN(STACK(1))/ANGLE_FACTOR
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CASIN(CSTACK(1))/ANGLE_FACTOR
-            CASE (3)
-               IF (ABS(RNSTACK(1)) .GT. ABS(RDSTACK(1))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ASIN Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = ASIN(STACK(1))/ANGLE_FACTOR
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ASINH') THEN                                         ! ASINH
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = ASINH(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CASINH(CSTACK(1))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = ASINH(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ATAN') THEN                                          ! ATAN
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = ATAN(STACK(1))/ANGLE_FACTOR
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CATAN(CSTACK(1))/ANGLE_FACTOR
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = ATAN(STACK(1))/ANGLE_FACTOR
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ATAN2') THEN                                         ! ATAN2
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = ATAN2(STACK(2),STACK(1))/ANGLE_FACTOR
-               CALL DROP_STACK(2)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CATAN(CSTACK(2)/CSTACK(1))/ANGLE_FACTOR
-               CALL CDROP_STACK(2)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = ATAN2(STACK(2),STACK(1))/ANGLE_FACTOR
-               CALL DROP_STACK(2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ATANH') THEN                                         ! ATANH
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ABS(STACK(1)) .GE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ATANH Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = ATANH(STACK(1))
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CATANH(CSTACK(1))
-            CASE (3)
-               IF (ABS(RNSTACK(1)) .GE. ABS(RDSTACK(1))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  ATANH Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = ATANH(STACK(1))
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'AU') THEN                                            ! AU
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (AU)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(AU,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (AU)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'AVERS') THEN                                         ! AVERS
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ABS(1.0D0-STACK(1)) .GT. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  AVERS Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = AVERS(STACK(1))/ANGLE_FACTOR
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CAVERS(CSTACK(1))/ANGLE_FACTOR
-            CASE (3)
-               IF (ABS(RNSTACK(1)) .LT. 0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  AVERS Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = AVERS(STACK(1))/ANGLE_FACTOR
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BESSELJ0') THEN                                      ! BESSELJ0
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = BESJ0(STACK(1))
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELJ0 not available '// &
-                  'in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = BESJ0(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BESSELJ1') THEN                                      ! BESSELJ1
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = BESJ1(STACK(1))
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELJ1 not available '// &
-                  'in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = BESJ1(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BESSELJ') THEN                                       ! BESSELJ
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELJ Error 1'
-               ELSE
-                  BES_X = STACK(1)
-                  BES_NB = INT(STACK(2)) + 1
-                  BES_ALPHA = FRAC(STACK(2))
-                  ALLOCATE (BES_B(BES_NB))
-                  CALL RJBESL(BES_X, BES_ALPHA, BES_NB, BES_B, BES_NCALC)
-                  IF (BES_NCALC .LT. 0) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELJ Error 2'
-                  ELSE IF (BES_NCALC .NE. BES_NB) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELJ Error 3'
-                  ELSE
-                     LASTX = STACK(1)
-                     STACK(1) = BES_B(BES_NB)
-                     CALL DROP_STACK(2)
-                  END IF
-                  DEALLOCATE (BES_B)
-               END IF
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELJ not available '// &
-                  'in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELJ Error 1'
-               ELSE
-                  BES_X = STACK(1)
-                  BES_NB = INT(STACK(2)) + 1
-                  BES_ALPHA = FRAC(STACK(2))
-                  ALLOCATE (BES_B(BES_NB))
-                  CALL RJBESL(BES_X, BES_ALPHA, BES_NB, BES_B, BES_NCALC)
-                  IF (BES_NCALC .LT. 0) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELJ Error 2'
-                  ELSE IF (BES_NCALC .NE. BES_NB) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELJ Error 3'
-                  ELSE
-                     LASTX = STACK(1)
-                     STACK(1) = BES_B(BES_NB)
-                     CALL DROP_STACK(2)
-                  END IF
-                  DEALLOCATE (BES_B)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BESSELY0') THEN                                      ! BESSELY0
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELY0 Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = BESY0(STACK(1))
-               END IF
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELY0 not available '// &
-                  'in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELY0 Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = BESY0(STACK(1))
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BESSELY1') THEN                                      ! BESSELY1
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELY1 Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = BESY1(STACK(1))
-               END IF
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELY1 not available '// &
-                  'in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELY1 Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = BESY1(STACK(1))
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BESSELY') THEN                                       ! BESSELY
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELY Error 1'
-               ELSE
-                  BES_X = STACK(1)
-                  BES_NB = INT(STACK(2)) + 1
-                  BES_ALPHA = FRAC(STACK(2))
-                  ALLOCATE (BES_B(BES_NB))
-                  CALL RYBESL(BES_X, BES_ALPHA, BES_NB, BES_B, BES_NCALC)
-                  IF (BES_NCALC .LT. 0) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELY Error 2'
-                  ELSE IF (BES_NCALC .NE. BES_NB) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELY Error 3'
-                  ELSE
-                     LASTX = STACK(1)
-                     STACK(1) = BES_B(BES_NB)
-                     CALL DROP_STACK(2)
-                  END IF
-                  DEALLOCATE (BES_B)
-               END IF
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELY not available '// &
-                  'in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELY Error 1'
-               ELSE
-                  BES_X = STACK(1)
-                  BES_NB = INT(STACK(2)) + 1
-                  BES_ALPHA = FRAC(STACK(2))
-                  ALLOCATE (BES_B(BES_NB))
-                  CALL RYBESL(BES_X, BES_ALPHA, BES_NB, BES_B, BES_NCALC)
-                  IF (BES_NCALC .LT. 0) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELY Error 2'
-                  ELSE IF (BES_NCALC .NE. BES_NB) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELY Error 3'
-                  ELSE
-                     LASTX = STACK(1)
-                     STACK(1) = BES_B(BES_NB)
-                     CALL DROP_STACK(2)
-                  END IF
-                  DEALLOCATE (BES_B)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BESSELI0') THEN                                      ! BESSELI0
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = BESI0(STACK(1))
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELI0 not available '// &
-                  'in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = BESI0(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BESSELI1') THEN                                      ! BESSELI1
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = BESI1(STACK(1))
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELI1 not available '// &
-                  'in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = BESI1(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BESSELI') THEN                                       ! BESSELI
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELI Error 1'
-               ELSE
-                  BES_X = STACK(1)
-                  BES_NB = INT(STACK(2)) + 1
-                  BES_ALPHA = FRAC(STACK(2))
-                  ALLOCATE (BES_B(BES_NB))
-                  CALL RIBESL(BES_X, BES_ALPHA, BES_NB, 1, BES_B, BES_NCALC)
-                  IF (BES_NCALC .LT. 0) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELI Error 2'
-                  ELSE IF (BES_NCALC .NE. BES_NB) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELI Error 3'
-                  ELSE
-                     LASTX = STACK(1)
-                     STACK(1) = BES_B(BES_NB)
-                     CALL DROP_STACK(2)
-                  END IF
-                  DEALLOCATE (BES_B)
-               END IF
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELI not available '// &
-                  'in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELI Error 1'
-               ELSE
-                  BES_X = STACK(1)
-                  BES_NB = INT(STACK(2)) + 1
-                  BES_ALPHA = FRAC(STACK(2))
-                  ALLOCATE (BES_B(BES_NB))
-                  CALL RIBESL(BES_X, BES_ALPHA, BES_NB, 1, BES_B, BES_NCALC)
-                  IF (BES_NCALC .LT. 0) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELI Error 2'
-                  ELSE IF (BES_NCALC .NE. BES_NB) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELI Error 3'
-                  ELSE
-                     LASTX = STACK(1)
-                     STACK(1) = BES_B(BES_NB)
-                     CALL DROP_STACK(2)
-                  END IF
-                  DEALLOCATE (BES_B)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BESSELK0') THEN                                      ! BESSELK0
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELK0 Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = BESK0(STACK(1))
-               END IF
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELK0 not available '// &
-                  'in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELK0 Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = BESK0(STACK(1))
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BESSELK1') THEN                                      ! BESSELK1
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELK1 Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = BESK1(STACK(1))
-               END IF
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELK1 not available '// &
-                  'in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELK1 Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = BESK1(STACK(1))
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BESSELK') THEN                                       ! BESSELK
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 1'
-               ELSE
-                  BES_X = STACK(1)
-                  BES_NB = INT(STACK(2)) + 1
-                  BES_ALPHA = FRAC(STACK(2))
-                  ALLOCATE (BES_B(BES_NB))
-                  CALL RKBESL(BES_X, BES_ALPHA, BES_NB, 1, BES_B, BES_NCALC)
-                  IF (BES_NCALC .LT. -1) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 2'
-                  ELSE IF (BES_NCALC .EQ. -1) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 3'
-                  ELSE IF (BES_NCALC .NE. BES_NB) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 4'
-                  ELSE
-                     LASTX = STACK(1)
-                     STACK(1) = BES_B(BES_NB)
-                     CALL DROP_STACK(2)
-                  END IF
-                  DEALLOCATE (BES_B)
-               END IF
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELK not available '// &
-                  'in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 1'
-               ELSE
-                  BES_X = STACK(1)
-                  BES_NB = INT(STACK(2)) + 1
-                  BES_ALPHA = FRAC(STACK(2))
-                  ALLOCATE (BES_B(BES_NB))
-                  CALL RKBESL(BES_X, BES_ALPHA, BES_NB, 1, BES_B, BES_NCALC)
-                  IF (BES_NCALC .LT. -1) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 2'
-                  ELSE IF (BES_NCALC .EQ. -1) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 3'
-                  ELSE IF (BES_NCALC .NE. BES_NB) THEN
-                     WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 4'
-                  ELSE
-                     LASTX = STACK(1)
-                     STACK(1) = BES_B(BES_NB)
-                     CALL DROP_STACK(2)
-                  END IF
-                  DEALLOCATE (BES_B)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BETA') THEN                                          ! BETA
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF ((ISINT(STACK(1)).AND.(STACK(1).LE.0.0D0)) .OR.  &
-                   (ISINT(STACK(2)).AND.(STACK(2).LE.0.0D0))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BETA Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = BETA(STACK(1),STACK(2))
-                  CALL DROP_STACK(2)
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CBETA(CSTACK(1),CSTACK(2))
-               CALL CDROP_STACK(2)
-            CASE (3)
-               IF (((RDSTACK(1).EQ.1).AND.(RNSTACK(1).LE.0)) .OR. &
-                   ((RDSTACK(2).EQ.1).AND.(RNSTACK(2).LE.0))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BETA Error'
-               ELSE
-                  IF ((RDSTACK(1).EQ.1) .AND. (RDSTACK(2).EQ.1)) THEN
-                     ITMP = RNSTACK(1)
-                     IF (ITMP.LE.0) THEN
-                        WRITE (UNIT=*, FMT='(A)') '  BETA Error'
-                     ELSE
-                        CALL RBETA(RNSTACK(1),RNSTACK(2),ITMP,ITMP2)
-                        RNLASTX = RNSTACK(1)
-                        RDLASTX = RDSTACK(1)
-                        RNSTACK(1) = ITMP
-                        RDSTACK(1) = ITMP2
-                        CALL RDROP_STACK(2)
-                     END IF
-                  ELSE
-                     CALL SWITCH_RAT_TO_REAL
-                     IF ((ISINT(STACK(1)).AND.(STACK(1).LE.0.0D0)) .OR.  &
-                         (ISINT(STACK(2)).AND.(STACK(2).LE.0.0D0))) THEN
-                        WRITE (UNIT=*, FMT='(A)') '  BETA Error'
-                     ELSE
-                        LASTX = STACK(1)
-                        STACK(1) = BETA(STACK(1),STACK(2))
-                        CALL DROP_STACK(2)
-                     END IF
-                  END IF
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'BIN') THEN                                           ! BIN
-         BASE_MODE = 2
-
-      ELSE IF (TRIM(STR) .EQ. 'C') THEN                                             ! C
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (C)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(C,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (C)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'C>F') THEN                                           ! C>F
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = (9.0D0/5.0D0)*STACK(1)+32.0D0
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = (9.0D0/5.0D0)*CSTACK(1)+32.0D0
-            CASE (3)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               CALL RMUL (9,5,RNSTACK(1),RDSTACK(1),NUM,DEN)
-               CALL RADD (NUM,DEN,32,1,NUM2,DEN2)
-               RNSTACK(1) = NUM2
-               RDSTACK(1) = DEN2
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CBRT') THEN                                          ! CBRT
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = CUBEROOT(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CCUBEROOT(CSTACK(1))
-            CASE (3)
-               TMP = CUBEROOT(DBLE(RNSTACK(1)))
-               TMP2 = CUBEROOT(DBLE(RDSTACK(1)))
-               IF (ISFRAC(TMP).OR.ISFRAC(TMP2)) THEN
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = CUBEROOT(STACK(1))
-               ELSE
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(1)
-                  RNSTACK(1) = NINT(CUBEROOT(DBLE(RNSTACK(1))))
-                  RDSTACK(1) = NINT(CUBEROOT(DBLE(RDSTACK(1))))
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CHS') THEN                                           ! CHS
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               STACK(1) = -STACK(1)
-            CASE (2)
-               CSTACK(1) = -CSTACK(1)
-            CASE (3)
-               RNSTACK(1) = -RNSTACK(1)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CLALL') THEN                                         ! CLALL
-         SELECT CASE (DOMAIN_MODE)
-            CASE(1)
-               STACK = 0.0D0
-               REG = 0.0D0
-               NN = 0.0D0
-               SUMX = 0.0D0
-               SUMX2 = 0.0D0
-               SUMY = 0.0D0
-               SUMY2 = 0.0D0
-               SUMXY = 0.0D0
-            CASE (2)
-               CSTACK = (0.0D0,0.0D0)
-               CREG = (0.0D0,0.0D0)
-               CNN = (0.0D0,0.0D0)
-               CSUMX = (0.0D0,0.0D0)
-               CSUMX2 = (0.0D0,0.0D0)
-               CSUMY = (0.0D0,0.0D0)
-               CSUMY2 = (0.0D0,0.0D0)
-               CSUMXY = (0.0D0,0.0D0)
-            CASE (3)
-               RNSTACK = 0; RDSTACK = 1
-               RNREG = 0; RDREG = 1
-               RNNN = 0; RDNN = 1
-               RNSUMX = 0; RDSUMX = 1
-               RNSUMX2 = 0; RDSUMX2 = 1
-               RNSUMY = 0; RDSUMY = 1
-               RNSUMY2 = 0; RDSUMY2 = 1
-               RNSUMXY = 0; RDSUMXY = 1
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CLREG') THEN                                         ! CLREG
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               REG = 0.0D0
-            CASE (2)
-               CREG = (0.0D0,0.0D0)
-            CASE (3)
-               RNREG = 0; RDREG = 1
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CLS') THEN                                           ! CLS
-         SELECT CASE (DOMAIN_MODE)
-            CASE(1)
-               NN = 0.0D0
-               SUMX = 0.0D0
-               SUMX2 = 0.0D0
-               SUMY = 0.0D0
-               SUMY2 = 0.0D0
-               SUMXY = 0.0D0
-            CASE (2)
-               CNN = (0.0D0,0.0D0)
-               CSUMX = (0.0D0,0.0D0)
-               CSUMX2 = (0.0D0,0.0D0)
-               CSUMY = (0.0D0,0.0D0)
-               CSUMY2 = (0.0D0,0.0D0)
-               CSUMXY = (0.0D0,0.0D0)
-            CASE (3)
-               RNNN = 0; RDNN = 1
-               RNSUMX = 0; RDSUMX = 1
-               RNSUMX2 = 0; RDSUMX2 = 1
-               RNSUMY = 0; RDSUMY = 1
-               RNSUMY2 = 0; RDSUMY2 = 1
-               RNSUMXY = 0; RDSUMXY = 1
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CLSTK') THEN                                         ! CLSTK
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               STACK = 0.0D0
-            CASE (2)
-               CSTACK = (0.0D0,0.0D0)
-            CASE (3)
-               RNSTACK = 0; RDSTACK = 1
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CLX') THEN                                           ! CLX
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               STACK(1) = 0.0D0
-            CASE (2)
-               CSTACK(1) = (0.0D0,0.0D0)
-            CASE (3)
-               RNSTACK(1) = 0; RDSTACK(1) = 1
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CM>IN') THEN                                         ! CM>IN
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               STACK(1) = STACK(1) / CM_PER_IN
-            CASE (2)
-               CSTACK(1) = CSTACK(1) / CM_PER_IN
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               STACK(1) = STACK(1) / CM_PER_IN
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CNR') THEN                                           ! CNR
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ISFRAC(STACK(1)) .OR. ISFRAC(STACK(2))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-               ELSE IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-               ELSE IF (STACK(2) .LT. STACK(1)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-               ELSE
-                  ITMP  = NINT(STACK(1))
-                  ITMP2 = NINT(STACK(2))
-                  LASTX = STACK(1)
-                  STACK(1) = CNR (ITMP2, ITMP)
-                  CALL DROP_STACK(2)
-               END IF
-            CASE (2)
-               IF (ISFRAC(DBLE(CSTACK(1))) .OR. ISFRAC(DBLE(CSTACK(2)))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-               ELSE IF (DBLE(CSTACK(1)).LT.0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-               ELSE IF (DBLE(CSTACK(2)).LT.0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-               ELSE IF (AIMAG(CSTACK(1)).NE.0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-               ELSE IF (AIMAG(CSTACK(2)).NE.0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-               ELSE IF (DBLE(CSTACK(2)) .LT. DBLE(CSTACK(1))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-               ELSE
-                  ITMP  = NINT(DBLE(CSTACK(1)))
-                  ITMP2 = NINT(DBLE(CSTACK(2)))
-                  TMP = CNR (ITMP2, ITMP)
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = CMPLX(TMP,0.0D0,8)
-                  CALL CDROP_STACK(2)
-               END IF
-            CASE (3)
-               IF ((RDSTACK(1).NE.1).OR.(RDSTACK(2).NE.1)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-               ELSE IF ((RNSTACK(1).LT.0) .OR. (RNSTACK(2).LT.0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-               ELSE IF (RNSTACK(2) .LT. RNSTACK(1)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-               ELSE
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(1)
-                  RNSTACK(1) = CNR (RNSTACK(2), RNSTACK(1))
-                  CALL RDROP_STACK(2)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'COMPLEX') THEN                                       ! COMPLEX
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               DOMAIN_MODE = 2
-               DO I = 1, STACK_SIZE
-                  CSTACK(I) = CMPLX(STACK(I),0.0D0,8)
-               END DO
-               DO I = 0, REG_SIZE-1
-                  CREG(I) = CMPLX(REG(I),0.0D0,8)
-               END DO
-               CLASTX = CMPLX(LASTX,0.0D0,8)
-               CNN = CMPLX(NN,0.0D0,8)
-               CSUMX = CMPLX(SUMX,0.0D0,8)
-               CSUMX2 = CMPLX(SUMX2,0.0D0,8)
-               CSUMY = CMPLX(SUMY,0.0D0,8)
-               CSUMY2 = CMPLX(SUMY2,0.0D0,8)
-               CSUMXY = CMPLX(SUMXY,0.0D0,8)
-            CASE (3)
-               DOMAIN_MODE = 2
-               DO I = 1, STACK_SIZE
-                  TMP = DBLE(RNSTACK(I))/DBLE(RDSTACK(I))
-                  CSTACK(I) = CMPLX(TMP,0.0D0,8)
-               END DO
-               DO I = 0, REG_SIZE-1
-                  TMP = DBLE(RNREG(I))/DBLE(RDREG(I))
-                  CREG(I) = CMPLX(TMP,0.0D0,8)
-               END DO
-               CLASTX = CMPLX(DBLE(RNLASTX)/DBLE(RDLASTX),0.0D0,8)
-               CNN = CMPLX(DBLE(RNNN)/DBLE(RDNN),0.0D0,8)
-               CSUMX = CMPLX(DBLE(RNSUMX)/DBLE(RDSUMX),0.0D0,8)
-               CSUMX2 = CMPLX(DBLE(RNSUMX2)/DBLE(RDSUMX2),0.0D0,8)
-               CSUMY = CMPLX(DBLE(RNSUMY)/DBLE(RDSUMY),0.0D0,8)
-               CSUMY2 = CMPLX(DBLE(RNSUMY2)/DBLE(RDSUMY2),0.0D0,8)
-               CSUMXY = CMPLX(DBLE(RNSUMXY)/DBLE(RDSUMXY),0.0D0,8)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CONJ') THEN                                          ! CONJ
-         SELECT CASE (DOMAIN_MODE)
-            CASE (2)
-               CSTACK(1) = CONJG(CSTACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'COS') THEN                                           ! COS
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = COS(STACK(1)*ANGLE_FACTOR)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = COS(CSTACK(1)*ANGLE_FACTOR)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = COS(STACK(1)*ANGLE_FACTOR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'COSH') THEN                                          ! COSH
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = COSH(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CCOSH(CSTACK(1))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = COSH(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'COT') THEN                                           ! COT
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = COT(STACK(1)*ANGLE_FACTOR)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CCOT(CSTACK(1)*ANGLE_FACTOR)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = COT(STACK(1)*ANGLE_FACTOR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'COTH') THEN                                          ! COTH
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = COTH(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CCOTH(CSTACK(1))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = COTH(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'COVERS') THEN                                        ! COVERS
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = COVERS(STACK(1)*ANGLE_FACTOR)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CCOVERS(CSTACK(1)*ANGLE_FACTOR)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = COVERS(STACK(1)*ANGLE_FACTOR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CRD') THEN                                           ! CRD
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = CRD(STACK(1)*ANGLE_FACTOR)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CCRD(CSTACK(1)*ANGLE_FACTOR)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = CRD(STACK(1)*ANGLE_FACTOR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CSC') THEN                                           ! CSC
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = CSC(STACK(1)*ANGLE_FACTOR)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CCSC(CSTACK(1)*ANGLE_FACTOR)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = CSC(STACK(1)*ANGLE_FACTOR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CSCH') THEN                                          ! CSCH
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = CSCH(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CCSCH(CSTACK(1))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = CSCH(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'CUBE') THEN                                          ! CUBE
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(1)**3
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(1)**3
-            CASE (3)
-               NUM = RNSTACK(1)
-               DEN = RDSTACK(1)
-               CALL RMUL (NUM,DEN,NUM,DEN,NUM2,DEN2)
-               CALL RMUL (NUM, DEN, NUM2, DEN2, NUM, DEN)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = NUM
-               RDSTACK(1) = DEN
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'D>F') THEN                                           ! D>F
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               CALL DEC_TO_FRAC (STACK(1), NUM, DEN, FRACTOL)
-               CALL DROP_STACK(1)
-               CALL PUSH_STACK(DBLE(NUM))
-               CALL PUSH_STACK(DBLE(DEN))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CALL DEC_TO_FRAC (DBLE(CSTACK(1)), NUM, DEN, FRACTOL)
-               CALL DEC_TO_FRAC (AIMAG(CSTACK(1)), NUM2, DEN2, FRACTOL)
-               CALL CDROP_STACK(1)
-               CALL CPUSH_STACK(CMPLX(DBLE(NUM),DBLE(NUM2),8))
-               CALL CPUSH_STACK(CMPLX(DBLE(DEN),DBLE(DEN2),8))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'D>R') THEN                                           ! D>R
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(1)*PI/180.0D0
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(1)*PI/180.0D0
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = STACK(1)*PI/180.0D0
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'DEC') THEN                                           ! DEC
-         BASE_MODE = 10
-
-      ELSE IF (TRIM(STR) .EQ. 'DEFAULT') THEN                                       ! DEFAULT
-         ANGLE_MODE = INITIAL_ANGLE_MODE
-
-         SELECT CASE (ANGLE_MODE)
-            CASE (1)
-               ANGLE_FACTOR = PI/180.0D0
-            CASE (2)
-               ANGLE_FACTOR = 1.0D0
-            CASE (3)
-               ANGLE_FACTOR = PI/200.0D0
-            CASE (4)
-               ANGLE_FACTOR = TWOPI
-         END SELECT
-
-         DISP_MODE = INITIAL_DISP_MODE
-         DISP_DIGITS = INITIAL_DISP_DIGITS
-         DOMAIN_MODE = INITIAL_DOMAIN_MODE
-         BASE_MODE = INITIAL_BASE_MODE
-         FRACTION_MODE = INITIAL_FRACTION_MODE
-
-      ELSE IF (TRIM(STR) .EQ. 'DEG') THEN                                           ! DEG
-         ANGLE_MODE = 1
-         ANGLE_FACTOR = PI/180.0D0
-
-      ELSE IF (TRIM(STR) .EQ. 'DIGAMMA') THEN                                       ! DIGAMMA
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = PSI(STACK(1))
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') ' DIGAMMA function not available in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = PSI(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'DUP') THEN                                           ! DUP
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK(STACK(1))
-            CASE (2)
-               CALL CPUSH_STACK(CSTACK(1))
-            CASE (3)
-               CALL RPUSH_STACK(RNSTACK(1),RDSTACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ECHG') THEN                                          ! ECHG
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (ECHG)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(ECHG,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (ECHG)
-         END SELECT
-
-      ELSE IF (STR(1:3) .EQ. 'ENG') THEN                                            ! ENG
-         IF (LEN_TRIM(STR) .EQ. 3) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ENG Error'
-         ELSE
-            READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-            IF (IERR .NE. 0) THEN
-               WRITE (UNIT=*, FMT='(A)') '  ENG Error'
-            ELSE
-               DISP_MODE = 3
-               DISP_DIGITS = ITMP
-            END IF
-         END IF
-
-      ELSE IF (TRIM(STR) .EQ. 'EPS0') THEN                                          ! EPS0
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (EPS0)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(EPS0,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (EPS0)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ERF') THEN                                           ! ERF
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = DERF(STACK(1))
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') ' ERF function not available in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = DERF(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ERFC') THEN                                          ! ERFC
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = DERFC(STACK(1))
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') ' ERFC function not available in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = DERFC(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'EULER') THEN                                         ! EULER
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (EULER)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(EULER,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (EULER)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'EXP') THEN                                           ! EXP
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = EXP(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = EXP(CSTACK(1))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = EXP(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'EXSEC') THEN                                         ! EXSEC
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = EXSEC(STACK(1)*ANGLE_FACTOR)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CEXSEC(CSTACK(1)*ANGLE_FACTOR)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = EXSEC(STACK(1)*ANGLE_FACTOR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'F>C') THEN                                           ! F>C
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = (5.0D0/9.0D0)*(STACK(1)-32.0D0)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = (5.0D0/9.0D0)*(CSTACK(1)-32.0D0)
-            CASE (3)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               CALL RSUB (RNSTACK(1),RDSTACK(1),32,1,NUM,DEN)
-               CALL RMUL (5,9,NUM,DEN,NUM2,DEN2)
-               RNSTACK(1) = NUM2
-               RDSTACK(1) = DEN2
-         END SELECT
-
-      ELSE IF (STR(1:3) .EQ. 'FIX') THEN                                            ! FIX
-         IF (LEN_TRIM(STR) .EQ. 3) THEN
-            WRITE (UNIT=*, FMT='(A)') '  FIX Error'
-         ELSE
-            READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-            IF (IERR .NE. 0) THEN
-               WRITE (UNIT=*, FMT='(A)') '  FIX Error'
-            ELSE
-               DISP_MODE = 1
-               DISP_DIGITS = ITMP
-            END IF
-         END IF
-
-      ELSE IF (TRIM(STR) .EQ. 'FRAC') THEN                                          ! FRAC
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = FRAC(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CFRAC(CSTACK(1))
-            CASE (3)
-               CALL RFRAC(RNSTACK(1),RDSTACK(1),NUM,DEN)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = NUM
-               RDSTACK(1) = DEN
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'FRACTOL') THEN                                       ! FRACTOL
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               FRACTOL = STACK(1)
-               CALL DROP_STACK(1)
-            CASE (2)
-               FRACTOL = DBLE(CSTACK(1))
-               CALL CDROP_STACK(1)
-            CASE (3)
-               FRACTOL = DBLE(RNSTACK(1))/DBLE(RDSTACK(1))
-               CALL RDROP_STACK(1)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'G') THEN                                             ! G
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (G)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(G,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (G)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'GAL>L') THEN                                         ! GAL>L
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(1) * L_PER_GAL
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(1) * L_PER_GAL
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = STACK(1) * L_PER_GAL
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'GAMMA') THEN                                         ! GAMMA
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ISINT(STACK(1)).AND.(STACK(1).LE.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  GAMMA Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = DGAMMA(STACK(1))
-               END IF
-            CASE (2)
-               IF (CSTACK(1) .EQ. (0.0D0,0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  GAMMA Error'
-               ELSE
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = CGAMMA(CSTACK(1))
-               END IF
-            CASE (3)
-               IF ((RDSTACK(1).EQ.1).AND.(RNSTACK(1).LE.0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  GAMMA Error'
-               ELSE
-                  IF (RDSTACK(1).EQ.1) THEN
-                     ITMP = RNSTACK(1)
-                     IF (ITMP.LE.0) THEN
-                        WRITE (UNIT=*, FMT='(A)') '  GAMMA Error'
-                     ELSE
-                        ITMP2 = 1
-                        DO I = 2, ITMP-1
-                           ITMP2 = ITMP2 * I
-                        END DO
-                        RNLASTX = RNSTACK(1)
-                        RDLASTX = RDSTACK(1)
-                        RNSTACK(1) = ITMP2
-                        RDSTACK(1) = 1
-                     END IF
-                  ELSE
-                     CALL SWITCH_RAT_TO_REAL
-                     IF (ISINT(STACK(1)).AND.(STACK(1).LE.0.0D0)) THEN
-                        WRITE (UNIT=*, FMT='(A)') '  GAMMA Error'
-                     ELSE
-                        LASTX = STACK(1)
-                        STACK(1) = DGAMMA(STACK(1))
-                     END IF
-                  END IF
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'GCD') THEN                                           ! GCD
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ISFRAC(STACK(1)).OR.ISFRAC(STACK(2))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  GCD Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = GCD(NINT(STACK(2)),NINT(STACK(1)))
-                  CALL DROP_STACK(2)
-               END IF
-            CASE (2)
-               IF (ISFRAC(DBLE(CSTACK(1))).OR.ISFRAC(DBLE(CSTACK(2))).OR. &
-                  (AIMAG(CSTACK(2)).NE.0.0D0).OR.(AIMAG(CSTACK(2)).NE.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  GCD Error'
-               ELSE
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = GCD(NINT(DBLE(CSTACK(2))),NINT(DBLE(CSTACK(1))))
-                  CALL CDROP_STACK(2)
-               END IF
-            CASE (3)
-               IF ((RDSTACK(1).NE.1).OR.(RDSTACK(2).NE.1)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  GCD Error'
-               ELSE
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(2)
-                  RNSTACK(1) = GCD(RNSTACK(2),RNSTACK(1))
-                  RDSTACK(1) = 1
-                  CALL RDROP_STACK(2)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'GOLDEN') THEN                                        ! GOLDEN
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (GOLDEN)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(GOLDEN,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (GOLDEN)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'GRAD') THEN                                          ! GRAD
-         ANGLE_MODE = 3
-         ANGLE_FACTOR = PI/200.0D0
-
-      ELSE IF (TRIM(STR) .EQ. 'GRAV') THEN                                          ! GRAV
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (GRAV)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(GRAV,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (GRAV)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'H') THEN                                             ! H
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (H)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(H,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (H)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'H>HMS') THEN                                         ! H>HMS
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL H2HMSD (STACK(1), ITMP, ITMP2, TMP)
-               LASTX = STACK(1)
-               STACK(1) = DBLE(ITMP) + 1.0D-2*ITMP2 + 1.0D-4*TMP
-            CASE (2)
-               IF (AIMAG(CSTACK(1)) .NE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  H>HMS Error'
-               ELSE
-                  CALL H2HMSD (DBLE(CSTACK(1)), ITMP, ITMP2, TMP)
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = CMPLX(DBLE(ITMP)+1.0D-2*ITMP2+1.0D-4*TMP, 0.0D0, 8)
-               END IF
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL H2HMSD (STACK(1), ITMP, ITMP2, TMP)
-               LASTX = STACK(1)
-               STACK(1) = DBLE(ITMP) + 1.0D-2*ITMP2 + 1.0D-4*TMP
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'HBAR') THEN                                          ! HBAR
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (HBAR)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(HBAR,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (HBAR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'HEX') THEN                                           ! HEX
-         BASE_MODE = 16
-
-      ELSE IF (TRIM(STR) .EQ. 'HMS>H') THEN                                         ! HMS>H
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               ITMP = INT(STACK(1))
-               ITMP2 = INT(FRAC(STACK(1))*1.0D2)
-               TMP = (STACK(1) - ITMP - ITMP2*1.0D-2)*1.0D4
-               CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
-               LASTX = STACK(1)
-               STACK(1) = TMP2
-            CASE (2)
-               IF (AIMAG(CSTACK(1)) .NE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  HMS>H Error'
-               ELSE
-                  ITMP = INT(DBLE(CSTACK(1)))
-                  ITMP2 = INT(FRAC(DBLE(CSTACK(1)))*1.0D2)
-                  TMP = (DBLE(CSTACK(1)) - ITMP - ITMP2*1.0D-2)*1.0D4
-                  CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = CMPLX(TMP2,0.0D0,8)
-               END IF
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               ITMP = INT(STACK(1))
-               ITMP2 = INT(FRAC(STACK(1))*1.0D2)
-               TMP = (STACK(1) - ITMP - ITMP2*1.0D-2)*1.0D4
-               CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
-               LASTX = STACK(1)
-               STACK(1) = TMP2
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'HMS+') THEN                                          ! HMS+
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               ITMP = INT(STACK(1))
-               ITMP2 = INT(FRAC(STACK(1))*1.0D2)
-               TMP = (STACK(1) - ITMP - ITMP2*1.0D-2)*1.0D4
-               CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
-               ITMP = INT(STACK(2))
-               ITMP2 = INT(FRAC(STACK(2))*1.0D2)
-               TMP = (STACK(2) - ITMP - ITMP2*1.0D-2)*1.0D4
-               CALL HMS2H (ITMP, ITMP2, TMP, TMP3)
-               CALL H2HMSD (TMP2+TMP3, ITMP, ITMP2, TMP)
-               LASTX = STACK(1)
-               STACK(1) = DBLE(ITMP) + 1.0D-2*ITMP2 + 1.0D-4*TMP
-               CALL DROP_STACK(2)
-            CASE (2)
-               IF (AIMAG(CSTACK(1)) .NE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  HMS+ Error'
-               ELSE
-                  ITMP = INT(CSTACK(1))
-                  ITMP2 = INT(CFRAC(CSTACK(1))*1.0e2_wp)
-                  TMP = (CSTACK(1) - ITMP - ITMP2*1.0D-2)*1.0D4
-                  CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
-                  ITMP = INT(CSTACK(2))
-                  ITMP2 = INT(CFRAC(CSTACK(2))*1.0e2_wp)
-                  TMP = (CSTACK(2) - ITMP - ITMP2*1.0D-2)*1.0D4
-                  CALL HMS2H (ITMP, ITMP2, TMP, TMP3)
-                  CALL H2HMSD (TMP2+TMP3, ITMP, ITMP2, TMP)
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = DBLE(ITMP) + 1.0D-2*ITMP2 + 1.0D-4*TMP
-                  CALL CDROP_STACK(2)
-               END IF
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               ITMP = INT(STACK(1))
-               ITMP2 = INT(FRAC(STACK(1))*1.0D2)
-               TMP = (STACK(1) - ITMP - ITMP2*1.0D-2)*1.0D4
-               CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
-               ITMP = INT(STACK(2))
-               ITMP2 = INT(FRAC(STACK(2))*1.0D2)
-               TMP = (STACK(2) - ITMP - ITMP2*1.0D-2)*1.0D4
-               CALL HMS2H (ITMP, ITMP2, TMP, TMP3)
-               CALL H2HMSD (TMP2+TMP3, ITMP, ITMP2, TMP)
-               LASTX = STACK(1)
-               STACK(1) = DBLE(ITMP) + 1.0D-2*ITMP2 + 1.0D-4*TMP
-               CALL DROP_STACK(2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'HMS-') THEN                                          ! HMS-
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               ITMP = INT(STACK(1))
-               ITMP2 = INT(FRAC(STACK(1))*1.0D2)
-               TMP = (STACK(1) - ITMP - ITMP2*1.0D-2)*1.0D4
-               CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
-               ITMP = INT(STACK(2))
-               ITMP2 = INT(FRAC(STACK(2))*1.0D2)
-               TMP = (STACK(2) - ITMP - ITMP2*1.0D-2)*1.0D4
-               CALL HMS2H (ITMP, ITMP2, TMP, TMP3)
-               CALL H2HMSD (TMP3-TMP2, ITMP, ITMP2, TMP)
-               LASTX = STACK(1)
-               STACK(1) = DBLE(ITMP) + 1.0D-2*ITMP2 + 1.0D-4*TMP
-               CALL DROP_STACK(2)
-            CASE (2)
-               IF (AIMAG(CSTACK(1)) .NE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  HMS- Error'
-               ELSE
-                  ITMP = INT(CSTACK(1))
-                  ITMP2 = INT(CFRAC(CSTACK(1))*1.0D2)
-                  TMP = (CSTACK(1) - ITMP - ITMP2*1.0D-2)*1.0D4
-                  CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
-                  ITMP = INT(CSTACK(2))
-                  ITMP2 = INT(CFRAC(CSTACK(2))*1.0D2)
-                  TMP = (CSTACK(2) - ITMP - ITMP2*1.0D-2)*1.0D4
-                  CALL HMS2H (ITMP, ITMP2, TMP, TMP3)
-                  CALL H2HMSD (TMP3-TMP2, ITMP, ITMP2, TMP)
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = DBLE(ITMP) + 1.0D-2*ITMP2 + 1.0D-4*TMP
-                  CALL CDROP_STACK(2)
-               END IF
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               ITMP = INT(STACK(1))
-               ITMP2 = INT(FRAC(STACK(1))*1.0D2)
-               TMP = (STACK(1) - ITMP - ITMP2*1.0D-2)*1.0D4
-               CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
-               ITMP = INT(STACK(2))
-               ITMP2 = INT(FRAC(STACK(2))*1.0D2)
-               TMP = (STACK(2) - ITMP - ITMP2*1.0D-2)*1.0D4
-               CALL HMS2H (ITMP, ITMP2, TMP, TMP3)
-               CALL H2HMSD (TMP3-TMP2, ITMP, ITMP2, TMP)
-               LASTX = STACK(1)
-               STACK(1) = DBLE(ITMP) + 1.0D-2*ITMP2 + 1.0D-4*TMP
-               CALL DROP_STACK(2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'HAV') THEN                                           ! HAV
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = HAV(STACK(1)*ANGLE_FACTOR)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CHAV(CSTACK(1)*ANGLE_FACTOR)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = HAV(STACK(1)*ANGLE_FACTOR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'HYPOT') THEN                                         ! HYPOT
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = SQRT(STACK(1)**2+STACK(2)**2)
-               CALL DROP_STACK(2)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = SQRT(CSTACK(1)**2+CSTACK(2)**2)
-               CALL CDROP_STACK(2)
-            CASE (3)
-               NUM = RNSTACK(1)
-               DEN = RDSTACK(1)
-               NUM2 = RNSTACK(2)
-               DEN2 = RDSTACK(2)
-               CALL RMUL (NUM,DEN,NUM,DEN,NUM3,DEN3)
-               CALL RMUL (NUM2,DEN2,NUM2,DEN2,NUM4,DEN4)
-               CALL RADD (NUM3,DEN3,NUM4,DEN4,NUM,DEN)
-               TMP = SQRT(DBLE(NUM))
-               TMP2 = SQRT(DBLE(DEN))
-               IF (ISFRAC(TMP).OR.ISFRAC(TMP2)) THEN
-                  CALL SWITCH_RAT_TO_REAL
-                  LASTX = STACK(1)
-                  STACK(1) = SQRT(STACK(1)**2+STACK(2)**2)
-                  CALL DROP_STACK(2)
-               ELSE
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(1)
-                  RNSTACK(1) = NINT(SQRT(DBLE(NUM)))
-                  RDSTACK(1) = NINT(SQRT(DBLE(DEN)))
-                  CALL RDROP_STACK(2)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'HYPOT3') THEN                                        ! HYPOT3
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = SQRT(STACK(1)**2+STACK(2)**2+STACK(3)**2)
-               CALL DROP_STACK(3)
-               CALL DROP_STACK(2)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = SQRT(CSTACK(1)**2+CSTACK(2)**2+CSTACK(3)**2)
-               CALL CDROP_STACK(3)
-               CALL CDROP_STACK(2)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = SQRT(STACK(1)**2+STACK(2)**2+STACK(3)**2)
-               CALL DROP_STACK(3)
-               CALL DROP_STACK(2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'I') THEN                                             ! I
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               WRITE (UNIT=*, FMT='(A)') ' i not available in REAL mode'
-            CASE (2)
-               CALL CPUSH_STACK (II)
-            CASE (3)
-               WRITE (UNIT=*, FMT='(A)') ' i not available in RATIONAL mode'
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'IM') THEN                                            ! IM
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = 0.0D0
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CMPLX(AIMAG(CSTACK(1)),0.0D0,8)
-            CASE (3)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = 0
-               RDSTACK(1) = 1
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'IMPROPER') THEN                                      ! IMPROPER
-         FRACTION_MODE = 1
-
-      ELSE IF (TRIM(STR) .EQ. 'IN>CM') THEN                                         ! IN>CM
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(1) * CM_PER_IN
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(1) * CM_PER_IN
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = STACK(1) * CM_PER_IN
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'INT') THEN                                           ! INT
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = AINT(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CINT(CSTACK(1))
-            CASE (3)
-               NUM = RINT(RNSTACK(1),RDSTACK(1))
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = NUM
-               RDSTACK(1) = 1
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'INT/') THEN                                          ! INT/
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .EQ. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  INT/ Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = AINT(STACK(2) / STACK(1))
-                  CALL DROP_STACK(2)
-               END IF
-            CASE (2)
-               IF (CSTACK(1) .EQ. (0.0D0,0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  INT/ Error'
-               ELSE
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = CINT(CSTACK(2) / CSTACK(1))
-                  CALL CDROP_STACK(2)
-               END IF
-            CASE (3)
-               IF (RNSTACK(1) .EQ. 0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  INT/ Error'
-               ELSE
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(1)
-                  RNSTACK(1) = RNSTACK(1) / RDSTACK(1)
-                  RDSTACK(1) = 1
-                  CALL RDROP_STACK(2)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'KB') THEN                                            ! KB
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (KB)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(KB,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (KB)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'KEPLER') THEN                                        ! KEPLER
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = KEPLER(STACK(2)*ANGLE_FACTOR,STACK(1))/ANGLE_FACTOR
-            CASE (2)
-               TMP = KEPLER(DBLE(CSTACK(2))*ANGLE_FACTOR,DBLE(CSTACK(1))) / &
-                  ANGLE_FACTOR
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CMPLX(TMP,0.0D0,8)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = KEPLER(STACK(2)*ANGLE_FACTOR,STACK(1))/ANGLE_FACTOR
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'KG>LB') THEN                                         ! KG>LB
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(1) / KG_PER_LB
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(1) / KG_PER_LB
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = STACK(1) / KG_PER_LB
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'L>GAL') THEN                                         ! L>GAL
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(1) / L_PER_GAL
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(1) / L_PER_GAL
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = STACK(1) / L_PER_GAL
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'LASTX') THEN                                         ! LASTX
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (LASTX)
-            CASE (2)
-               CALL CPUSH_STACK (CLASTX)
-            CASE (3)
-               CALL RPUSH_STACK (RNLASTX, RDLASTX)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'LB>KG') THEN                                         ! LB>KG
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(1) * KG_PER_LB
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(1) * KG_PER_LB
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = STACK(1) * KG_PER_LB
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'LCM') THEN                                           ! LCM
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (ISFRAC(STACK(1)).OR.ISFRAC(STACK(2))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LCM Error'
-               ELSE IF ((STACK(1).EQ.0.0D0).AND.(STACK(2).EQ.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LCM Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = LCM(NINT(STACK(2)),NINT(STACK(1)))
-                  CALL DROP_STACK(2)
-               END IF
-            CASE (2)
-               IF (ISFRAC(DBLE(CSTACK(1))).OR.ISFRAC(DBLE(CSTACK(2))).OR. &
-                  (AIMAG(CSTACK(2)).NE.0.0D0).OR.(AIMAG(CSTACK(2)).NE.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LCM Error'
-               ELSE IF ((CSTACK(1).EQ.(0.0D0,0.0D0)).AND. &
-                  (CSTACK(2).EQ.(0.0D0,0.0D0))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LCM Error'
-               ELSE
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = LCM(NINT(DBLE(CSTACK(2))),NINT(DBLE(CSTACK(1))))
-                  CALL CDROP_STACK(2)
-               END IF
-            CASE (3)
-               IF ((RDSTACK(1).NE.1).OR.(RDSTACK(2).NE.1)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LCM Error'
-               ELSE IF ((RNSTACK(1).EQ.0).AND.(RNSTACK(2).EQ.0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LCM Error'
-               ELSE
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(2)
-                  RNSTACK(1) = LCM(RNSTACK(2),RNSTACK(1))
-                  RDSTACK(1) = 1
-                  CALL RDROP_STACK(2)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'LN') THEN                                            ! LN
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LN Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = LOG(STACK(1))
-               END IF
-            CASE (2)
-               IF (CSTACK(1) .EQ. (0.0D0,0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LN Error'
-               ELSE
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = LOG(CSTACK(1))
-               END IF
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LN Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = LOG(STACK(1))
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'LOG') THEN                                           ! LOG
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LOG Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = LOG10(STACK(1))
-               END IF
-            CASE (2)
-               IF (CSTACK(1) .EQ. (0.0D0,0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LOG Error'
-               ELSE
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = CLOG10(CSTACK(1))
-               END IF
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LOG Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = LOG10(STACK(1))
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'LOG2') THEN                                          ! LOG2
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LOG2 Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = LOG(STACK(1))/LN2
-               END IF
-            CASE (2)
-               IF (CSTACK(1) .EQ. (0.0D0,0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LOG2 Error'
-               ELSE
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = LOG(CSTACK(1))/LN2
-               END IF
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               IF (STACK(1) .LE. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LOG2 Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = LOG(STACK(1))/LN2
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'LR') THEN                                            ! LR
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (NN .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LR Error'
-               ELSE
-                  CALL LINREG (TMPM,TMPB,TMPR)
-                  CALL PUSH_STACK (TMPM)
-                  CALL PUSH_STACK (TMPB)
-               END IF
-            CASE (2)
-               IF (DBLE(CNN) .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LR Error'
-               ELSE
-                  CALL CLINREG (CTMPM,CTMPB,CTMPR)
-                  CALL CPUSH_STACK (CTMPM)
-                  CALL CPUSH_STACK (CTMPB)
-               END IF
-            CASE (3)
-               IF (RNNN .LE. 1) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  LR Error'
-               ELSE
-                  CALL RLINREG (NUMM,DENM,NUMB,DENB,TMPR)
-                  CALL RPUSH_STACK (NUMM,DENM)
-                  CALL RPUSH_STACK (NUMB,DENB)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ME') THEN                                            ! ME
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (ME)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(ME,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (ME)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'MIXED') THEN                                         ! MIXED
-         FRACTION_MODE = 2
-
-      ELSE IF (TRIM(STR) .EQ. 'MN') THEN                                            ! MN
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (MN)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(MN,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (MN)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'MOD') THEN                                           ! MOD
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .EQ. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  MOD Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = MOD (STACK(2),STACK(1))
-                  CALL DROP_STACK(2)
-               END IF
-            CASE (2)
-               IF (CSTACK(1) .EQ. (0.0D0,0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  MOD Error'
-               ELSE
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = CMOD (CSTACK(2),CSTACK(1))
-                  CALL CDROP_STACK(2)
-               END IF
-            CASE (3)
-               IF (RNSTACK(1) .EQ. 0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  MOD Error'
-               ELSE
-                  NUM = RNSTACK(1)
-                  DEN = RDSTACK(1)
-                  NUM2 = RNSTACK(2)
-                  DEN2 = RDSTACK(2)
-                  CALL RMOD (NUM2, DEN2, NUM, DEN, ITMP, ITMP2)
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(1)
-                  RNSTACK(1) = ITMP
-                  RDSTACK(1) = ITMP2
-                  CALL RDROP_STACK(2)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'MODES') THEN                                         ! MODES
-         WRITE (UNIT=*, FMT='()')
-         SELECT CASE (ANGLE_MODE)
-            CASE (1)
-               WRITE (UNIT=*, FMT='(A)') '  Angles:     DEG'
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Angles:     RAD'
-            CASE (3)
-               WRITE (UNIT=*, FMT='(A)') '  Angles:     GRAD'
-            CASE (4)
-               WRITE (UNIT=*, FMT='(A)') '  Angles:     REV'
-         END SELECT
-         SELECT CASE (DISP_MODE)
-            CASE (1)
-               WRITE (UNIT=*, FMT='(A,I0)') '  Display:    FIX ', DISP_DIGITS
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A,I0)') '  Display:    SCI ', DISP_DIGITS
-            CASE (3)
-               WRITE (UNIT=*, FMT='(A,I0)') '  Display:    ENG ', DISP_DIGITS
-            CASE (4)
-               WRITE (UNIT=*, FMT='(A)') '  Display:    ALL '
-         END SELECT
-         SELECT CASE (BASE_MODE)
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Base:       BIN'
-            CASE (8)
-               WRITE (UNIT=*, FMT='(A)') '  Base:       OCT'
-            CASE (10)
-               WRITE (UNIT=*, FMT='(A)') '  Base:       DEC'
-            CASE (16)
-               WRITE (UNIT=*, FMT='(A)') '  Base:       HEX'
-         END SELECT
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               WRITE (UNIT=*, FMT='(A)') '  Domain:     REAL'
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Domain:     COMPLEX'
-            CASE (3)
-               WRITE (UNIT=*, FMT='(A)') '  Domain:     RATIONAL'
-         END SELECT
-         SELECT CASE (FRACTION_MODE)
-            CASE (1)
-               WRITE (UNIT=*, FMT='(A)') '  Fractions:  IMPROPER'
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') '  Fractions:  MIXED'
-         END SELECT
-         WRITE (UNIT=*, FMT='(A)') ' '
-
-      ELSE IF (TRIM(STR) .EQ. 'MP') THEN                                            ! MP
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (MP)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(MP,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (MP)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'MU0') THEN                                           ! MU0
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (MU0)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(MU0,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (MU0)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'MUB') THEN                                           ! MUB
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (MUB)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(MUB,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (MUB)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'MUN') THEN                                           ! MUN
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (MUN)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(MUN,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (MUN)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'N') THEN                                             ! N
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (NN)
-            CASE (2)
-               CALL CPUSH_STACK (CNN)
-            CASE (3)
-               CALL RPUSH_STACK (RNNN, RDNN)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'NA') THEN                                            ! NA
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (NA)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(NA,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (NA)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'NOT') THEN                                           ! NOT
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = NOT (INT(STACK(1)))
-            CASE (2)
-               TMP = NOT (INT(DBLE(CSTACK(1))))
-               TMP2 = NOT (INT(AIMAG(CSTACK(1))))
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CMPLX(TMP,TMP2,8)
-            CASE (3)
-               ITMP = RNSTACK(1)/RDSTACK(1)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = NOT (ITMP)
-               RDSTACK(1) = 1
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'OCT') THEN                                           ! OCT
-         BASE_MODE = 8
-
-      ELSE IF (TRIM(STR) .EQ. 'OR') THEN                                            ! OR
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = IOR (INT(STACK(2)), INT(STACK(1)))
-               CALL DROP_STACK(2)
-            CASE (2)
-               TMP = IOR (INT(DBLE(CSTACK(2))), INT(DBLE(CSTACK(1))))
-               TMP2 = IOR (INT(AIMAG(CSTACK(2))), INT(AIMAG(CSTACK(1))))
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CMPLX(TMP,TMP2,8)
-               CALL CDROP_STACK(2)
-            CASE (3)
-               ITMP = RNSTACK(1)/RDSTACK(1)
-               ITMP2 = RNSTACK(2)/RDSTACK(2)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = IOR (ITMP2, ITMP)
-               RDSTACK(1) = 1
-               CALL RDROP_STACK(2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'P>R') THEN                                           ! P>R
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               TMP  = STACK(1)*COS(STACK(2)*ANGLE_FACTOR)
-               TMP2 = STACK(1)*SIN(STACK(2)*ANGLE_FACTOR)
-               LASTX = STACK(1)
-               STACK(1) = TMP
-               STACK(2) = TMP2
-            CASE (2)
-               TMP  = DBLE(CSTACK(1))*COS(AIMAG(CSTACK(1))*ANGLE_FACTOR)
-               TMP2 = DBLE(CSTACK(1))*SIN(AIMAG(CSTACK(1))*ANGLE_FACTOR)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CMPLX(TMP,TMP2,8)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               TMP  = STACK(1)*COS(STACK(2)*ANGLE_FACTOR)
-               TMP2 = STACK(1)*SIN(STACK(2)*ANGLE_FACTOR)
-               LASTX = STACK(1)
-               STACK(1) = TMP
-               STACK(2) = TMP2
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'PI') THEN                                            ! PI
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (PI)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(PI,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (PI)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'PNR') THEN                                           ! PNR
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF ((RDSTACK(1).NE.1).OR.(RDSTACK(2).NE.1)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-               ELSE IF ((RNSTACK(1).LT.0) .OR. (RNSTACK(2).LT.0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-               ELSE IF (RNSTACK(2) .LT. RNSTACK(1)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = PNR (ITMP2, ITMP)
-                  CALL DROP_STACK(2)
-               END IF
-            CASE (2)
-               IF (ISFRAC(DBLE(CSTACK(1))) .OR. ISFRAC(DBLE(CSTACK(2)))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-               ELSE IF (DBLE(CSTACK(1)).LT.0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-               ELSE IF (DBLE(CSTACK(2)).LT.0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-               ELSE IF (AIMAG(CSTACK(1)).NE.0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-               ELSE IF (AIMAG(CSTACK(2)).NE.0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-               ELSE IF (DBLE(CSTACK(2)) .LT. DBLE(CSTACK(1))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-               ELSE
-                  ITMP  = NINT(DBLE(CSTACK(1)))
-                  ITMP2 = NINT(DBLE(CSTACK(2)))
-                  TMP = PNR (ITMP2, ITMP)
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = CMPLX(TMP,0.0D0,8)
-                  CALL CDROP_STACK(2)
-               END IF
-            CASE (3)
-               IF (ISFRAC(STACK(1)) .OR. ISFRAC(STACK(2))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-               ELSE IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-               ELSE IF (STACK(2) .LT. STACK(1)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-               ELSE
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(1)
-                  RNSTACK(1) = PNR (RNSTACK(2), RNSTACK(1))
-                  CALL RDROP_STACK(2)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'PR') THEN                                            ! PR
-         WRITE (UNIT=*, FMT='()')
-         DO I = 0, REG_SIZE-1
-            SELECT CASE (DOMAIN_MODE)
-               CASE (1)
-                  CALL PRINTX(REG(I), NUMSTR)
-               CASE (2)
-                  CALL CPRINTX(CREG(I), NUMSTR)
-               CASE (3)
-                  CALL RPRINTX(RNREG(I), RDREG(I), NUMSTR)
-            END SELECT
-            WRITE (UNIT=*, FMT='(1X,I3,A)') I, ':  '//TRIM(NUMSTR)
-         END DO
-         WRITE (UNIT=*, FMT='(A)') ' '
-
-      ELSE IF (TRIM(STR) .EQ. 'PS') THEN                                            ! PS
-         WRITE (UNIT=*, FMT='()')
-         DO I = STACK_SIZE, 1, -1
-            SELECT CASE (I)
-               CASE (1)
-                  REGNAME = ' X'
-               CASE (2)
-                  REGNAME = ' Y'
-               CASE (3)
-                  REGNAME = ' Z'
-               CASE (4)
-                  REGNAME = ' T'
-               CASE DEFAULT
-                  WRITE (UNIT=REGNAME, FMT='(I2)') I
-            END SELECT
-            SELECT CASE (DOMAIN_MODE)
-               CASE (1)
-                  CALL PRINTX(STACK(I), NUMSTR)
-               CASE (2)
-                  CALL CPRINTX(CSTACK(I), NUMSTR)
-               CASE (3)
-                  CALL RPRINTX(RNSTACK(I), RDSTACK(I), NUMSTR)
-            END SELECT
-            WRITE (UNIT=*, FMT='(2X,A)') REGNAME//':  '//TRIM(NUMSTR)
-         END DO
-         WRITE (UNIT=*, FMT='(A)') ' '
-
-      ELSE IF (TRIM(STR) .EQ. 'PSUMS') THEN                                         ! PSUMS
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               WRITE (UNIT=*, FMT='()')
-               CALL PRINTX(NN, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  N:   '//TRIM(NUMSTR)
-               CALL PRINTX(SUMX, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  X:   '//TRIM(NUMSTR)
-               CALL PRINTX(SUMX2, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  X2:  '//TRIM(NUMSTR)
-               CALL PRINTX(SUMY, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  Y:   '//TRIM(NUMSTR)
-               CALL PRINTX(SUMY2, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  Y2:  '//TRIM(NUMSTR)
-               CALL PRINTX(SUMXY, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  XY:  '//TRIM(NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') ' '
-            CASE (2)
-               WRITE (UNIT=*, FMT='()')
-               CALL CPRINTX(CNN, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  N:   '//TRIM(NUMSTR)
-               CALL CPRINTX(CSUMX, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  X:   '//TRIM(NUMSTR)
-               CALL CPRINTX(CSUMX2, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  X2:  '//TRIM(NUMSTR)
-               CALL CPRINTX(CSUMY, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  Y:   '//TRIM(NUMSTR)
-               CALL CPRINTX(CSUMY2, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  Y2:  '//TRIM(NUMSTR)
-               CALL CPRINTX(CSUMXY, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  XY:  '//TRIM(NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') ' '
-            CASE (3)
-               WRITE (UNIT=*, FMT='()')
-               CALL RPRINTX(RNNN, RDNN, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  N:   '//TRIM(NUMSTR)
-               CALL RPRINTX(RNSUMX, RDSUMX, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  X:   '//TRIM(NUMSTR)
-               CALL RPRINTX(RNSUMX2, RDSUMX2, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  X2:  '//TRIM(NUMSTR)
-               CALL RPRINTX(RNSUMY, RDSUMY, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  Y:   '//TRIM(NUMSTR)
-               CALL RPRINTX(RNSUMY2, RDSUMY2, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  Y2:  '//TRIM(NUMSTR)
-               CALL RPRINTX(RNSUMXY, RDSUMXY, NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') '  XY:  '//TRIM(NUMSTR)
-               WRITE (UNIT=*, FMT='(A)') ' '
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'R') THEN                                             ! R
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               TMP = STACK(1)
-               DO I = 1, STACK_SIZE-1
-                  STACK(I) = STACK(I+1)
-               END DO
-               STACK(STACK_SIZE) = TMP
-            CASE (2)
-               CTMP = CSTACK(1)
-               DO I = 1, STACK_SIZE-1
-                  CSTACK(I) = CSTACK(I+1)
-               END DO
-               CSTACK(STACK_SIZE) = CTMP
-            CASE (3)
-               ITMP = RNSTACK(1)
-               ITMP2 = RDSTACK(1)
-               DO I = 1, STACK_SIZE-1
-                  RNSTACK(I) = RNSTACK(I+1)
-                  RDSTACK(I) = RDSTACK(I+1)
-               END DO
-               RNSTACK(STACK_SIZE) = ITMP
-               RDSTACK(STACK_SIZE) = ITMP2
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'R>D') THEN                                           ! R>D
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(1)*180.0D0/PI
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(1)*180.0D0/PI
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = STACK(1)*180.0D0/PI
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'R>P') THEN                                           ! R>P
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               TMP  = SQRT((STACK(1))**2+(STACK(2))**2)
-               TMP2 = ATAN2(STACK(2),STACK(1))/ANGLE_FACTOR
-               LASTX = STACK(1)
-               STACK(1) = TMP
-               STACK(2) = TMP2
-            CASE (2)
-               TMP = ABS(CSTACK(1))
-               TMP2 = ATAN2(AIMAG(CSTACK(1)),DBLE(CSTACK(1)))/ANGLE_FACTOR
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CMPLX(TMP,TMP2,8)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               TMP  = SQRT((STACK(1))**2+(STACK(2))**2)
-               TMP2 = ATAN2(STACK(2),STACK(1))/ANGLE_FACTOR
-               LASTX = STACK(1)
-               STACK(1) = TMP
-               STACK(2) = TMP2
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'RAD') THEN                                           ! RAD
-         ANGLE_MODE = 2
-         ANGLE_FACTOR = 1.0D0
-
-      ELSE IF (TRIM(STR) .EQ. 'RAND') THEN                                          ! RAND
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL RANDOM_NUMBER (TMP)
-               CALL PUSH_STACK(TMP)
-            CASE (2)
-               CALL RANDOM_NUMBER (TMP)
-               CALL RANDOM_NUMBER (TMP2)
-               CALL CPUSH_STACK(CMPLX(TMP,TMP2,8))
-            CASE (3)
-               CALL RANDOM_NUMBER (TMP)
-               CALL DEC_TO_FRAC (TMP, NUM, DEN, FRACTOL)
-               CALL RPUSH_STACK(NUM, DEN)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'RATIONAL') THEN                                      ! RATIONAL
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               DOMAIN_MODE = 3
-               DO I = 1, STACK_SIZE
-                  CALL DEC_TO_FRAC (STACK(I),ITMP,ITMP2,FRACTOL)
-                  RNSTACK(I) = ITMP
-                  RDSTACK(I) = ITMP2
-               END DO
-               DO I = 0, REG_SIZE-1
-                  CALL DEC_TO_FRAC (REG(I),ITMP,ITMP2,FRACTOL)
-                  RNREG(I) = ITMP
-                  RDREG(I) = ITMP2
-               END DO
-               CALL DEC_TO_FRAC (LASTX,ITMP,ITMP2,FRACTOL)
-               RNLASTX = ITMP
-               RDLASTX = ITMP2
-               CALL DEC_TO_FRAC (NN,ITMP,ITMP2,FRACTOL)
-               RNNN = ITMP
-               RDNN = ITMP2
-               CALL DEC_TO_FRAC (SUMX,ITMP,ITMP2,FRACTOL)
-               RNSUMX = ITMP
-               RDSUMX = ITMP2
-               CALL DEC_TO_FRAC (SUMX2,ITMP,ITMP2,FRACTOL)
-               RNSUMX2 = ITMP
-               RDSUMX2 = ITMP2
-               CALL DEC_TO_FRAC (SUMY,ITMP,ITMP2,FRACTOL)
-               RNSUMY = ITMP
-               RDSUMY = ITMP2
-               CALL DEC_TO_FRAC (SUMY2,ITMP,ITMP2,FRACTOL)
-               RNSUMY2 = ITMP
-               RDSUMY2 = ITMP2
-               CALL DEC_TO_FRAC (SUMXY,ITMP,ITMP2,FRACTOL)
-               RNSUMXY = ITMP
-               RDSUMXY = ITMP2
-            CASE (2)
-               DOMAIN_MODE = 3
-               DO I = 1, STACK_SIZE
-                  CALL DEC_TO_FRAC (DBLE(CSTACK(I)),ITMP,ITMP2,FRACTOL)
-                  RNSTACK(I) = ITMP
-                  RDSTACK(I) = ITMP2
-               END DO
-               DO I = 0, REG_SIZE-1
-                  CALL DEC_TO_FRAC (DBLE(CREG(I)),ITMP,ITMP2,FRACTOL)
-                  RNREG(I) = ITMP
-                  RDREG(I) = ITMP2
-               END DO
-               CALL DEC_TO_FRAC (DBLE(CLASTX),ITMP,ITMP2,FRACTOL)
-               RNLASTX = ITMP
-               RDLASTX = ITMP2
-               CALL DEC_TO_FRAC (DBLE(CNN),ITMP,ITMP2,FRACTOL)
-               RNNN = ITMP
-               RDNN = ITMP2
-               CALL DEC_TO_FRAC (DBLE(CSUMX),ITMP,ITMP2,FRACTOL)
-               RNSUMX = ITMP
-               RDSUMX = ITMP2
-               CALL DEC_TO_FRAC (DBLE(CSUMX2),ITMP,ITMP2,FRACTOL)
-               RNSUMX2 = ITMP
-               RDSUMX2 = ITMP2
-               CALL DEC_TO_FRAC (DBLE(CSUMY),ITMP,ITMP2,FRACTOL)
-               RNSUMY = ITMP
-               RDSUMY = ITMP2
-               CALL DEC_TO_FRAC (DBLE(CSUMY2),ITMP,ITMP2,FRACTOL)
-               RNSUMY2 = ITMP
-               RDSUMY2 = ITMP2
-               CALL DEC_TO_FRAC (DBLE(CSUMXY),ITMP,ITMP2,FRACTOL)
-               RNSUMXY = ITMP
-               RDSUMXY = ITMP2
-         END SELECT
-
-      ELSE IF (STR(1:3) .EQ. 'RCL') THEN                                            ! RCL
-         IF (LEN_TRIM(STR) .EQ. 3) THEN
-            WRITE (UNIT=*, FMT='(A)') '  RCL Error'
-         ELSE
-            READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-            IF (IERR .NE. 0) THEN
-               WRITE (UNIT=*, FMT='(A)') '  RCL Error'
-            ELSE
-               IF ((ITMP.LT.0).OR.(ITMP.GE.REG_SIZE)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  RCL Error'
-               ELSE
-                  SELECT CASE (DOMAIN_MODE)
-                     CASE (1)
-                        CALL PUSH_STACK(REG(ITMP))
-                     CASE (2)
-                        CALL CPUSH_STACK(CREG(ITMP))
-                     CASE (3)
-                        CALL RPUSH_STACK(RNREG(ITMP),RDREG(ITMP))
-                  END SELECT
-               END IF
-            END IF
-         END IF
-         PRINT *, REG(ITMP)
-
-      ELSE IF (TRIM(STR) .EQ. 'RCORR') THEN                                         ! RCORR
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (NN .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  RCORR Error'
-               ELSE
-                  CALL LINREG (TMPM,TMPB,TMPR)
-                  CALL PUSH_STACK (TMPR)
-               END IF
-            CASE (2)
-               IF (DBLE(CNN) .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  RCORR Error'
-               ELSE
-                  CALL CLINREG (CTMPM,CTMPB,CTMPR)
-                  CALL CPUSH_STACK (CTMPR)
-               END IF
-            CASE (3)
-               IF (RNNN .LE. 1) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  RCORR Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  CALL LINREG (TMPM,TMPB,TMPR)
-                  CALL PUSH_STACK (TMPR)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'RE') THEN                                            ! RE
-         SELECT CASE (DOMAIN_MODE)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CMPLX(DBLE(CSTACK(1)),0.0D0,8)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'REAL') THEN                                          ! REAL
-         SELECT CASE (DOMAIN_MODE)
-            CASE (2)
-               DOMAIN_MODE = 1
-               DO I = 1, STACK_SIZE
-                  STACK(I) = DBLE(CSTACK(I))
-               END DO
-               DO I = 0, REG_SIZE-1
-                  REG(I) = DBLE(CREG(I))
-               END DO
-               LASTX = DBLE(CLASTX)
-               NN = DBLE(CNN)
-               SUMX = DBLE(CSUMX)
-               SUMX2 = DBLE(CSUMX2)
-               SUMY = DBLE(CSUMY)
-               SUMY2 = DBLE(CSUMY2)
-               SUMXY = DBLE(CSUMXY)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'REARTH') THEN                                        ! REARTH
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (REARTH)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(REARTH,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (REARTH)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'REDUCE') THEN                                        ! REDUCE
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               TMP = STACK(1)
-               CALL DROP_STACK(1)
-               LASTX = STACK(1)
-               STACK(1) = REDUCE(STACK(1)*ANGLE_FACTOR,TMP*ANGLE_FACTOR) &
-                  / ANGLE_FACTOR
-            CASE (2)
-               TMP = DBLE(CSTACK(1))
-               CALL CDROP_STACK(1)
-               CLASTX = CSTACK(1)
-               TMP2 = REDUCE(DBLE(CSTACK(1))*ANGLE_FACTOR,TMP*ANGLE_FACTOR) &
-                  / ANGLE_FACTOR
-               CSTACK(1) = CMPLX(TMP2,0.0D0,8)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               TMP = STACK(1)
-               CALL DROP_STACK(1)
-               LASTX = STACK(1)
-               STACK(1) = REDUCE(STACK(1)*ANGLE_FACTOR,TMP*ANGLE_FACTOR) &
-                  / ANGLE_FACTOR
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'RESET') THEN                                         ! RESET
-         STACK = 0.0D0
-         REG = 0.0D0
-         LASTX = 0.0D0
-
-         NN = 0.0D0
-         SUMX = 0.0D0
-         SUMX2 = 0.0D0
-         SUMY = 0.0D0
-         SUMY2 = 0.0D0
-         SUMXY = 0.0D0
-
-         CSTACK = (0.0D0,0.0D0)
-         CREG = (0.0D0,0.0D0)
-         CLASTX = (0.0D0,0.0D0)
-
-         CNN = (0.0D0,0.0D0)
-         CSUMX = (0.0D0,0.0D0)
-         CSUMX2 = (0.0D0,0.0D0)
-         CSUMY = (0.0D0,0.0D0)
-         CSUMY2 = (0.0D0,0.0D0)
-         CSUMXY = (0.0D0,0.0D0)
-
-         RNSTACK = 0; RDSTACK = 1
-         RNREG = 0; RDREG = 1
-         RNLASTX = 0; RDLASTX = 1
-
-         RNNN = 0; RDNN = 1
-         RNSUMX = 0; RDSUMX = 1
-         RNSUMX2 = 0; RDSUMX2 = 1
-         RNSUMY = 0; RDSUMY = 1
-         RNSUMY2 = 0; RDSUMY2 = 1
-         RNSUMXY = 0; RDSUMXY = 1
-
-         ANGLE_MODE = INITIAL_ANGLE_MODE
-
-         SELECT CASE (ANGLE_MODE)
-            CASE (1)
-               ANGLE_FACTOR = PI/180.0D0
-            CASE (2)
-               ANGLE_FACTOR = 1.0D0
-            CASE (3)
-               ANGLE_FACTOR = PI/200.0D0
-            CASE (4)
-               ANGLE_FACTOR = TWOPI
-         END SELECT
-
-         DISP_MODE = INITIAL_DISP_MODE
-         DISP_DIGITS = INITIAL_DISP_DIGITS
-         DOMAIN_MODE = INITIAL_DOMAIN_MODE
-         BASE_MODE = INITIAL_BASE_MODE
-         FRACTION_MODE = INITIAL_FRACTION_MODE
-
-         FRACTOL = INITIAL_FRACTOL
-
-      ELSE IF (TRIM(STR) .EQ. 'REV') THEN                                           ! REV
-         ANGLE_MODE = 4
-         ANGLE_FACTOR = TWOPI
-
-      ELSE IF (TRIM(STR) .EQ. 'RGAS') THEN                                          ! RGAS
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (RGAS)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(RGAS,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (RGAS)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'RI') THEN                                            ! RI
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               STACK(1) = 0.0D0
-            CASE (2)
-               TMP = DBLE(CSTACK(1))
-               TMP2 = AIMAG(CSTACK(1))
-               CSTACK(1) = CMPLX(TMP2,TMP,8)
-            CASE (3)
-               RNSTACK(1) = 0
-               RDSTACK(1) = 1
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'ROUND') THEN                                         ! ROUND
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = ANINT(STACK(1))
-            CASE (2)
-               TMP = ANINT(DBLE(CSTACK(1)))
-               TMP2 = ANINT(AIMAG(CSTACK(1)))
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CMPLX(TMP,TMP2,8)
-            CASE (3)
-               NUM = RNSTACK(1)
-               DEN = RDSTACK(1)
-               CALL RNINT (NUM, DEN)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = NUM
-               RDSTACK(1) = DEN
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'RUP') THEN                                           ! RUP
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               TMP = STACK(STACK_SIZE)
-               DO I = STACK_SIZE, 2, -1
-                  STACK(I) = STACK(I-1)
-               END DO
-               STACK(1) = TMP
-            CASE (2)
-               CTMP = CSTACK(STACK_SIZE)
-               DO I = STACK_SIZE, 2, -1
-                  CSTACK(I) = CSTACK(I-1)
-               END DO
-               CSTACK(1) = CTMP
-            CASE (3)
-               ITMP = RNSTACK(STACK_SIZE)
-               ITMP2 = RDSTACK(STACK_SIZE)
-               DO I = STACK_SIZE, 2, -1
-                  RNSTACK(I) = RNSTACK(I-1)
-                  RDSTACK(I) = RDSTACK(I-1)
-               END DO
-               RNSTACK(1) = ITMP
-               RDSTACK(1) = ITMP2
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'RZETA') THEN                                         ! RZETA
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = RIEMANNZETA(STACK(1), 1.0D-10) + 1.0D0
-            CASE (2)
-               WRITE (UNIT=*, FMT='(A)') ' RZETA function not available in COMPLEX mode.'
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = RIEMANNZETA(STACK(1), 1.0D-10) + 1.0D0
-         END SELECT
-
-      ELSE IF (STR(1:3) .EQ. 'S') THEN                                              ! S
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               NN = NN + 1.0D0
-               SUMX = SUMX + STACK(1)
-               SUMX2 = SUMX2 + STACK(1)**2
-               SUMY = SUMY + STACK(2)
-               SUMY2 = SUMY2 + STACK(2)**2
-               SUMXY = SUMXY + STACK(1)*STACK(2)
-               LASTX = STACK(1)
-               STACK(1) = NN
-            CASE (2)
-               CNN = CNN + 1.0D0
-               CSUMX = CSUMX + CSTACK(1)
-               CSUMX2 = CSUMX2 + CSTACK(1)**2
-               CSUMY = CSUMY + CSTACK(2)
-               CSUMY2 = CSUMY2 + CSTACK(2)**2
-               CSUMXY = CSUMXY + CSTACK(1)*CSTACK(2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CNN
-            CASE (3)
-               CALL RADD(RNNN,RDNN,1,1,RNNN,RDNN)
-               CALL RADD(RNSUMX,RDSUMX,RNSTACK(1),RDSTACK(1),RNSUMX,RDSUMX)
-               CALL RMUL(RNSTACK(1),RDSTACK(1),RNSTACK(1),RDSTACK(1),NUM,DEN)
-               CALL RADD(RNSUMX2,RDSUMX2,NUM,DEN,RNSUMX2,RDSUMX2)
-               CALL RADD(RNSUMY,RDSUMY,RNSTACK(2),RDSTACK(2),RNSUMY,RDSUMY)
-               CALL RMUL(RNSTACK(2),RDSTACK(2),RNSTACK(2),RDSTACK(2),NUM,DEN)
-               CALL RADD(RNSUMY2,RDSUMY2,NUM,DEN,RNSUMY2,RDSUMY2)
-               CALL RMUL(RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
-               CALL RADD(RNSUMXY,RDSUMXY,NUM,DEN,RNSUMXY,RDSUMXY)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = RNNN
-               RDSTACK(1) = RDNN
-         END SELECT
-
-      ELSE IF (STR(1:3) .EQ. 'S-') THEN                                             ! S-
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               NN = NN - 1.0D0
-               SUMX = SUMX - STACK(1)
-               SUMX2 = SUMX2 - STACK(1)**2
-               SUMY = SUMY - STACK(2)
-               SUMY2 = SUMY2 - STACK(2)**2
-               SUMXY = SUMXY - STACK(1)*STACK(2)
-               LASTX = STACK(1)
-               STACK(1) = NN
-            CASE (2)
-               CNN = CNN - 1.0D0
-               CSUMX = CSUMX - CSTACK(1)
-               CSUMX2 = CSUMX2 - CSTACK(1)**2
-               CSUMY = CSUMY - CSTACK(2)
-               CSUMY2 = CSUMY2 - CSTACK(2)**2
-               CSUMXY = CSUMXY - CSTACK(1)*CSTACK(2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CNN
-            CASE (3)
-               CALL RADD(RNNN,RDNN,1,1,RNNN,RDNN)
-               CALL RSUB(RNSUMX,RDSUMX,RNSTACK(1),RDSTACK(1),RNSUMX,RDSUMX)
-               CALL RMUL(RNSTACK(1),RDSTACK(1),RNSTACK(1),RDSTACK(1),NUM,DEN)
-               CALL RSUB(RNSUMX2,RDSUMX2,NUM,DEN,RNSUMX2,RDSUMX2)
-               CALL RSUB(RNSUMY,RDSUMY,RNSTACK(2),RDSTACK(2),RNSUMY,RDSUMY)
-               CALL RMUL(RNSTACK(2),RDSTACK(2),RNSTACK(2),RDSTACK(2),NUM,DEN)
-               CALL RSUB(RNSUMY2,RDSUMY2,NUM,DEN,RNSUMY2,RDSUMY2)
-               CALL RMUL(RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
-               CALL RSUB(RNSUMXY,RDSUMXY,NUM,DEN,RNSUMXY,RDSUMXY)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = RNNN
-               RDSTACK(1) = RDNN
-         END SELECT
-
-      ELSE IF (STR(1:3) .EQ. 'SCI') THEN                                            ! SCI
-         IF (LEN_TRIM(STR) .EQ. 3) THEN
-            WRITE (UNIT=*, FMT='(A)') '  SCI Error'
-         ELSE
-            READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-            IF (IERR .NE. 0) THEN
-               WRITE (UNIT=*, FMT='(A)') '  SCI Error'
-            ELSE
-               DISP_MODE = 2
-               DISP_DIGITS = ITMP
-            END IF
-         END IF
-
-      ELSE IF (TRIM(STR) .EQ. 'SEC') THEN                                           ! SEC
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = SEC(STACK(1)*ANGLE_FACTOR)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSEC(CSTACK(1)*ANGLE_FACTOR)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = SEC(STACK(1)*ANGLE_FACTOR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'SECH') THEN                                          ! SECH
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = SECH(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSECH(CSTACK(1))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = SECH(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'SGN') THEN                                           ! SGN
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .LT. 0.0D0) THEN
-                  TMP = -1.0D0
-               ELSE IF (STACK(1) .EQ. 0.0D0) THEN
-                  TMP = 0.0D0
-               ELSE
-                  TMP = +1.0D0
-               END IF
-               LASTX = STACK(1)
-               STACK(1) = TMP
-            CASE (2)
-               IF (DBLE(CSTACK(1)) .LT. 0.0D0) THEN
-                  TMP = -1.0D0
-               ELSE IF (DBLE(CSTACK(1)) .EQ. 0.0D0) THEN
-                  TMP = 0.0D0
-               ELSE
-                  TMP = +1.0D0
-               END IF
-               IF (AIMAG(CSTACK(1)) .LT. 0.0D0) THEN
-                  TMP2 = -1.0D0
-               ELSE IF (AIMAG(CSTACK(1)) .EQ. 0.0D0) THEN
-                  TMP2 = 0.0D0
-               ELSE
-                  TMP2 = +1.0D0
-               END IF
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CMPLX(TMP,TMP2,8)
-            CASE (3)
-               IF (RNSTACK(1) .LT. 0) THEN
-                  ITMP = 1
-               ELSE IF (RNSTACK(1) .EQ. 0) THEN
-                  ITMP = 0
-               ELSE
-                  ITMP = +1
-               END IF
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = ITMP
-               RDSTACK(1) = 1
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'SIN') THEN                                           ! SIN
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = SIN(STACK(1)*ANGLE_FACTOR)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = SIN(CSTACK(1)*ANGLE_FACTOR)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = SIN(STACK(1)*ANGLE_FACTOR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'SINC') THEN                                          ! SINC
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = SINC(STACK(1)*ANGLE_FACTOR)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSINC(CSTACK(1)*ANGLE_FACTOR)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = SINC(STACK(1)*ANGLE_FACTOR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'SINH') THEN                                          ! SINH
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = SINH(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSINH(CSTACK(1))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = SINH(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'SINHC') THEN                                         ! SINHC
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = SINHC(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSINHC(CSTACK(1))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = SINHC(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'SQR') THEN                                           ! SQR
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(1)**2
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(1)**2
-            CASE (3)
-               NUM = RNSTACK(1)
-               DEN = RDSTACK(1)
-               CALL RMUL (NUM,DEN,NUM,DEN,NUM2,DEN2)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = NUM2
-               RDSTACK(1) = DEN2
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'SQRT') THEN                                          ! SQRT
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (STACK(1) .LT. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  SQRT Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = SQRT(STACK(1))
-               END IF
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = SQRT(CSTACK(1))
-            CASE (3)
-               IF (RNSTACK(1) .LT. 0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  SQRT Error'
-               ELSE
-                  TMP = SQRT(DBLE(RNSTACK(1)))
-                  TMP2 = SQRT(DBLE(RDSTACK(1)))
-                  IF (ISFRAC(TMP).OR.ISFRAC(TMP2)) THEN
-                     CALL SWITCH_RAT_TO_REAL
-                     LASTX = STACK(1)
-                     STACK(1) = SQRT(STACK(1))
-                  ELSE
-                     RNLASTX = RNSTACK(1)
-                     RDLASTX = RDSTACK(1)
-                     RNSTACK(1) = NINT(SQRT(DBLE(RNSTACK(1))))
-                     RDSTACK(1) = NINT(SQRT(DBLE(RDSTACK(1))))
-                  END IF
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'STEFAN') THEN                                        ! STEFAN
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (STEFAN)
-            CASE (2)
-               CALL CPUSH_STACK (CMPLX(STEFAN,0.0D0,8))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               CALL PUSH_STACK (STEFAN)
-         END SELECT
-
-      ELSE IF (STR(1:3) .EQ. 'STO') THEN                                            ! STO
-         IF (LEN_TRIM(STR) .EQ. 3) THEN
-            WRITE (UNIT=*, FMT='(A)') '  STO Error'
-         ELSE
-            READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-            IF (IERR .NE. 0) THEN
-               WRITE (UNIT=*, FMT='(A)') '  STO Error'
-            ELSE
-               IF ((ITMP.LT.0).OR.(ITMP.GE.REG_SIZE)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  STO Error'
-               ELSE
-                  SELECT CASE (DOMAIN_MODE)
-                     CASE (1)
-                        REG(ITMP) = STACK(1)
-                     CASE (2)
-                        CREG(ITMP) = CSTACK(1)
-                     CASE (3)
-                        RNREG(ITMP) = RNSTACK(1)
-                        RDREG(ITMP) = RDSTACK(1)
-                  END SELECT
-               END IF
-            END IF
-         END IF
-         PRINT *, REG(ITMP)
-
-      ELSE IF (TRIM(STR) .EQ. 'SUMX') THEN                                          ! SUMX
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (SUMX)
-            CASE (2)
-               CALL CPUSH_STACK (CSUMX)
-            CASE (3)
-               CALL RPUSH_STACK (RNSUMX,RDSUMX)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'SUMX2') THEN                                         ! SUMX2
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (SUMX2)
-            CASE (2)
-               CALL CPUSH_STACK (CSUMX2)
-            CASE (3)
-               CALL RPUSH_STACK (RNSUMX2,RDSUMX2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'SUMXY') THEN                                         ! SUMXY
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (SUMXY)
-            CASE (2)
-               CALL CPUSH_STACK (CSUMXY)
-            CASE (3)
-               CALL RPUSH_STACK (RNSUMXY,RDSUMXY)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'SUMY') THEN                                          ! SUMY
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (SUMY)
-            CASE (2)
-               CALL CPUSH_STACK (CSUMY)
-            CASE (3)
-               CALL RPUSH_STACK (RNSUMY,RDSUMY)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'SUMY2') THEN                                         ! SUMY2
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               CALL PUSH_STACK (SUMY2)
-            CASE (2)
-               CALL CPUSH_STACK (CSUMY2)
-            CASE (3)
-               CALL RPUSH_STACK (RNSUMY2,RDSUMY2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'TAN') THEN                                           ! TAN
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = TAN(STACK(1)*ANGLE_FACTOR)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CTAN(CSTACK(1)*ANGLE_FACTOR)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = TAN(STACK(1)*ANGLE_FACTOR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'TANC') THEN                                          ! TANC
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = TANC(STACK(1)*ANGLE_FACTOR)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CTANC(CSTACK(1)*ANGLE_FACTOR)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = TANC(STACK(1)*ANGLE_FACTOR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'TANH') THEN                                          ! TANH
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = TANH(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CTANH(CSTACK(1))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = TANH(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'TANHC') THEN                                         ! TANHC
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = TANHC(STACK(1))
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CTANHC(CSTACK(1))
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = TANHC(STACK(1))
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'TIME') THEN                                          ! TIME
-         CALL DATE_AND_TIME (DATE, TIME, ZONE, DT)
-         YEAR = DT(1)
-         MONTH = DT(2)
-         DAY = DT(3)
-         HOUR = DT(5)
-         MINUTE = DT(6)
-         SECOND = DT(7)
-         WRITE (UNIT=*, FMT='(/A,I2,1H/,I2,1H/,I4)') '  Date:  ', MONTH, DAY, YEAR
-         WRITE (UNIT=*, FMT='(A,I2.2,1H:,I2.2,1H:,I2.2/)') &
-            '  Time:  ', HOUR, MINUTE, SECOND
-
-      ELSE IF (TRIM(STR) .EQ. 'VER') THEN                                           ! VER
-         WRITE (UNIT=*, FMT='(/A/)') '  RPN Version '//VERSION
-
-      ELSE IF (TRIM(STR) .EQ. 'VERS') THEN                                          ! VERS
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = VERS(STACK(1)*ANGLE_FACTOR)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CVERS(CSTACK(1)*ANGLE_FACTOR)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = VERS(STACK(1)*ANGLE_FACTOR)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'X^') THEN                                            ! X^
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (NN .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  X^ Error'
-               ELSE
-                  CALL LINREG (TMPM,TMPB,TMPR)
-                  LASTX = STACK(1)
-                  STACK(1) = (STACK(1)-TMPB)/TMPM
-               END IF
-            CASE (2)
-               IF (DBLE(CNN) .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  X^ Error'
-               ELSE
-                  CALL CLINREG (CTMPM,CTMPB,CTMPR)
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = (CSTACK(1)-CTMPB)/CTMPM
-               END IF
-            CASE (3)
-               IF (RNNN .LE. 1) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  X^ Error'
-               ELSE
-                  CALL RLINREG (NUMM,DENM,NUMB,DENB,TMPR)
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(1)
-                  CALL RSUB(RNSTACK(1),RDSTACK(1),NUMB,DENB,NUM,DEN)
-                  CALL RDIV(NUM,DEN,NUMM,DENM,NUM2,DEN2)
-                  RNSTACK(1) = NUM2
-                  RDSTACK(1) = DEN2
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'XMEAN') THEN                                         ! XMEAN
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (NN .EQ. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  XMEAN Error'
-               ELSE
-                  TMP = SUMX/NN
-                  CALL PUSH_STACK(TMP)
-               END IF
-            CASE (2)
-               IF (CNN .EQ. (0.0D0,0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  XMEAN Error'
-               ELSE
-                  CTMP = CSUMX/CNN
-                  CALL CPUSH_STACK(CTMP)
-               END IF
-            CASE (3)
-               IF (RNNN .EQ. 0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  XMEAN Error'
-               ELSE
-                  CALL RDIV (RNSUMX,RDSUMX,RNNN,RDNN,NUM,DEN)
-                  CALL RPUSH_STACK(NUM,DEN)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'XOR') THEN                                           ! XOR
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = IEOR (INT(STACK(2)), INT(STACK(1)))
-               CALL DROP_STACK(2)
-            CASE (2)
-               TMP = IEOR (INT(DBLE(CSTACK(2))), INT(DBLE(CSTACK(1))))
-               TMP2 = IEOR (INT(AIMAG(CSTACK(2))), INT(AIMAG(CSTACK(1))))
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CMPLX(TMP,TMP2,8)
-               CALL CDROP_STACK(2)
-            CASE (3)
-               ITMP = RNSTACK(1)/RDSTACK(1)
-               ITMP2 = RNSTACK(2)/RDSTACK(2)
-               RNLASTX = RNSTACK(1)
-               RDLASTX = RDSTACK(1)
-               RNSTACK(1) = IEOR (ITMP2, ITMP)
-               RDSTACK(1) = 1
-               CALL RDROP_STACK(2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'XRT') THEN                                           ! XRT
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               LASTX = STACK(1)
-               STACK(1) = STACK(2) ** (1.0D0/STACK(1))
-               CALL DROP_STACK(2)
-            CASE (2)
-               CLASTX = CSTACK(1)
-               CSTACK(1) = CSTACK(2) ** (1.0D0/CSTACK(1))
-               CALL CDROP_STACK(2)
-            CASE (3)
-               CALL SWITCH_RAT_TO_REAL
-               LASTX = STACK(1)
-               STACK(1) = STACK(2) ** (1.0D0/STACK(1))
-               CALL DROP_STACK(2)
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'XS') THEN                                            ! XS
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (NN .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  XS Error'
-               ELSE
-                  TMP = SQRT((SUMX2-SUMX**2/NN)/(NN-1.0D0))
-                  CALL PUSH_STACK(TMP)
-               END IF
-            CASE (2)
-               IF (DBLE(CNN) .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  XS Error'
-               ELSE
-                  CTMP = SQRT((CSUMX2-CSUMX**2/CNN)/(CNN-1.0D0))
-                  CALL CPUSH_STACK(CTMP)
-               END IF
-            CASE (3)
-               IF (RNNN .LE. RDNN) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  XS Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  TMP = SQRT((SUMX2-SUMX**2/NN)/(NN-1.0D0))
-                  CALL PUSH_STACK(TMP)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'XSIG') THEN                                          ! XSIG
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (NN .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  XSIG Error'
-               ELSE
-                  TMP = SQRT((SUMX2-SUMX**2/NN)/NN)
-                  CALL PUSH_STACK(TMP)
-               END IF
-            CASE (2)
-               IF (DBLE(CNN) .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  XSIG Error'
-               ELSE
-                  CTMP = SQRT((CSUMX2-CSUMX**2/CNN)/CNN)
-                  CALL CPUSH_STACK(CTMP)
-               END IF
-            CASE (3)
-               IF (RNNN .LE. RDNN) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  XSIG Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  TMP = SQRT((SUMX2-SUMX**2/NN)/NN)
-                  CALL PUSH_STACK(TMP)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'XY') THEN                                            ! XY
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               TMP = STACK(1)
-               STACK(1) = STACK(2)
-               STACK(2) = TMP
-            CASE (2)
-               CTMP = CSTACK(1)
-               CSTACK(1) = CSTACK(2)
-               CSTACK(2) = CTMP
-            CASE (3)
-               ITMP = RNSTACK(1)
-               ITMP2 = RDSTACK(1)
-               RNSTACK(1) = RNSTACK(2)
-               RDSTACK(1) = RDSTACK(2)
-               RNSTACK(2) = ITMP
-               RDSTACK(2) = ITMP2
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'Y^') THEN                                            ! Y^
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (NN .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Y^ Error'
-               ELSE
-                  CALL LINREG (TMPM,TMPB,TMPR)
-                  LASTX = STACK(1)
-                  STACK(1) = TMPM*STACK(1)+TMPB
-               END IF
-            CASE (2)
-               IF (DBLE(CNN) .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Y^ Error'
-               ELSE
-                  CALL CLINREG (CTMPM,CTMPB,CTMPR)
-                  CLASTX = CSTACK(1)
-                  CSTACK(1) = CTMPM*CSTACK(1)+CTMPB
-               END IF
-            CASE (3)
-               IF (RNNN .LE. 1) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Y^ Error'
-               ELSE
-                  CALL RLINREG (NUMM,DENM,NUMB,DENB,TMPR)
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(1)
-                  CALL RMUL(NUMM,DENM,RNSTACK(1),RDSTACK(1),NUM,DEN)
-                  CALL RADD(NUM,DEN,NUMB,DENB,NUM2,DEN2)
-                  RNSTACK(1) = NUM2
-                  RDSTACK(1) = DEN2
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'YMEAN') THEN                                         ! YMEAN
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (NN .EQ. 0.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  YMEAN Error'
-               ELSE
-                  TMP = SUMY/NN
-                  CALL PUSH_STACK(TMP)
-               END IF
-            CASE (2)
-               IF (CNN .EQ. (0.0D0,0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  YMEAN Error'
-               ELSE
-                  CTMP = CSUMY/CNN
-                  CALL CPUSH_STACK(CTMP)
-               END IF
-            CASE (3)
-               IF (RNNN .EQ. 0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  YMEAN Error'
-               ELSE
-                  CALL RDIV (RNSUMY,RDSUMY,RNNN,RDNN,NUM,DEN)
-                  CALL RPUSH_STACK(NUM,DEN)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'YS') THEN                                            ! YS
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (NN .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  YS Error'
-               ELSE
-                  TMP = SQRT((SUMY2-SUMY**2/NN)/(NN-1.0D0))
-                  CALL PUSH_STACK(TMP)
-               END IF
-            CASE (2)
-               IF (DBLE(CNN) .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  YS Error'
-               ELSE
-                  CTMP = SQRT((CSUMY2-CSUMY**2/CNN)/(CNN-1.0D0))
-                  CALL CPUSH_STACK(CTMP)
-               END IF
-            CASE (3)
-               IF (RNNN .LE. RDNN) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  YS Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  TMP = SQRT((SUMY2-SUMY**2/NN)/(NN-1.0D0))
-                  CALL PUSH_STACK(TMP)
-               END IF
-         END SELECT
-
-      ELSE IF (TRIM(STR) .EQ. 'YSIG') THEN                                          ! YSIG
-         SELECT CASE (DOMAIN_MODE)
-            CASE (1)
-               IF (NN .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  YSIG Error'
-               ELSE
-                  TMP = SQRT((SUMY2-SUMY**2/NN)/NN)
-                  CALL PUSH_STACK(TMP)
-               END IF
-            CASE (2)
-               IF (DBLE(CNN) .LE. 1.0D0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  YSIG Error'
-               ELSE
-                  CTMP = SQRT((CSUMY2-CSUMY**2/CNN)/CNN)
-                  CALL CPUSH_STACK(CTMP)
-               END IF
-            CASE (3)
-               IF (RNNN .LE. RDNN) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  YSIG Error'
-               ELSE
-                  CALL SWITCH_RAT_TO_REAL
-                  TMP = SQRT((SUMY2-SUMY**2/NN)/NN)
-                  CALL PUSH_STACK(TMP)
-               END IF
-         END SELECT
-
-      ELSE
-         WRITE (UNIT=*, FMT='(A)') '  Input error:  "'//TRIM(STR)//'"'
-      END IF
-
-      RETURN
-
-      END SUBROUTINE EVAL
-
-
-
-
 
 !***********************************************************************************************************************************
 !  ISDIGIT
@@ -4440,18 +11,12 @@ END SUBROUTINE PRINTX
 !  Determines whether the input character is a digit (0-9).
 !***********************************************************************************************************************************
 
-      FUNCTION ISDIGIT (CH) RESULT (DIG_FLAG)
+elemental logical FUNCTION ISDIGIT (CH)
+CHARACTER, INTENT(IN) :: CH
 
-      IMPLICIT NONE
+isdigit = (CH .GE. '0') .AND. (CH .LE. '9')
 
-      CHARACTER, INTENT(IN) :: CH
-      LOGICAL :: DIG_FLAG
-
-      DIG_FLAG = (CH .GE. '0') .AND. (CH .LE. '9')
-
-      RETURN
-
-      END FUNCTION ISDIGIT
+END FUNCTION ISDIGIT
 
 
 
@@ -4463,13 +28,12 @@ END SUBROUTINE PRINTX
 !  Determines whether the input character is a + or - sign.
 !***********************************************************************************************************************************
 
-      elemental logical FUNCTION ISPM (CH) RESULT (PM_FLAG)
+elemental logical FUNCTION ISPM (CH)
+CHARACTER, INTENT(IN) :: CH
 
-      CHARACTER, INTENT(IN) :: CH
+ispm = (CH .EQ. '+') .OR. (CH .EQ. '-')
 
-      PM_FLAG = (CH .EQ. '+') .OR. (CH .EQ. '-')
-
-      END FUNCTION ISPM
+END FUNCTION ISPM
 
 
 
@@ -4481,18 +45,12 @@ END SUBROUTINE PRINTX
 !  Determines whether the input character is a valid hexadecimal digit
 !***********************************************************************************************************************************
 
-      FUNCTION ISHEX (CH) RESULT (HEX_FLAG)
+elemental logical FUNCTION ISHEX (CH) 
+CHARACTER, INTENT(IN) :: CH
 
-      IMPLICIT NONE
+ishex = (((CH .GE. '0') .AND. (CH .LE. '9')) .OR. ((CH .GE. 'A') .AND. (CH .LE. 'F')))
 
-      CHARACTER, INTENT(IN) :: CH
-      LOGICAL :: HEX_FLAG
-
-      HEX_FLAG = (((CH .GE. '0') .AND. (CH .LE. '9')) .OR. ((CH .GE. 'A') .AND. (CH .LE. 'F')))
-
-      RETURN
-
-      END FUNCTION ISHEX
+END FUNCTION ISHEX
 
 
 
@@ -5094,36 +652,32 @@ END SUBROUTINE PRINTX
 !  SWITCH_RAT_TO_REAL
 !***********************************************************************************************************************************
 
-      SUBROUTINE SWITCH_RAT_TO_REAL
+SUBROUTINE SWITCH_RAT_TO_REAL
 
-      USE GLOBAL
+USE GLOBAL
 
-      IMPLICIT NONE
+INTEGER :: I
 
-      INTEGER :: I
+DOMAIN_MODE = 1
 
-      DOMAIN_MODE = 1
+DO I = 1, STACK_SIZE
+   STACK(I) = DBLE(RNSTACK(I))/DBLE(RDSTACK(I))
+END DO
 
-      DO I = 1, STACK_SIZE
-         STACK(I) = DBLE(RNSTACK(I))/DBLE(RDSTACK(I))
-      END DO
+DO I = 0, REG_SIZE-1
+   REG(I) = DBLE(RNREG(I))/DBLE(RDREG(I))
+END DO
 
-      DO I = 0, REG_SIZE-1
-         REG(I) = DBLE(RNREG(I))/DBLE(RDREG(I))
-      END DO
+LASTX = DBLE(RNLASTX)/DBLE(RDLASTX)
 
-      LASTX = DBLE(RNLASTX)/DBLE(RDLASTX)
+NN = DBLE(RNNN)/DBLE(RDNN)
+SUMX = DBLE(RNSUMX)/DBLE(RDSUMX)
+SUMX2 = DBLE(RNSUMX2)/DBLE(RDSUMX2)
+SUMY = DBLE(RNSUMY)/DBLE(RDSUMY)
+SUMY2 = DBLE(RNSUMY2)/DBLE(RDSUMY2)
+SUMXY = DBLE(RNSUMXY)/DBLE(RDSUMXY)
 
-      NN = DBLE(RNNN)/DBLE(RDNN)
-      SUMX = DBLE(RNSUMX)/DBLE(RDSUMX)
-      SUMX2 = DBLE(RNSUMX2)/DBLE(RDSUMX2)
-      SUMY = DBLE(RNSUMY)/DBLE(RDSUMY)
-      SUMY2 = DBLE(RNSUMY2)/DBLE(RDSUMY2)
-      SUMXY = DBLE(RNSUMXY)/DBLE(RDSUMXY)
-
-      RETURN
-
-      END SUBROUTINE SWITCH_RAT_TO_REAL
+END SUBROUTINE SWITCH_RAT_TO_REAL
 
 
 
@@ -5141,24 +695,24 @@ END SUBROUTINE PRINTX
 !  Find the greatest common divisor of two integers using Euclid's algorithm.
 !***********************************************************************************************************************************
 
-      elemental integer FUNCTION GCD (A, B) RESULT (G)
+elemental integer FUNCTION GCD (A, B)
 
-      INTEGER, INTENT(IN) :: A, B
+INTEGER, INTENT(IN) :: A, B
 
-      INTEGER :: A1, B1, T
+INTEGER :: A1, B1, T
 
-      A1 = A
-      B1 = B
+A1 = A
+B1 = B
 
-      DO WHILE (B1 .NE. 0)
-         T = B1
-         B1 = MOD (A1,B1)
-         A1 = T
-      END DO
+DO WHILE (B1 .NE. 0)
+   T = B1
+   B1 = MOD (A1,B1)
+   A1 = T
+END DO
 
-      G = A1
+GCD = A1
 
-      END FUNCTION GCD
+END FUNCTION GCD
 
 
 !***********************************************************************************************************************************
@@ -5168,13 +722,13 @@ END SUBROUTINE PRINTX
 !  Find the least common multiple of two integers.
 !***********************************************************************************************************************************
 
-      elemental integer FUNCTION LCM (A, B) RESULT (L)
+elemental integer FUNCTION LCM (A, B)
 
-      INTEGER, INTENT(IN) :: A, B
+INTEGER, INTENT(IN) :: A, B
 
-      L = A*B/GCD(A,B)
+LCM = A*B/GCD(A,B)
 
-      END FUNCTION LCM
+END FUNCTION LCM
 
 
 
@@ -5185,39 +739,39 @@ END SUBROUTINE PRINTX
 !  Check for a denominator or numerator of 0; make the denominator positive; and reduce the fraction.
 !***********************************************************************************************************************************
 
-      elemental SUBROUTINE RATNORM (NUM, DEN)
+elemental SUBROUTINE RATNORM (NUM, DEN)
 
-      INTEGER, INTENT(IN OUT) :: NUM, DEN
+INTEGER, INTENT(IN OUT) :: NUM, DEN
 
-      INTEGER :: G
-      LOGICAL :: NEGFLAG
+INTEGER :: G
+LOGICAL :: NEGFLAG
 
-      IF (DEN .EQ. 0) THEN                                                        ! check for zero denominator
-         error stop  'Error in RATNORM: denominator is zero.'
-         NUM = 0
-         DEN = 1
-         RETURN
-      END IF
+IF (DEN .EQ. 0) THEN                                                        ! check for zero denominator
+   error stop  'Error in RATNORM: denominator is zero.'
+   NUM = 0
+   DEN = 1
+   RETURN
+END IF
 
-      IF (NUM .EQ. 0) THEN                                                        ! if zero numerator, just return 0/1
-         NUM = 0
-         DEN = 1
-         RETURN
-      END IF
+IF (NUM .EQ. 0) THEN                                                        ! if zero numerator, just return 0/1
+   NUM = 0
+   DEN = 1
+   RETURN
+END IF
 
-      NEGFLAG = (NUM .LT. 0) .NEQV. (DEN .LT. 0)                                ! save sign of fraction in NEGFLAG
+NEGFLAG = (NUM .LT. 0) .NEQV. (DEN .LT. 0)                                ! save sign of fraction in NEGFLAG
 
-      NUM = ABS(NUM)                                                            ! take absolute value of NUM and DEN
-      DEN = ABS(DEN)
+NUM = ABS(NUM)                                                            ! take absolute value of NUM and DEN
+DEN = ABS(DEN)
 
-      G = GCD (NUM, DEN)                                                        ! find GCD of NUM and DEN
+G = GCD (NUM, DEN)                                                        ! find GCD of NUM and DEN
 
-      NUM = NUM / G                                                             ! reduce the fraction
-      DEN = DEN / G
+NUM = NUM / G                                                             ! reduce the fraction
+DEN = DEN / G
 
-      IF (NEGFLAG) NUM = -NUM                                                   ! restore the sign to the numerator
+IF (NEGFLAG) NUM = -NUM                                                   ! restore the sign to the numerator
 
-      END SUBROUTINE RATNORM
+END SUBROUTINE RATNORM
 
 
 
@@ -5229,16 +783,16 @@ END SUBROUTINE PRINTX
 !  Add two rational numbers.
 !***********************************************************************************************************************************
 
-      elemental SUBROUTINE RADD (N1, D1, N2, D2, NR, DR)
+elemental SUBROUTINE RADD (N1, D1, N2, D2, NR, DR)
 
-      INTEGER, INTENT(IN) :: N1, D1, N2, D2
-      INTEGER, INTENT(OUT) :: NR, DR
+INTEGER, INTENT(IN) :: N1, D1, N2, D2
+INTEGER, INTENT(OUT) :: NR, DR
 
-      NR = N1*D2+D1*N2
-      DR = D1*D2
-      CALL RATNORM (NR, DR)
+NR = N1*D2+D1*N2
+DR = D1*D2
+CALL RATNORM (NR, DR)
 
-      END SUBROUTINE RADD
+END SUBROUTINE RADD
 
 
 
@@ -5250,16 +804,16 @@ END SUBROUTINE PRINTX
 !  Subtract two rational numbers.
 !***********************************************************************************************************************************
 
-      elemental SUBROUTINE RSUB (N1, D1, N2, D2, NR, DR)
+elemental SUBROUTINE RSUB (N1, D1, N2, D2, NR, DR)
 
-      INTEGER, INTENT(IN) :: N1, D1, N2, D2
-      INTEGER, INTENT(OUT) :: NR, DR
+INTEGER, INTENT(IN) :: N1, D1, N2, D2
+INTEGER, INTENT(OUT) :: NR, DR
 
-      NR = N1*D2-D1*N2
-      DR = D1*D2
-      CALL RATNORM (NR, DR)
+NR = N1*D2-D1*N2
+DR = D1*D2
+CALL RATNORM (NR, DR)
 
-      END SUBROUTINE RSUB
+END SUBROUTINE RSUB
 
 
 
@@ -5271,16 +825,16 @@ END SUBROUTINE PRINTX
 !  Multiply two rational numbers.
 !***********************************************************************************************************************************
 
-      elemental SUBROUTINE RMUL (N1, D1, N2, D2, NR, DR)
+elemental SUBROUTINE RMUL (N1, D1, N2, D2, NR, DR)
 
-      INTEGER, INTENT(IN) :: N1, D1, N2, D2
-      INTEGER, INTENT(OUT) :: NR, DR
+INTEGER, INTENT(IN) :: N1, D1, N2, D2
+INTEGER, INTENT(OUT) :: NR, DR
 
-      NR = N1*N2
-      DR = D1*D2
-      CALL RATNORM (NR, DR)
+NR = N1*N2
+DR = D1*D2
+CALL RATNORM (NR, DR)
 
-      END SUBROUTINE RMUL
+END SUBROUTINE RMUL
 
 
 
@@ -5292,20 +846,20 @@ END SUBROUTINE PRINTX
 !  Multiply two rational numbers.
 !***********************************************************************************************************************************
 
-      SUBROUTINE RDIV (N1, D1, N2, D2, NR, DR)
+SUBROUTINE RDIV (N1, D1, N2, D2, NR, DR)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      INTEGER, INTENT(IN) :: N1, D1, N2, D2
-      INTEGER, INTENT(OUT) :: NR, DR
+INTEGER, INTENT(IN) :: N1, D1, N2, D2
+INTEGER, INTENT(OUT) :: NR, DR
 
-      NR = N1*D2
-      DR = D1*N2
-      CALL RATNORM (NR, DR)
+NR = N1*D2
+DR = D1*N2
+CALL RATNORM (NR, DR)
 
-      RETURN
+RETURN
 
-      END SUBROUTINE RDIV
+END SUBROUTINE RDIV
 
 
 
@@ -5317,17 +871,17 @@ END SUBROUTINE PRINTX
 !  Fractional part of a number.
 !***********************************************************************************************************************************
 
-      elemental real(wp) FUNCTION FRAC (X) RESULT (Y)
+elemental real(wp) FUNCTION FRAC (X) RESULT (Y)
 
-      real(wp), INTENT(IN) :: X
-      real(wp) ::  Z
+real(wp), INTENT(IN) :: X
+real(wp) ::  Z
 
-      Z = ABS(X)
-      Y = Z - INT(Z)
-      Y = SIGN(Y,X)
+Z = ABS(X)
+Y = Z - INT(Z)
+Y = SIGN(Y,X)
 
 
-      END FUNCTION FRAC
+END FUNCTION FRAC
 
 
 
@@ -5339,27 +893,27 @@ END SUBROUTINE PRINTX
 !  Complex FRAC.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CFRAC (X) RESULT (Y)
+elemental complex(wp) FUNCTION CFRAC (X) RESULT (Y)
 
-      COMPLEX(wp), INTENT(IN) :: X
-      real(wp) :: XR, XI, YR, YI, ZR, ZI
+COMPLEX(wp), INTENT(IN) :: X
+real(wp) :: XR, XI, YR, YI, ZR, ZI
 
-      XR = DBLE(X)
-      XI = AIMAG(X)
+XR = DBLE(X)
+XI = AIMAG(X)
 
-      ZR = ABS(XR)
-      YR = ZR - INT(ZR)
-      YR = SIGN(YR,XR)
+ZR = ABS(XR)
+YR = ZR - INT(ZR)
+YR = SIGN(YR,XR)
 
-      ZI = ABS(XI)
-      YI = ZI - INT(ZI)
-      YI = SIGN(YI,XI)
+ZI = ABS(XI)
+YI = ZI - INT(ZI)
+YI = SIGN(YI,XI)
 
-      Y = CMPLX(YR,YI,8)
+Y = CMPLX(YR,YI,8)
 
-      RETURN
+RETURN
 
-      END FUNCTION CFRAC
+END FUNCTION CFRAC
 
 
 
@@ -5371,20 +925,20 @@ END SUBROUTINE PRINTX
 !  Rational FRAC.
 !***********************************************************************************************************************************
 
-      elemental SUBROUTINE RFRAC (N, D, NR, DR)
+elemental SUBROUTINE RFRAC (N, D, NR, DR)
 
-      INTEGER, INTENT(IN) :: N, D
-      INTEGER, INTENT(OUT) :: NR, DR
-      INTEGER :: NI, NA, DA
+INTEGER, INTENT(IN) :: N, D
+INTEGER, INTENT(OUT) :: NR, DR
+INTEGER :: NI, NA, DA
 
-      NA = ABS(N)
-      DA = ABS(D)
-      NI = RINT (NA, DA)
-      CALL RSUB (NA, DA, NI, 1, NR, DR)
-      NR = SIGN(NR,N)
-      CALL RATNORM (NR, DR)
+NA = ABS(N)
+DA = ABS(D)
+NI = RINT (NA, DA)
+CALL RSUB (NA, DA, NI, 1, NR, DR)
+NR = SIGN(NR,N)
+CALL RATNORM (NR, DR)
 
-      END SUBROUTINE RFRAC
+END SUBROUTINE RFRAC
 
 
 
@@ -5396,17 +950,17 @@ END SUBROUTINE PRINTX
 !  Complex INT.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CINT (X) RESULT (Y)
+elemental complex(wp) FUNCTION CINT (X) RESULT (Y)
 
-      COMPLEX(wp), INTENT(IN) :: X
+COMPLEX(wp), INTENT(IN) :: X
 
-      real(wp) :: YR, YI
+real(wp) :: YR, YI
 
-      YR = AINT(DBLE(X))
-      YI = AINT(AIMAG(X))
-      Y = CMPLX(YR,YI,8)
+YR = AINT(DBLE(X))
+YI = AINT(AIMAG(X))
+Y = CMPLX(YR,YI,8)
 
-      END FUNCTION CINT
+END FUNCTION CINT
 
 
 
@@ -5418,17 +972,17 @@ END SUBROUTINE PRINTX
 !  Rational INT.
 !***********************************************************************************************************************************
 
-      elemental integer FUNCTION RINT (N, D) RESULT (R)
+elemental integer FUNCTION RINT (N, D) RESULT (R)
 
-      INTEGER, INTENT(IN) :: N, D
-      INTEGER :: NN, DN
+INTEGER, INTENT(IN) :: N, D
+INTEGER :: NN, DN
 
-      NN = N
-      DN = D
-      CALL RATNORM (NN, DN)
-      R = NN / DN
+NN = N
+DN = D
+CALL RATNORM (NN, DN)
+R = NN / DN
 
-      END FUNCTION RINT
+END FUNCTION RINT
 
 
 
@@ -5440,30 +994,30 @@ END SUBROUTINE PRINTX
 !  Rational NINT.
 !***********************************************************************************************************************************
 
-      SUBROUTINE RNINT (N, D)
+SUBROUTINE RNINT (N, D)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      INTEGER, INTENT(IN OUT) :: N, D
-      INTEGER :: NN, DN, TN, TD
+INTEGER, INTENT(IN OUT) :: N, D
+INTEGER :: NN, DN, TN, TD
 
-      NN = N
-      DN = D
-      CALL RATNORM (NN, DN)
+NN = N
+DN = D
+CALL RATNORM (NN, DN)
 
-      IF (NN .GE. 0) THEN
-         CALL RADD (NN, DN, 1, 2, TN, TD)
-         N = TN / TD
-         D = 1
-      ELSE
-         CALL RSUB (NN, DN, 1, 2, TN, TD)
-         N = TN / TD
-         D = 1
-      END IF
+IF (NN .GE. 0) THEN
+   CALL RADD (NN, DN, 1, 2, TN, TD)
+   N = TN / TD
+   D = 1
+ELSE
+   CALL RSUB (NN, DN, 1, 2, TN, TD)
+   N = TN / TD
+   D = 1
+END IF
 
-      RETURN
+RETURN
 
-      END SUBROUTINE RNINT
+END SUBROUTINE RNINT
 
 
 
@@ -5475,13 +1029,13 @@ END SUBROUTINE PRINTX
 !  Complex MOD.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CMOD (X,Y) RESULT (Z)
+elemental complex(wp) FUNCTION CMOD (X,Y) RESULT (Z)
 
-      COMPLEX(wp), INTENT(IN) :: X, Y
+COMPLEX(wp), INTENT(IN) :: X, Y
 
-      Z = X - CINT(X/Y)*Y
+Z = X - CINT(X/Y)*Y
 
-      END FUNCTION CMOD
+END FUNCTION CMOD
 
 
 
@@ -5493,28 +1047,28 @@ END SUBROUTINE PRINTX
 !  Rational MOD.
 !***********************************************************************************************************************************
 
-      SUBROUTINE RMOD (N1, D1, N2, D2, NR, DR)
+SUBROUTINE RMOD (N1, D1, N2, D2, NR, DR)
 
-      INTEGER, INTENT(IN) :: N1, D1, N2, D2
-      INTEGER, INTENT(OUT) :: NR, DR
-      INTEGER :: NAN, DAN, NBN, DBN, NT, DT, ITMP
- 
-      NAN = N1
-      DAN = D1
+INTEGER, INTENT(IN) :: N1, D1, N2, D2
+INTEGER, INTENT(OUT) :: NR, DR
+INTEGER :: NAN, DAN, NBN, DBN, NT, DT, ITMP
 
-      NBN = N2
-      DBN = D2
+NAN = N1
+DAN = D1
 
-      CALL RATNORM (NAN,DAN)
-      CALL RATNORM (NBN,DBN)
+NBN = N2
+DBN = D2
 
-      CALL RDIV (NAN, DAN, NBN, DBN, NT, DT)
-      ITMP = RINT (NT, DT)
-      CALL RMUL (ITMP, 1, NBN, DBN, NT, DT)
-      CALL RSUB (NAN, DAN, NT, DT, NR, DR)
-      CALL RATNORM (NR, DR)
+CALL RATNORM (NAN,DAN)
+CALL RATNORM (NBN,DBN)
 
-      END SUBROUTINE RMOD
+CALL RDIV (NAN, DAN, NBN, DBN, NT, DT)
+ITMP = RINT (NT, DT)
+CALL RMUL (ITMP, 1, NBN, DBN, NT, DT)
+CALL RSUB (NAN, DAN, NT, DT, NR, DR)
+CALL RATNORM (NR, DR)
+
+END SUBROUTINE RMOD
 
 
 
@@ -5526,21 +1080,21 @@ END SUBROUTINE PRINTX
 !  Computes the cube root.
 !***********************************************************************************************************************************
 
-      FUNCTION CUBEROOT (X) RESULT (Y)
+FUNCTION CUBEROOT (X) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      real(wp), INTENT(IN) :: X
-      real(wp) :: Y
+real(wp), INTENT(IN) :: X
+real(wp) :: Y
 
-      real(wp), PARAMETER :: THIRD = 0.33333333333333333333333333333333333333333333333333333333333333333333333333333333333D0
+real(wp), PARAMETER :: THIRD = 0.33333333333333333333333333333333333333333333333333333333333333333333333333333333333D0
 
 
-      Y = SIGN((ABS(X))**THIRD,X)
+Y = SIGN((ABS(X))**THIRD,X)
 
-      RETURN
+RETURN
 
-      END FUNCTION CUBEROOT
+END FUNCTION CUBEROOT
 
 
 
@@ -5552,21 +1106,21 @@ END SUBROUTINE PRINTX
 !  Computes the complex cube root.
 !***********************************************************************************************************************************
 
-      FUNCTION CCUBEROOT (Z) RESULT (Y)
+FUNCTION CCUBEROOT (Z) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      COMPLEX(wp), INTENT(IN) :: Z
-      COMPLEX(wp) :: Y
+COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp) :: Y
 
-      real(wp), PARAMETER :: THIRD = 0.33333333333333333333333333333333333333333333333333333333333333333333333333333333333D0
+real(wp), PARAMETER :: THIRD = 0.33333333333333333333333333333333333333333333333333333333333333333333333333333333333D0
 
 
-      Y = Z**THIRD
+Y = Z**THIRD
 
-      RETURN
+RETURN
 
-      END FUNCTION CCUBEROOT
+END FUNCTION CCUBEROOT
 
 
 
@@ -5578,19 +1132,19 @@ END SUBROUTINE PRINTX
 !  Complex common logarithm.
 !***********************************************************************************************************************************
 
-      FUNCTION CLOG10 (X) RESULT (Y)
+FUNCTION CLOG10 (X) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      COMPLEX(wp), INTENT(IN) :: X
-      COMPLEX(wp) :: Y
-      real(wp), PARAMETER :: LN10 = 2.302585092994045684017991454684364207601101488628772976033327900967572609677352480236D0
+COMPLEX(wp), INTENT(IN) :: X
+COMPLEX(wp) :: Y
+real(wp), PARAMETER :: LN10 = 2.302585092994045684017991454684364207601101488628772976033327900967572609677352480236D0
 
-      Y = LOG(X)/LN10
+Y = LOG(X)/LN10
 
-      RETURN
+RETURN
 
-      END FUNCTION CLOG10
+END FUNCTION CLOG10
 
 
 
@@ -5602,25 +1156,25 @@ END SUBROUTINE PRINTX
 !  Combinations of N things taken R at a time.
 !***********************************************************************************************************************************
 
-      FUNCTION CNR (N,R) RESULT (Y)
+FUNCTION CNR (N,R) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      INTEGER, INTENT(IN) :: N, R
-      real(wp) :: Y
-      INTEGER :: I, J
+INTEGER, INTENT(IN) :: N, R
+real(wp) :: Y
+INTEGER :: I, J
 
-      Y = 1.0D0
-      J = N
+Y = 1.0D0
+J = N
 
-      DO I = N-R, 1, -1
-         Y = Y * DBLE(J)/DBLE(I)
-         J = J - 1
-      END DO
+DO I = N-R, 1, -1
+   Y = Y * DBLE(J)/DBLE(I)
+   J = J - 1
+END DO
 
-      RETURN
+RETURN
 
-      END FUNCTION CNR
+END FUNCTION CNR
 
 
 
@@ -5632,106 +1186,46 @@ END SUBROUTINE PRINTX
 !  Permutations of N things taken R at a time.
 !***********************************************************************************************************************************
 
-      FUNCTION PNR (N,R) RESULT (Y)
+FUNCTION PNR (N,R) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      INTEGER, INTENT(IN) :: N, R
-      real(wp) :: Y
-      INTEGER :: I, J
+INTEGER, INTENT(IN) :: N, R
+real(wp) :: Y
+INTEGER :: I, J
 
-      Y = 1.0D0
-      J = N
+Y = 1.0D0
+J = N
 
-      DO I = N-R, 1, -1
-         Y = Y * DBLE(J)/DBLE(I)
-         J = J - 1
-      END DO
+DO I = N-R, 1, -1
+   Y = Y * DBLE(J)/DBLE(I)
+   J = J - 1
+END DO
 
-      DO I = R, 1, -1
-         Y = Y * DBLE(I)
-      END DO
+DO I = R, 1, -1
+   Y = Y * DBLE(I)
+END DO
 
-      RETURN
+RETURN
 
-      END FUNCTION PNR
-
-
-!***********************************************************************************************************************************
-!  CASIN
-!
-!  Complex inverse sine.
-!***********************************************************************************************************************************
-
-      elemental complex(wp) FUNCTION CASIN (Z) RESULT (Y)
-
-      COMPLEX(wp), INTENT(IN) :: Z
-
-      COMPLEX(wp), PARAMETER  :: II = (0.0D0,1.0D0)
-
-      Y = -II*LOG(II*Z+SQRT(1.0D0-Z*Z))
-
-      END FUNCTION CASIN
-
-
-!***********************************************************************************************************************************
-!  CACOS
-!
-!  Complex inverse cosine.
-!***********************************************************************************************************************************
-
-      elemental complex(wp) FUNCTION CACOS(Z) RESULT (Y)
-      COMPLEX(wp), INTENT(IN) :: Z
-      COMPLEX(wp), PARAMETER  :: II = (0.0D0,1.0D0)
-
-      Y = -II*LOG(Z+II*SQRT(1.0D0-Z*Z))
-
-
-      END FUNCTION CACOS
+END FUNCTION PNR
 
 
 
 
-
-!***********************************************************************************************************************************
+!*********************************************************************************************
 !  CTAN
 !
 !  Complex tangent.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CTAN (Z) RESULT (Y)
+elemental complex(wp) FUNCTION CTAN (Z) RESULT (Y)
 
-      COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp), INTENT(IN) :: Z
 
-      Y = SIN(Z)/COS(Z)
+Y = SIN(Z)/COS(Z)
 
-      END FUNCTION CTAN
-
-
-
-
-
-!***********************************************************************************************************************************
-!  CATAN
-!
-!  Complex inverse tangent.
-!***********************************************************************************************************************************
-
-      FUNCTION CATAN (Z) RESULT (Y)
-
-      IMPLICIT NONE
-
-      COMPLEX(wp), INTENT(IN) :: Z
-      COMPLEX(wp) :: Y
-
-      COMPLEX(wp), PARAMETER  :: II = (0.0D0,1.0D0)
-
-      Y = -0.5D0*II*LOG((1.0D0+II*Z)/(1.0D0-II*Z))
-
-      RETURN
-
-      END FUNCTION CATAN
-
+END FUNCTION CTAN
 
 
 
@@ -5742,18 +1236,14 @@ END SUBROUTINE PRINTX
 !  Secant.
 !***********************************************************************************************************************************
 
-      FUNCTION SEC (X) RESULT (Y)
+FUNCTION SEC (X) RESULT (Y)
 
-      IMPLICIT NONE
+real(wp), INTENT (IN) :: X
+real(wp) :: Y
 
-      real(wp), INTENT (IN) :: X
-      real(wp) :: Y
+Y = 1.0D0/COS(X)
 
-      Y = 1.0D0/COS(X)
-
-      RETURN
-
-      END FUNCTION SEC
+END FUNCTION SEC
 
 
 
@@ -5765,18 +1255,18 @@ END SUBROUTINE PRINTX
 !  Complex secant.
 !***********************************************************************************************************************************
 
-      FUNCTION CSEC (Z) RESULT (Y)
+FUNCTION CSEC (Z) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      COMPLEX(wp), INTENT(IN) :: Z
-      COMPLEX(wp) :: Y
+COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp) :: Y
 
-      Y = 1.0D0/COS(Z)
+Y = 1.0D0/COS(Z)
 
-      RETURN
+RETURN
 
-      END FUNCTION CSEC
+END FUNCTION CSEC
 
 
 
@@ -5788,13 +1278,13 @@ END SUBROUTINE PRINTX
 !  Inverse secant.
 !***********************************************************************************************************************************
 
-      real(wp) FUNCTION ASEC (Y) RESULT (X)
+real(wp) FUNCTION ASEC (Y) RESULT (X)
 
-      real(wp), INTENT (IN) :: Y
+real(wp), INTENT (IN) :: Y
 
-      X = ACOS(1.0D0/Y)
+X = ACOS(1.0D0/Y)
 
-      END FUNCTION ASEC
+END FUNCTION ASEC
 
 !***********************************************************************************************************************************
 !  CASEC
@@ -5802,44 +1292,44 @@ END SUBROUTINE PRINTX
 !  Complex inverse secant.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CASEC (Z) RESULT (Y)
+elemental complex(wp) FUNCTION CASEC (Z) RESULT (Y)
 
-      COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp), INTENT(IN) :: Z
 
-      Y = CACOS(1.0D0/Z)
+Y = ACOS(1.0D0/Z)
 
-      END FUNCTION CASEC
+END FUNCTION CASEC
 !***********************************************************************************************************************************
 !  CSC
 !
 !  Cosecant.
 !***********************************************************************************************************************************
 
-      elemental real(wp) FUNCTION CSC (X) RESULT (Y)
+elemental real(wp) FUNCTION CSC (X) RESULT (Y)
 
-      real(wp), INTENT (IN) :: X
+real(wp), INTENT (IN) :: X
 
-      Y = 1.0D0/SIN(X)
+Y = 1.0D0/SIN(X)
 
-      END FUNCTION CSC
+END FUNCTION CSC
 !***********************************************************************************************************************************
 !  CCSC
 !
 !  Complex cosecant.
 !***********************************************************************************************************************************
 
-      FUNCTION CCSC (Z) RESULT (Y)
+FUNCTION CCSC (Z) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      COMPLEX(wp), INTENT(IN) :: Z
-      COMPLEX(wp) :: Y
+COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp) :: Y
 
-      Y = 1.0D0/SIN(Z)
+Y = 1.0D0/SIN(Z)
 
-      RETURN
+RETURN
 
-      END FUNCTION CCSC
+END FUNCTION CCSC
 
 
 
@@ -5851,18 +1341,18 @@ END SUBROUTINE PRINTX
 !  Inverse cosecant.
 !***********************************************************************************************************************************
 
-      FUNCTION ACSC (Y) RESULT (X)
+FUNCTION ACSC (Y) RESULT (X)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      real(wp), INTENT (IN) :: Y
-      real(wp) :: X
+real(wp), INTENT (IN) :: Y
+real(wp) :: X
 
-      X = ASIN(1.0D0/Y)
+X = ASIN(1.0D0/Y)
 
-      RETURN
+RETURN
 
-      END FUNCTION ACSC
+END FUNCTION ACSC
 
 
 
@@ -5874,13 +1364,13 @@ END SUBROUTINE PRINTX
 !  Complex inverse cosecant.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CACSC (Z) RESULT (Y)
+elemental complex(wp) FUNCTION CACSC (Z) RESULT (Y)
 
-      COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp), INTENT(IN) :: Z
 
-      Y = CASIN(1.0D0/Z)
+Y = ASIN(1.0D0/Z)
 
-      END FUNCTION CACSC
+END FUNCTION CACSC
 
 
 
@@ -5892,18 +1382,18 @@ END SUBROUTINE PRINTX
 !  Cotangent.
 !***********************************************************************************************************************************
 
-      FUNCTION COT (X) RESULT (Y)
+FUNCTION COT (X) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      real(wp), INTENT (IN) :: X
-      real(wp) :: Y
+real(wp), INTENT (IN) :: X
+real(wp) :: Y
 
-      Y = 1.0D0/TAN(X)
+Y = 1.0D0/TAN(X)
 
-      RETURN
+RETURN
 
-      END FUNCTION COT
+END FUNCTION COT
 
 
 
@@ -5915,18 +1405,18 @@ END SUBROUTINE PRINTX
 !  Complex cotangent.
 !***********************************************************************************************************************************
 
-      FUNCTION CCOT (Z) RESULT (Y)
+FUNCTION CCOT (Z) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      COMPLEX(wp), INTENT(IN) :: Z
-      COMPLEX(wp) :: Y
+COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp) :: Y
 
-      Y = COS(Z)/SIN(Z)
+Y = COS(Z)/SIN(Z)
 
-      RETURN
+RETURN
 
-      END FUNCTION CCOT
+END FUNCTION CCOT
 
 
 
@@ -5938,18 +1428,18 @@ END SUBROUTINE PRINTX
 !  Inverse cotangent.
 !***********************************************************************************************************************************
 
-      FUNCTION ACOT (Y) RESULT (X)
+FUNCTION ACOT (Y) RESULT (X)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      real(wp), INTENT (IN) :: Y
-      real(wp) :: X
+real(wp), INTENT (IN) :: Y
+real(wp) :: X
 
-      X = ATAN(1.0D0/Y)
+X = ATAN(1.0D0/Y)
 
-      RETURN
+RETURN
 
-      END FUNCTION ACOT
+END FUNCTION ACOT
 
 
 
@@ -5961,19 +1451,19 @@ END SUBROUTINE PRINTX
 !  Inverse cotangent (two arguments).
 !***********************************************************************************************************************************
 
-      FUNCTION ACOT2 (Y,Z) RESULT (X)
+FUNCTION ACOT2 (Y,Z) RESULT (X)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      real(wp), INTENT (IN) :: Y                                           ! cotangent numerator
-      real(wp), INTENT (IN) :: Z                                           ! cotangent denominator
-      real(wp) :: X
+real(wp), INTENT (IN) :: Y                                           ! cotangent numerator
+real(wp), INTENT (IN) :: Z                                           ! cotangent denominator
+real(wp) :: X
 
-      X = ATAN2(Z,Y)
+X = ATAN2(Z,Y)
 
-      RETURN
+RETURN
 
-      END FUNCTION ACOT2
+END FUNCTION ACOT2
 
 
 
@@ -5985,20 +1475,20 @@ END SUBROUTINE PRINTX
 !  Complex inverse cotangent.
 !***********************************************************************************************************************************
 
-      FUNCTION CACOT (Z) RESULT (Y)
+FUNCTION CACOT (Z) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      COMPLEX(wp), INTENT(IN) :: Z
-      COMPLEX(wp) :: Y
+COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp) :: Y
 
-      COMPLEX(wp), PARAMETER  :: II = (0.0D0,1.0D0)
+COMPLEX(wp), PARAMETER  :: II = (0.0D0,1.0D0)
 
-      Y = -0.5D0*II*LOG((II*Z-1.0D0)/(II*Z+1.0D0))
+Y = -0.5D0*II*LOG((II*Z-1.0D0)/(II*Z+1.0D0))
 
-      RETURN
+RETURN
 
-      END FUNCTION CACOT
+END FUNCTION CACOT
 
 
 
@@ -6010,18 +1500,18 @@ END SUBROUTINE PRINTX
 !  Exsecant.
 !***********************************************************************************************************************************
 
-      FUNCTION EXSEC (X) RESULT (Y)
+FUNCTION EXSEC (X) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      real(wp), INTENT (IN) :: X
-      real(wp) :: Y
+real(wp), INTENT (IN) :: X
+real(wp) :: Y
 
-      Y = 1.0D0/COS(X) - 1.0D0
+Y = 1.0D0/COS(X) - 1.0D0
 
-      RETURN
+RETURN
 
-      END FUNCTION EXSEC
+END FUNCTION EXSEC
 
 
 
@@ -6033,18 +1523,12 @@ END SUBROUTINE PRINTX
 !  Complex exsecant.
 !***********************************************************************************************************************************
 
-      FUNCTION CEXSEC (Z) RESULT (Y)
+elemental complex(wp) FUNCTION CEXSEC (Z)
 
-      IMPLICIT NONE
+COMPLEX(wp), INTENT(IN) :: Z
+ cexsec = 1.0D0/COS(Z) - 1.0D0
 
-      COMPLEX(wp), INTENT(IN) :: Z
-      COMPLEX(wp) :: Y
-
-      Y = 1.0D0/COS(Z) - 1.0D0
-
-      RETURN
-
-      END FUNCTION CEXSEC
+END FUNCTION CEXSEC
 
 
 
@@ -6056,18 +1540,18 @@ END SUBROUTINE PRINTX
 !  Inverse exsecant.
 !***********************************************************************************************************************************
 
-      FUNCTION AEXSEC (Y) RESULT (X)
+FUNCTION AEXSEC (Y) RESULT (X)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      real(wp), INTENT (IN) :: Y
-      real(wp) :: X
+real(wp), INTENT (IN) :: Y
+real(wp) :: X
 
-      X = ACOS(1.0D0 / (Y + 1.0D0))
+X = ACOS(1.0D0 / (Y + 1.0D0))
 
-      RETURN
+RETURN
 
-      END FUNCTION AEXSEC
+END FUNCTION AEXSEC
 
 
 
@@ -6079,13 +1563,13 @@ END SUBROUTINE PRINTX
 !  Complex inverse exsecant.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CAEXSEC (Y) RESULT (X)
+elemental complex(wp) FUNCTION CAEXSEC (Y) RESULT (X)
 
-      COMPLEX(wp), INTENT (IN) :: Y
+COMPLEX(wp), INTENT (IN) :: Y
 
-      X = CACOS(1.0D0 / (Y + 1.0D0))
+X = ACOS(1.0D0 / (Y + 1.0D0))
 
-      END FUNCTION CAEXSEC
+END FUNCTION CAEXSEC
 
 
 
@@ -6097,18 +1581,18 @@ END SUBROUTINE PRINTX
 !  Versine.
 !***********************************************************************************************************************************
 
-      FUNCTION VERS (X) RESULT (Y)
+FUNCTION VERS (X) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      real(wp), INTENT (IN) :: X
-      real(wp) :: Y
+real(wp), INTENT (IN) :: X
+real(wp) :: Y
 
-      Y = 1.0D0 - COS(X)
+Y = 1.0D0 - COS(X)
 
-      RETURN
+RETURN
 
-      END FUNCTION VERS
+END FUNCTION VERS
 
 
 
@@ -6120,18 +1604,18 @@ END SUBROUTINE PRINTX
 !  Complex versine.
 !***********************************************************************************************************************************
 
-      FUNCTION CVERS (Z) RESULT (Y)
+FUNCTION CVERS (Z) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      COMPLEX(wp), INTENT(IN) :: Z
-      COMPLEX(wp) :: Y
+COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp) :: Y
 
-      Y = 1.0D0 - COS(Z)
+Y = 1.0D0 - COS(Z)
 
-      RETURN
+RETURN
 
-      END FUNCTION CVERS
+END FUNCTION CVERS
 
 
 
@@ -6143,18 +1627,18 @@ END SUBROUTINE PRINTX
 !  Inverse versine.
 !***********************************************************************************************************************************
 
-      FUNCTION AVERS (Y) RESULT (X)
+FUNCTION AVERS (Y) RESULT (X)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      real(wp), INTENT (IN) :: Y
-      real(wp) :: X
+real(wp), INTENT (IN) :: Y
+real(wp) :: X
 
-      X = ACOS(1.0D0 - Y)
+X = ACOS(1.0D0 - Y)
 
-      RETURN
+RETURN
 
-      END FUNCTION AVERS
+END FUNCTION AVERS
 
 
 
@@ -6166,34 +1650,28 @@ END SUBROUTINE PRINTX
 !  Complex inverse versine.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CAVERS (Y) RESULT (X)
+elemental complex(wp) FUNCTION CAVERS (Y) RESULT (X)
 
-      COMPLEX(wp), INTENT (IN) :: Y
-      
-      X = CACOS(1.0D0 - Y)
+COMPLEX(wp), INTENT (IN) :: Y
 
-      END FUNCTION CAVERS
+X = acos(1.0D0 - Y)
 
-
+END FUNCTION CAVERS
 
 
-
-!***********************************************************************************************************************************
+!*************************************************************************************************
 !  COVERS
 !
 !  Coversine.
 !***********************************************************************************************************************************
 
-      elemental real(wp) FUNCTION COVERS (X) RESULT (Y)
+elemental real(wp) FUNCTION COVERS (X) RESULT (Y)
 
-      real(wp), INTENT (IN) :: X
+real(wp), INTENT (IN) :: X
 
-      Y = 1.0D0 - SIN(X)
+Y = 1.0D0 - SIN(X)
 
-      END FUNCTION COVERS
-
-
-
+END FUNCTION COVERS
 
 
 !***********************************************************************************************************************************
@@ -6202,18 +1680,18 @@ END SUBROUTINE PRINTX
 !  Complex coversine.
 !***********************************************************************************************************************************
 
-      FUNCTION CCOVERS (Z) RESULT (Y)
+FUNCTION CCOVERS (Z) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      COMPLEX(wp), INTENT(IN) :: Z
-      COMPLEX(wp) :: Y
+COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp) :: Y
 
-      Y = 1.0D0 - SIN(Z)
+Y = 1.0D0 - SIN(Z)
 
-      RETURN
+RETURN
 
-      END FUNCTION CCOVERS
+END FUNCTION CCOVERS
 
 
 
@@ -6225,18 +1703,18 @@ END SUBROUTINE PRINTX
 !  Inverse coversine.
 !***********************************************************************************************************************************
 
-      FUNCTION ACOVERS (Y) RESULT (X)
+FUNCTION ACOVERS (Y) RESULT (X)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      real(wp), INTENT (IN) :: Y
-      real(wp) :: X
+real(wp), INTENT (IN) :: Y
+real(wp) :: X
 
-      X = ASIN(1.0D0 - Y)
+X = ASIN(1.0D0 - Y)
 
-      RETURN
+RETURN
 
-      END FUNCTION ACOVERS
+END FUNCTION ACOVERS
 
 
 
@@ -6248,13 +1726,13 @@ END SUBROUTINE PRINTX
 !  Complex inverse coversine.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CACOVERS (Y) RESULT (X)
+elemental complex(wp) FUNCTION CACOVERS (Y) RESULT (X)
 
-      COMPLEX(wp), INTENT (IN) :: Y
+COMPLEX(wp), INTENT (IN) :: Y
 
-      X = CASIN(1.0D0 - Y)
+X = ASIN(1.0D0 - Y)
 
-      END FUNCTION CACOVERS
+END FUNCTION CACOVERS
 
 
 !***********************************************************************************************************************************
@@ -6263,13 +1741,13 @@ END SUBROUTINE PRINTX
 !  Haversine.
 !***********************************************************************************************************************************
 
-      elemental real(wp) FUNCTION HAV (X) RESULT (Y)
+elemental real(wp) FUNCTION HAV (X) RESULT (Y)
 
-      real(wp), INTENT (IN) :: X
+real(wp), INTENT (IN) :: X
 
-      Y = (SIN(0.5D0*X))**2
+Y = (SIN(0.5D0*X))**2
 
-      END FUNCTION HAV
+END FUNCTION HAV
 
 
 !***********************************************************************************************************************************
@@ -6278,14 +1756,14 @@ END SUBROUTINE PRINTX
 !  Complex haversine.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CHAV (Z) RESULT (Y)
+elemental complex(wp) FUNCTION CHAV (Z) RESULT (Y)
 
-      COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp), INTENT(IN) :: Z
 
-      Y = (SIN(0.5D0*Z))**2
+Y = (SIN(0.5D0*Z))**2
 
 
-      END FUNCTION CHAV
+END FUNCTION CHAV
 
 
 
@@ -6295,18 +1773,18 @@ END SUBROUTINE PRINTX
 !  Inverse haversine.
 !***********************************************************************************************************************************
 
-      FUNCTION AHAV (Y) RESULT (X)
+FUNCTION AHAV (Y) RESULT (X)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      real(wp), INTENT (IN) :: Y
-      real(wp) :: X
+real(wp), INTENT (IN) :: Y
+real(wp) :: X
 
-      X = 2.0D0*ASIN(SQRT(Y))
+X = 2.0D0*ASIN(SQRT(Y))
 
-      RETURN
+RETURN
 
-      END FUNCTION AHAV
+END FUNCTION AHAV
 
 
 !***********************************************************************************************************************************
@@ -6315,13 +1793,13 @@ END SUBROUTINE PRINTX
 !  Complex inverse haversine.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CAHAV (Y) RESULT (X)
+elemental complex(wp) FUNCTION CAHAV (Y) RESULT (X)
 
-      COMPLEX(wp), INTENT (IN) :: Y
+COMPLEX(wp), INTENT (IN) :: Y
 
-      X = 2.0D0*CASIN(SQRT(Y))
+X = 2.0D0*asin(SQRT(Y))
 
-      END FUNCTION CAHAV
+END FUNCTION CAHAV
 
 
 !***********************************************************************************************************************************
@@ -6330,18 +1808,18 @@ END SUBROUTINE PRINTX
 !  Chord (of Ptolemy).
 !***********************************************************************************************************************************
 
-      FUNCTION CRD (X) RESULT (Y)
+FUNCTION CRD (X) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      real(wp), INTENT (IN) :: X
-      real(wp) :: Y
+real(wp), INTENT (IN) :: X
+real(wp) :: Y
 
-      Y = 2.0D0*SIN(0.5D0*X)
+Y = 2.0D0*SIN(0.5D0*X)
 
-      RETURN
+RETURN
 
-      END FUNCTION CRD
+END FUNCTION CRD
 
 
 
@@ -6353,20 +1831,17 @@ END SUBROUTINE PRINTX
 !  Complex chord (of Ptolemy).
 !***********************************************************************************************************************************
 
-      FUNCTION CCRD (Z) RESULT (Y)
+FUNCTION CCRD (Z) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      COMPLEX(wp), INTENT(IN) :: Z
-      COMPLEX(wp) :: Y
+COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp) :: Y
 
-      Y = 2.0D0*SIN(0.5D0*Z)
-
-      RETURN
-
-      END FUNCTION CCRD
+Y = 2.0D0*SIN(0.5D0*Z)
 
 
+END FUNCTION CCRD
 
 
 
@@ -6376,26 +1851,26 @@ END SUBROUTINE PRINTX
 !  Inverse chord (of Ptolemy).
 !***********************************************************************************************************************************
 
-      elemental real(wp) FUNCTION ACRD (Y) RESULT (X)
+elemental real(wp) FUNCTION ACRD (Y) RESULT (X)
 
-      real(wp), INTENT (IN) :: Y
+real(wp), INTENT (IN) :: Y
 
-      X = 2.0D0*ASIN(0.5D0*Y)
+X = 2.0D0*ASIN(0.5D0*Y)
 
-      END FUNCTION ACRD
+END FUNCTION ACRD
 !***********************************************************************************************************************************
 !  CACRD
 !
 !  Complex inverse chord (of Ptolemy).
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CACRD (Y) RESULT (X)
+elemental complex(wp) FUNCTION CACRD (Y) RESULT (X)
 
-      COMPLEX(wp), INTENT (IN) :: Y
+COMPLEX(wp), INTENT (IN) :: Y
 
-      X = 2.0D0*CASIN(0.5D0*Y)
+X = 2.0D0*asin(0.5D0*Y)
 
-      END FUNCTION CACRD
+END FUNCTION CACRD
 
 !***********************************************************************************************************************************
 !  LOG1P
@@ -6403,200 +1878,14 @@ END SUBROUTINE PRINTX
 !  Compute log(1+x).
 !***********************************************************************************************************************************
 
-      elemental real(wp) FUNCTION LOG1P (X) RESULT (Y)
-      real(wp), INTENT(IN) :: X
-      real(wp) :: Z
+elemental real(wp) FUNCTION LOG1P (X) RESULT (Y)
+real(wp), INTENT(IN) :: X
+real(wp) :: Z
 
-      Z = 1.0D0 + X
-      Y = LOG(Z) - ((Z-1.0D0)-X)/Z                                                  ! cancels errors with IEEE arithmetic
+Z = 1.0D0 + X
+Y = LOG(Z) - ((Z-1.0D0)-X)/Z                                                  ! cancels errors with IEEE arithmetic
 
-      END FUNCTION LOG1P
-
-!***********************************************************************************************************************************
-!  CSINH
-!
-!  Complex hyperbolic sine.
-!***********************************************************************************************************************************
-
-      elemental complex(wp) FUNCTION CSINH (Z) RESULT (Y)
-
-      COMPLEX(wp), INTENT(IN) :: Z
-      real(wp) :: U, V, ZR, ZI
-
-      ZR = DBLE(Z)
-      ZI = AIMAG(Z)
-
-      U = SINH(ZR) * COS(ZI)
-      V = COSH(ZR) * SIN(ZI)
-
-      Y = CMPLX(U,V,8)
-
-      END FUNCTION CSINH
-
-
-
-
-
-!***********************************************************************************************************************************
-!  ASINH
-!
-!  Inverse hyperbolic sine.
-!***********************************************************************************************************************************
-
-      elemental real(wp) FUNCTION ASINH (X) RESULT (Y)
-
-      real(wp), INTENT(IN) :: X
-      real(wp) :: A, S, SEPS, A2
-
-      real(wp), PARAMETER :: LN2 = 0.6931471805599453094172321214581765680755001343602552541206800094933936219696947156059D0
-
-      A = ABS(X)
-      S = SIGN(1._wp,X)
-      SEPS = SQRT(EPSILON(1._wp))
-
-      IF (A .GT. (1.0D0 / SEPS)) THEN
-         Y = S * (LOG (A) + LN2)
-      ELSE IF (A .GT. 2.0D0) THEN
-         Y = S * LOG (2 * A + 1.0D0 / (A + SQRT (A * A + 1.0D0)))
-      ELSE IF (A .GT. SEPS) THEN
-         A2 = A * A
-         Y = S * LOG1P (A + A2 / (1.0D0 + SQRT (1.0D0 + A2)))
-      ELSE
-         Y = X
-      END IF
-
-      END FUNCTION ASINH
-
-
-
-
-
-!***********************************************************************************************************************************
-!  CASINH
-!
-!  Complex inverse hyperbolic sine.
-!***********************************************************************************************************************************
-
-      elemental complex(wp) FUNCTION CASINH (Z) RESULT (Y)
-
-      COMPLEX(wp), INTENT(IN) :: Z
-
-      Y = LOG(Z+SQRT(Z*Z+1.0D0))
-
-      END FUNCTION CASINH
-
-
-
-
-
-!***********************************************************************************************************************************
-!  CCOSH
-!
-!  Complex hyperbolic cosine.
-!***********************************************************************************************************************************
-
-      elemental complex(wp) FUNCTION CCOSH (Z) RESULT (Y)
-
-      IMPLICIT NONE
-
-      COMPLEX(wp), INTENT(IN) :: Z
-      real(wp) :: U, V, ZR, ZI
-
-      ZR = DBLE(Z)
-      ZI = AIMAG(Z)
-
-      U = COSH(ZR) * COS(ZI)
-      V = SINH(ZR) * SIN(ZI)
-
-      Y = CMPLX(U,V,8)
-
-      END FUNCTION CCOSH
-
-
-
-
-!***********************************************************************************************************************************
-!  CACOSH
-!
-!  Complex inverse hyperbolic cosine.
-!***********************************************************************************************************************************
-
-      elemental complex(wp) FUNCTION CACOSH (Z) RESULT (Y)
-
-      COMPLEX(wp), INTENT(IN) :: Z
-
-      Y = LOG(Z+SQRT(Z*Z-1.0D0))
-
-      END FUNCTION CACOSH
-
-
-
-
-
-!***********************************************************************************************************************************
-!  CTANH
-!
-!  Complex hyperbolic tangent.
-!***********************************************************************************************************************************
-
-      elemental complex(wp) FUNCTION CTANH (Z) RESULT (Y)
-
-      COMPLEX(wp), INTENT(IN) :: Z
-
-      Y = CSINH(Z)/CCOSH(Z)
-
-      END FUNCTION CTANH
-
-
-
-
-
-!***********************************************************************************************************************************
-!  ATANH
-!
-!  Inverse hyperbolic tangent.
-!***********************************************************************************************************************************
-
-      elemental real(wp) FUNCTION ATANH (X) RESULT (Y)
-
-      real(wp), INTENT(IN) :: X
-      real(wp) :: A, S
-
-      A = ABS(X)
-      S = SIGN(1.0D0,X)
-
-      IF (A .GE. 1.0D0) THEN
-         Y = 0.0D0
-         error stop ' ATANH Error.'
-      ELSE IF (A .GE. 0.5D0) THEN
-         Y = S * 0.5D0 * LOG1P(2.0D0 * A / (1.0D0 - A))
-      ELSE IF (A .GT. EPSILON(1.0D0)) THEN
-         Y = S * 0.5D0 * LOG1P(2.0D0 * A + 2.0D0 * A * A / (1.0D0 - A))
-      ELSE
-         Y = X
-      END IF
-
-      END FUNCTION ATANH
-
-
-
-
-
-!***********************************************************************************************************************************
-!  CATANH
-!
-!  Complex inverse hyperbolic tangent.
-!***********************************************************************************************************************************
-
-      elemental complex(wp) FUNCTION CATANH (Z) RESULT (Y)
-
-      COMPLEX(wp), INTENT(IN) :: Z
-
-      Y = 0.5D0*LOG((1.0D0+Z)/(1.0D0-Z))
-
-      END FUNCTION CATANH
-
-
+END FUNCTION LOG1P
 
 
 
@@ -6606,20 +1895,13 @@ END SUBROUTINE PRINTX
 !  Hyperbolic secant.
 !***********************************************************************************************************************************
 
-      FUNCTION SECH (X) RESULT (Y)
+elemental real(wp) FUNCTION SECH (X)
 
-      IMPLICIT NONE
+real(wp), INTENT (IN) :: X
 
-      real(wp), INTENT (IN) :: X
-      real(wp) :: Y
+sech = 1.0D0/COSH(X)
 
-      Y = 1.0D0/COSH(X)
-
-      RETURN
-
-      END FUNCTION SECH
-
-
+END FUNCTION SECH
 
 
 
@@ -6629,15 +1911,12 @@ END SUBROUTINE PRINTX
 !  Complex hyperbolic secant.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CSECH (Z) RESULT (Y)
+elemental complex(wp) FUNCTION CSECH (Z) RESULT (Y)
+COMPLEX(wp), INTENT (IN) :: Z
 
-      COMPLEX(wp), INTENT (IN) :: Z
- 
-      Y = 1.0D0/CCOSH(Z)
+Y = 1.0D0/cosh(Z)
 
-      END FUNCTION CSECH
-
-
+END FUNCTION CSECH
 
 
 
@@ -6647,19 +1926,12 @@ END SUBROUTINE PRINTX
 !  Inverse hyperbolic secant.
 !***********************************************************************************************************************************
 
-      FUNCTION ASECH (Y) RESULT (X)
+elemental real(wp) FUNCTION ASECH (Y)
+real(wp), INTENT (IN) :: Y
 
-      IMPLICIT NONE
+asech = ACOSH(1.0D0/Y)
 
-      real(wp), INTENT (IN) :: Y
-      real(wp) :: X
-      real(wp) :: ACOSH
-
-      X = ACOSH(1.0D0/Y)
-
-      RETURN
-
-      END FUNCTION ASECH
+END FUNCTION ASECH
 
 
 
@@ -6671,13 +1943,12 @@ END SUBROUTINE PRINTX
 !  Complex inverse hyperbolic secant.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CASECH (Y) RESULT (X)
+elemental complex(wp) FUNCTION CASECH(Y)
+COMPLEX(wp), INTENT (IN) :: Y
 
-      COMPLEX(wp), INTENT (IN) :: Y
+casech = ACOSH(1.0D0/Y)
 
-      X = CACOSH(1.0D0/Y)
-
-      END FUNCTION CASECH
+END FUNCTION CASECH
 
 !***********************************************************************************************************************************
 !  CSCH
@@ -6685,13 +1956,13 @@ END SUBROUTINE PRINTX
 !  Hyperbolic cosecant.
 !***********************************************************************************************************************************
 
-      elemental real(wp) FUNCTION CSCH (X) RESULT (Y)
+elemental real(wp) FUNCTION CSCH (X) RESULT (Y)
 
-      real(wp), INTENT (IN) :: X
+real(wp), INTENT (IN) :: X
 
-      Y = 1.0D0/SINH(X)
+Y = 1.0D0/SINH(X)
 
-      END FUNCTION CSCH
+END FUNCTION CSCH
 
 !***********************************************************************************************************************************
 !  CCSCH
@@ -6699,13 +1970,13 @@ END SUBROUTINE PRINTX
 !  Complex hyperbolic cosecant.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CCSCH (Z) RESULT (Y)
+elemental complex(wp) FUNCTION CCSCH (Z) RESULT (Y)
 
-      COMPLEX(wp), INTENT (IN) :: Z
+COMPLEX(wp), INTENT (IN) :: Z
 
-      Y = 1.0D0/CSINH(Z)
+Y = 1.0D0 / SINH(Z)
 
-      END FUNCTION CCSCH
+END FUNCTION CCSCH
 
 !***********************************************************************************************************************************
 !  ACSCH
@@ -6713,14 +1984,14 @@ END SUBROUTINE PRINTX
 !  Inverse hyperbolic cosecant.
 !***********************************************************************************************************************************
 
-      elemental real(wp) FUNCTION ACSCH (Y) RESULT (X)
+elemental real(wp) FUNCTION ACSCH (Y) RESULT (X)
 
-      real(wp), INTENT (IN) :: Y
+real(wp), INTENT (IN) :: Y
 
-      X = ASINH(1.0D0/Y)
+X = ASINH(1.0D0/Y)
 
 
-      END FUNCTION ACSCH
+END FUNCTION ACSCH
 
 !***********************************************************************************************************************************
 !  CACSCH
@@ -6728,13 +1999,13 @@ END SUBROUTINE PRINTX
 !  Complex inverse hyperbolic cosecant.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CACSCH (Y) RESULT (X)
+elemental complex(wp) FUNCTION CACSCH (Y) RESULT (X)
 
-      COMPLEX(wp), INTENT (IN) :: Y
+COMPLEX(wp), INTENT (IN) :: Y
 
-      X = CASINH(1.0D0/Y)
+X = ASINH(1.0D0/Y)
 
-      END FUNCTION CACSCH
+END FUNCTION CACSCH
 
 
 
@@ -6746,18 +2017,14 @@ END SUBROUTINE PRINTX
 !  Hyperbolic cotangent.
 !***********************************************************************************************************************************
 
-      FUNCTION COTH (X) RESULT (Y)
+elemental real(wp) FUNCTION COTH (X)
 
-      IMPLICIT NONE
+real(wp), INTENT (IN) :: X
 
-      real(wp), INTENT (IN) :: X
-      real(wp) :: Y
+coth = 1.0D0/TANH(X)
 
-      Y = 1.0D0/TANH(X)
 
-      RETURN
-
-      END FUNCTION COTH
+END FUNCTION COTH
 
 
 
@@ -6769,17 +2036,17 @@ END SUBROUTINE PRINTX
 !  Complex hyperbolic cotangent.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CCOTH (Z)
+elemental complex(wp) FUNCTION CCOTH (Z)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      COMPLEX(wp), INTENT (IN) :: Z
-      COMPLEX(wp) :: Y
+COMPLEX(wp), INTENT (IN) :: Z
+COMPLEX(wp) :: Y
 
-      CCOTH = 1._wp / CTANH(Z)
+ CCOTH = 1._wp / tanh(Z)
 
 
-      END FUNCTION CCOTH
+END FUNCTION CCOTH
 
 
 
@@ -6791,12 +2058,12 @@ END SUBROUTINE PRINTX
 !  Inverse hyperbolic cotangent.
 !***********************************************************************************************************************************
 
-      elemental real(wp) FUNCTION ACOTH (Y)
-      real(wp), INTENT (IN) :: Y
+elemental real(wp) FUNCTION ACOTH (Y)
+real(wp), INTENT (IN) :: Y
 
-      ACOTH = ATANH(1.0D0/Y)
+ACOTH = ATANH(1.0D0/Y)
 
-      END FUNCTION ACOTH
+END FUNCTION ACOTH
 
 
 
@@ -6806,21 +2073,12 @@ END SUBROUTINE PRINTX
 !  Complex inverse hyperbolic cotangent.
 !***********************************************************************************************************************************
 
-      FUNCTION CACOTH (Z) RESULT (Y)
+elemental complex(wp) FUNCTION CACOTH (Z)
+COMPLEX(wp), INTENT(IN) :: Z
 
-      IMPLICIT NONE
+cacoth = 0.5D0*LOG((Z+1.0D0)/(Z-1.0D0))
 
-      COMPLEX(wp), INTENT(IN) :: Z
-      COMPLEX(wp) :: Y
-
-      Y = 0.5D0*LOG((Z+1.0D0)/(Z-1.0D0))
-
-      RETURN
-
-      END FUNCTION CACOTH
-
-
-
+END FUNCTION CACOTH
 
 
 !***********************************************************************************************************************************
@@ -6829,22 +2087,18 @@ END SUBROUTINE PRINTX
 !  Sine cardinal (sinc) function.
 !***********************************************************************************************************************************
 
-      FUNCTION SINC (X) RESULT (Y)
+elemental real(wp) FUNCTION SINC (X) RESULT (Y)
 
-      IMPLICIT NONE
+real(wp), INTENT(IN) :: X
 
-      real(wp), INTENT(IN) :: X
-      real(wp) :: Y
+IF (X .EQ. 0.0D0) THEN
+   Y = 1.0D0
+ELSE
+   Y = SIN(X)/X
+END IF
 
-      IF (X .EQ. 0.0D0) THEN
-         Y = 1.0D0
-      ELSE
-         Y = SIN(X)/X
-      END IF
 
-      RETURN
-
-      END FUNCTION SINC
+END FUNCTION SINC
 
 
 
@@ -6856,22 +2110,22 @@ END SUBROUTINE PRINTX
 !  Complex sine cardinal (sinc) function.
 !***********************************************************************************************************************************
 
-      FUNCTION CSINC (Z) RESULT (Y)
+FUNCTION CSINC (Z) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      COMPLEX(wp), INTENT(IN) :: Z
-      COMPLEX(wp) :: Y
+COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp) :: Y
 
-      IF (Z .EQ. (0.0D0,0.0D0)) THEN
-         Y = (1.0D0,0.0D0)
-      ELSE
-         Y = SIN(Z)/Z
-      END IF
+IF (Z .EQ. (0.0D0,0.0D0)) THEN
+   Y = (1.0D0,0.0D0)
+ELSE
+   Y = SIN(Z)/Z
+END IF
 
-      RETURN
+RETURN
 
-      END FUNCTION CSINC
+END FUNCTION CSINC
 
 
 
@@ -6883,24 +2137,22 @@ END SUBROUTINE PRINTX
 !  Tanc function.
 !***********************************************************************************************************************************
 
-      FUNCTION TANC (X) RESULT (Y)
+FUNCTION TANC (X) RESULT (Y)
 
-      IMPLICIT NONE
+IMPLICIT NONE
 
-      real(wp), INTENT(IN) :: X
-      real(wp) :: Y
+real(wp), INTENT(IN) :: X
+real(wp) :: Y
 
-      IF (X .EQ. 0.0D0) THEN
-         Y = 1.0D0
-      ELSE
-         Y = TAN(X)/X
-      END IF
+IF (X .EQ. 0.0D0) THEN
+   Y = 1.0D0
+ELSE
+   Y = TAN(X)/X
+END IF
 
-      RETURN
+RETURN
 
-      END FUNCTION TANC
-
-
+END FUNCTION TANC
 
 
 
@@ -6910,19 +2162,17 @@ END SUBROUTINE PRINTX
 !  Complex tanc function.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CTANC (Z) RESULT (Y)
+elemental complex(wp) FUNCTION CTANC (Z) RESULT (Y)
 
-      COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp), INTENT(IN) :: Z
 
-      IF (Z .EQ. (0.0D0,0.0D0)) THEN
-         Y = (1.0D0,0.0D0)
-      ELSE
-         Y = CTAN(Z)/Z
-      END IF
+IF (Z .EQ. (0.0D0,0.0D0)) THEN
+   Y = (1.0D0,0.0D0)
+ELSE
+   Y = CTAN(Z)/Z
+END IF
 
-      END FUNCTION CTANC
-
-
+END FUNCTION CTANC
 
 
 
@@ -6932,24 +2182,17 @@ END SUBROUTINE PRINTX
 !  Sinhc function.
 !***********************************************************************************************************************************
 
-      FUNCTION SINHC (X) RESULT (Y)
+elemental real(wp) FUNCTION SINHC (X) RESULT (Y)
 
-      IMPLICIT NONE
+real(wp), INTENT(IN) :: X
 
-      real(wp), INTENT(IN) :: X
-      real(wp) :: Y
+IF (X .EQ. 0.0D0) THEN
+   Y = 1.0D0
+ELSE
+   Y = SINH(X)/X
+END IF
 
-      IF (X .EQ. 0.0D0) THEN
-         Y = 1.0D0
-      ELSE
-         Y = SINH(X)/X
-      END IF
-
-      RETURN
-
-      END FUNCTION SINHC
-
-
+END FUNCTION SINHC
 
 
 
@@ -6959,17 +2202,17 @@ END SUBROUTINE PRINTX
 !  Complex sinhc function.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CSINHC (Z) RESULT (Y)
-      COMPLEX(wp), INTENT(IN) :: Z
+elemental complex(wp) FUNCTION CSINHC (Z) RESULT (Y)
+COMPLEX(wp), INTENT(IN) :: Z
 
 
-      IF (Z .EQ. (0.0D0,0.0D0)) THEN
-         Y = (1.0D0,0.0D0)
-      ELSE
-         Y = CSINH(Z)/Z
-      END IF
+IF (Z .EQ. (0.0D0,0.0D0)) THEN
+   Y = (1.0D0,0.0D0)
+ELSE
+   Y = SINH(Z)/Z
+END IF
 
-      END FUNCTION CSINHC
+END FUNCTION CSINHC
 
 
 
@@ -6981,19 +2224,19 @@ END SUBROUTINE PRINTX
 !  Tanhc function.
 !***********************************************************************************************************************************
 
-      elemental real(wp) FUNCTION TANHC (X) RESULT (Y)
+elemental real(wp) FUNCTION TANHC (X) RESULT (Y)
 
-      real(wp), INTENT(IN) :: X
- 
-
-      IF (X .EQ. 0.0D0) THEN
-         Y = 1.0D0
-      ELSE
-         Y = TANH(X)/X
-      END IF
+real(wp), INTENT(IN) :: X
 
 
-      END FUNCTION TANHC
+IF (X .EQ. 0.0D0) THEN
+   Y = 1.0D0
+ELSE
+   Y = TANH(X)/X
+END IF
+
+
+END FUNCTION TANHC
 
 
 
@@ -7005,257 +2248,17 @@ END SUBROUTINE PRINTX
 !  Complex tanhc function.
 !***********************************************************************************************************************************
 
-      elemental complex(wp) FUNCTION CTANHC (Z) RESULT (Y)
+elemental complex(wp) FUNCTION CTANHC (Z) RESULT (Y)
 
-      COMPLEX(wp), INTENT(IN) :: Z
+COMPLEX(wp), INTENT(IN) :: Z
 
-      IF (Z .EQ. (0.0D0,0.0D0)) THEN
-         Y = (1.0D0,0.0D0)
-      ELSE
-         Y = CTANH(Z)/Z
-      END IF
-      
-      END FUNCTION CTANHC
+IF (Z .EQ. (0.0D0,0.0D0)) THEN
+   Y = (1.0D0,0.0D0)
+ELSE
+   Y = TANH(Z)/Z
+END IF
 
-
-
-
-
-!***********************************************************************************************************************************
-!  DGAMMA
-!
-!  Returns the gamma function of the argument X.  X cannot be 0 or a negative integer.
-!
-!  From http://www.netlib.org/specfun/gamma
-!***********************************************************************************************************************************
-
-      elemental real(wp) FUNCTION DGAMMA(X)
-!----------------------------------------------------------------------
-!
-! This routine calculates the GAMMA function for a real argument X.
-!   Computation is based on an algorithm outlined in reference 1.
-!   The program uses rational functions that approximate the GAMMA
-!   function to at least 20 significant decimal digits.  Coefficients
-!   for the approximation over the interval (1,2) are unpublished.
-!   Those for the approximation for X .GE. 12 are from reference 2.
-!   The accuracy achieved depends on the arithmetic system, the
-!   compiler, the intrinsic functions, and proper selection of the
-!   machine-dependent constants.
-!
-!
-!*******************************************************************
-!*******************************************************************
-!
-! Explanation of machine-dependent constants
-!
-! beta   - radix for the floating-point representation
-! maxexp - the smallest positive power of beta that overflows
-! XBIG   - the largest argument for which GAMMA(X) is representable
-!          in the machine, i.e., the solution to the equation
-!                  GAMMA(XBIG) = beta**maxexp
-! XINF   - the largest machine representable floating-point number;
-!          approximately beta**maxexp
-! EPS    - the smallest positive floating-point number such that
-!          1.0+EPS .GT. 1.0
-! XMININ - the smallest positive floating-point number such that
-!          1/XMININ is machine representable
-!
-!     Approximate values for some important machines are:
-!
-!                            beta       maxexp        XBIG
-!
-! CRAY-1         (S.P.)        2         8191        966.961
-! Cyber 180/855
-!   under NOS    (S.P.)        2         1070        177.803
-! IEEE (IBM/XT,
-!   SUN, etc.)   (S.P.)        2          128        35.040
-! IEEE (IBM/XT,
-!   SUN, etc.)   (D.P.)        2         1024        171.624
-! IBM 3033       (D.P.)       16           63        57.574
-! VAX D-Format   (D.P.)        2          127        34.844
-! VAX G-Format   (D.P.)        2         1023        171.489
-!
-!                            XINF         EPS        XMININ
-!
-! CRAY-1         (S.P.)   5.45E+2465   7.11E-15    1.84E-2466
-! Cyber 180/855
-!   under NOS    (S.P.)   1.26E+322    3.55E-15    3.14E-294
-! IEEE (IBM/XT,
-!   SUN, etc.)   (S.P.)   3.40E+38     1.19E-7     1.18E-38
-! IEEE (IBM/XT,
-!   SUN, etc.)   (D.P.)   1.79D+308    2.22D-16    2.23D-308
-! IBM 3033       (D.P.)   7.23D+75     2.22D-16    1.39D-76
-! VAX D-Format   (D.P.)   1.70D+38     1.39D-17    5.88D-39
-! VAX G-Format   (D.P.)   8.98D+307    1.11D-16    1.12D-308
-!
-!*******************************************************************
-!*******************************************************************
-!
-! Error returns
-!
-!  The program returns the value XINF for singularities or
-!     when overflow would occur.  The computation is believed
-!     to be free of underflow and overflow.
-!
-!
-!  Intrinsic functions required are:
-!
-!     INT, DBLE, EXP, LOG, REAL, SIN
-!
-!
-! References: "An Overview of Software Development for Special
-!              Functions", W. J. Cody, Lecture Notes in Mathematics,
-!              506, Numerical Analysis Dundee, 1975, G. A. Watson
-!              (ed.), Springer Verlag, Berlin, 1976.
-!
-!              Computer Approximations, Hart, Et. Al., Wiley and
-!              sons, New York, 1968.
-!
-!  Latest modification: October 12, 1989
-!
-!  Authors: W. J. Cody and L. Stoltz
-!           Applied Mathematics Division
-!           Argonne National Laboratory
-!           Argonne, IL 60439
-!
-!----------------------------------------------------------------------
-      real(wp), intent(in) :: x
-      INTEGER I,N
-      LOGICAL PARITY
-      real(wp) :: CONV,FACT,RES,SUM,XDEN,XNUM,Y,Y1,YSQ,Z
-!----------------------------------------------------------------------
-!  Mathematical constants
-!----------------------------------------------------------------------
-      real(wp), parameter :: ONE=1._wp, HALF=0.5_wp,TWELVE=12._wp,TWO=2._wp,ZERO=0._wp
-      real(wp), parameter :: PI=4._wp*atan(1._wp),SQRTPI = sqrt(pi)
-!----------------------------------------------------------------------
-!  Machine dependent parameters
-!----------------------------------------------------------------------
-      real(wp), parameter :: XBIG = 171.624D0, XMININ = 2.23D-308, EPS=2.22D-16, XINF=1.79D308
-!----------------------------------------------------------------------
-!  Numerator and denominator coefficients for rational minimax
-!     approximation over (1,2).
-!----------------------------------------------------------------------
-      real(wp), parameter :: P(*) = [-1.71618513886549492533811D+0,2.47656508055759199108314D+1,&
-             -3.79804256470945635097577D+2,6.29331155312818442661052D+2,&
-             8.66966202790413211295064D+2,-3.14512729688483675254357D+4,&
-             -3.61444134186911729807069D+4,6.64561438202405440627855D+4]
-             
-      real(wp), parameter :: Q(*) =[-3.08402300119738975254353D+1,3.15350626979604161529144D+2,&
-            -1.01515636749021914166146D+3,-3.10777167157231109440444D+3,&
-              2.25381184209801510330112D+4,4.75584627752788110767815D+3,&
-            -1.34659959864969306392456D+5,-1.15132259675553483497211D+5]
-!----------------------------------------------------------------------
-!  Coefficients for minimax approximation over (12, INF).
-!----------------------------------------------------------------------
-      real(wp), parameter :: C(*) =[-1.910444077728D-03,8.4171387781295D-04,                   &
-           -5.952379913043012D-04,7.93650793500350248D-04,              &
-           -2.777777777777681622553D-03,8.333333333333333331554247D-02, &
-            5.7083835261D-03]
-!----------------------------------------------------------------------
-!  Statement functions for conversion between integer and float
-!----------------------------------------------------------------------
-      CONV(I) = DBLE(I)
-      PARITY = .FALSE.
-      FACT = ONE
-      N = 0
-      Y = X
-      IF (Y .LE. ZERO) THEN
-!----------------------------------------------------------------------
-!  Argument is negative
-!----------------------------------------------------------------------
-            Y = -X
-            Y1 = AINT(Y)
-            RES = Y - Y1
-            IF (RES .NE. ZERO) THEN
-                  IF (Y1 .NE. AINT(Y1*HALF)*TWO) PARITY = .TRUE.
-                  FACT = -PI / SIN(PI*RES)
-                  Y = Y + ONE
-               ELSE
-                  RES = XINF
-                  GO TO 900
-            END IF
-      END IF
-!----------------------------------------------------------------------
-!  Argument is positive
-!----------------------------------------------------------------------
-      IF (Y .LT. EPS) THEN
-!----------------------------------------------------------------------
-!  Argument .LT. EPS
-!----------------------------------------------------------------------
-            IF (Y .GE. XMININ) THEN
-                  RES = ONE / Y
-               ELSE
-                  RES = XINF
-                  GO TO 900
-            END IF
-         ELSE IF (Y .LT. TWELVE) THEN
-            Y1 = Y
-            IF (Y .LT. ONE) THEN
-!----------------------------------------------------------------------
-!  0.0 .LT. argument .LT. 1.0
-!----------------------------------------------------------------------
-                  Z = Y
-                  Y = Y + ONE
-               ELSE
-!----------------------------------------------------------------------
-!  1.0 .LT. argument .LT. 12.0, reduce argument if necessary
-!----------------------------------------------------------------------
-                  N = INT(Y) - 1
-                  Y = Y - CONV(N)
-                  Z = Y - ONE
-            END IF
-!----------------------------------------------------------------------
-!  Evaluate approximation for 1.0 .LT. argument .LT. 2.0
-!----------------------------------------------------------------------
-            XNUM = ZERO
-            XDEN = ONE
-            DO 260 I = 1, 8
-               XNUM = (XNUM + P(I)) * Z
-               XDEN = XDEN * Z + Q(I)
-  260       CONTINUE
-            RES = XNUM / XDEN + ONE
-            IF (Y1 .LT. Y) THEN
-!----------------------------------------------------------------------
-!  Adjust result for case  0.0 .LT. argument .LT. 1.0
-!----------------------------------------------------------------------
-                  RES = RES / Y1
-               ELSE IF (Y1 .GT. Y) THEN
-!----------------------------------------------------------------------
-!  Adjust result for case  2.0 .LT. argument .LT. 12.0
-!----------------------------------------------------------------------
-                  DO 290 I = 1, N
-                     RES = RES * Y
-                     Y = Y + ONE
-  290             CONTINUE
-            END IF
-         ELSE
-!----------------------------------------------------------------------
-!  Evaluate for argument .GE. 12.0,
-!----------------------------------------------------------------------
-            IF (Y .LE. XBIG) THEN
-                  YSQ = Y * Y
-                  SUM = C(7)
-                  DO 350 I = 1, 6
-                     SUM = SUM / YSQ + C(I)
-  350             CONTINUE
-                  SUM = SUM/Y - Y + SQRTPI
-                  SUM = SUM + (Y-HALF)*LOG(Y)
-                  RES = EXP(SUM)
-               ELSE
-                  RES = XINF
-                  GO TO 900
-            END IF
-      END IF
-!----------------------------------------------------------------------
-!  Final adjustments and return
-!----------------------------------------------------------------------
-      IF (PARITY) RES = -RES
-      IF (FACT .NE. ONE) RES = FACT / RES
-  900 DGAMMA = RES
-! ---------- Last line of GAMMA ----------
-      END function dgamma
-
+END FUNCTION CTANHC
 
 
 
@@ -7528,7 +2531,7 @@ END SUBROUTINE PRINTX
       IF (X .GT. ZERO) PSI = -XINF
   500 RETURN
 !---------- Last card of PSI ----------
-      END
+      END function psi
 
 
 
@@ -7563,7 +2566,7 @@ END SUBROUTINE PRINTX
       END IF
 
       IF (Y .EQ. 0.0D0) THEN                                                        ! if real Z
-         R = CMPLX(DGAMMA(X),0.0D0,8)
+         R = CMPLX(GAMMA(X),0.0D0,8)
          RETURN
       END IF
 
@@ -7599,7 +2602,7 @@ END SUBROUTINE PRINTX
          IF (J .LT. 0) EXIT
       END DO
 
-      R = CMPLX(COS(THETA),SIN(THETA),8) * ABS(DGAMMA(X)) * PROD
+      R = CMPLX(COS(THETA),SIN(THETA),8) * ABS(gamma(X)) * PROD
 
       RETURN
 
@@ -7623,8 +2626,6 @@ END SUBROUTINE PRINTX
 
       R = SQRT((PI/Y)*CSCH(PI*Y)) * CMPLX(SIN(THETA),-COS(THETA),8)
 
-      RETURN
-
       END FUNCTION CGAMMA
 
 
@@ -7641,7 +2642,7 @@ END SUBROUTINE PRINTX
 
       real(wp), INTENT(IN) :: X, Y
  
-      R = DGAMMA(X)*DGAMMA(Y)/DGAMMA(X+Y)
+      R = gamma(X)*gamma(Y)/gamma(X+Y)
 
       END FUNCTION BETA
 
@@ -8607,919 +3608,6 @@ END SUBROUTINE PRINTX
       END FUNCTION KEPLER
 
 
-
-
-
-!***********************************************************************************************************************************
-!  CALJY0
-!
-!  From http://www.netlib.org/specfun
-!***********************************************************************************************************************************
-
-      SUBROUTINE CALJY0(ARG,RESULT,JINT)
-!---------------------------------------------------------------------
-!
-! This packet computes zero-order Bessel functions of the first and
-!   second kind (J0 and Y0), for real arguments X, where 0 < X <= XMAX
-!   for Y0, and |X| <= XMAX for J0.  It contains two function-type
-!   subprograms,  BESJ0  and  BESY0,  and one subroutine-type
-!   subprogram,  CALJY0.  The calling statements for the primary
-!   entries are:
-!
-!           Y = BESJ0(X)
-!   and
-!           Y = BESY0(X),
-!
-!   where the entry points correspond to the functions J0(X) and Y0(X),
-!   respectively.  The routine  CALJY0  is intended for internal packet
-!   use only, all computations within the packet being concentrated in
-!   this one routine.  The function subprograms invoke  CALJY0  with
-!   the statement
-!           CALL CALJY0(ARG,RESULT,JINT),
-!   where the parameter usage is as follows:
-!
-!      Function                  Parameters for CALJY0
-!       call              ARG             RESULT          JINT
-!
-!     BESJ0(ARG)     |ARG| .LE. XMAX       J0(ARG)          0
-!     BESY0(ARG)   0 .LT. ARG .LE. XMAX    Y0(ARG)          1
-!
-!   The main computation uses unpublished minimax rational
-!   approximations for X .LE. 8.0, and an approximation from the
-!   book  Computer Approximations  by Hart, et. al., Wiley and Sons,
-!   New York, 1968, for arguments larger than 8.0   Part of this
-!   transportable packet is patterned after the machine-dependent
-!   FUNPACK program BESJ0(X), but cannot match that version for
-!   efficiency or accuracy.  This version uses rational functions
-!   that are theoretically accurate to at least 18 significant decimal
-!   digits for X <= 8, and at least 18 decimal places for X > 8.  The
-!   accuracy achieved depends on the arithmetic system, the compiler,
-!   the intrinsic functions, and proper selection of the machine-
-!   dependent constants.
-!
-!*******************************************************************
-!
-! Explanation of machine-dependent constants
-!
-!   XINF   = largest positive machine number
-!   XMAX   = largest acceptable argument.  The functions AINT, SIN
-!            and COS must perform properly for  ABS(X) .LE. XMAX.
-!            We recommend that XMAX be a small integer multiple of
-!            sqrt(1/eps), where eps is the smallest positive number
-!            such that  1+eps > 1.
-!   XSMALL = positive argument such that  1.0-(X/2)**2 = 1.0
-!            to machine precision for all  ABS(X) .LE. XSMALL.
-!            We recommend that  XSMALL < sqrt(eps)/beta, where beta
-!            is the floating-point radix (usually 2 or 16).
-!
-!     Approximate values for some important machines are
-!
-!                          eps      XMAX     XSMALL      XINF
-!
-!  CDC 7600      (S.P.)  7.11E-15  1.34E+08  2.98E-08  1.26E+322
-!  CRAY-1        (S.P.)  7.11E-15  1.34E+08  2.98E-08  5.45E+2465
-!  IBM PC (8087) (S.P.)  5.96E-08  8.19E+03  1.22E-04  3.40E+38
-!  IBM PC (8087) (D.P.)  1.11D-16  2.68D+08  3.72D-09  1.79D+308
-!  IBM 195       (D.P.)  2.22D-16  6.87D+09  9.09D-13  7.23D+75
-!  UNIVAC 1108   (D.P.)  1.73D-18  4.30D+09  2.33D-10  8.98D+307
-!  VAX 11/780    (D.P.)  1.39D-17  1.07D+09  9.31D-10  1.70D+38
-!
-!*******************************************************************
-!*******************************************************************
-!
-! Error Returns
-!
-!  The program returns the value zero for  X .GT. XMAX, and returns
-!    -XINF when BESLY0 is called with a negative or zero argument.
-!
-!
-! Intrinsic functions required are:
-!
-!     ABS, AINT, COS, LOG, SIN, SQRT
-!
-!
-!  Latest modification: June 2, 1989
-!
-!  Author: W. J. Cody
-!          Mathematics and Computer Science Division
-!          Argonne National Laboratory
-!          Argonne, IL 60439
-!
-!--------------------------------------------------------------------
-      INTEGER I,JINT
-!S    REAL
-      real(wp)                                                  &
-             ARG,AX,CONS,DOWN,EIGHT,FIVE5,FOUR,ONE,ONEOV8,PI2,PJ0,      &
-             PJ1,PLG,PROD,PY0,PY1,PY2,P0,P1,P17,QJ0,QJ1,QLG,QY0,QY1,    &
-             QY2,Q0,Q1,RESJ,RESULT,R0,R1,SIXTY4,THREE,TWOPI,TWOPI1,     &
-             TWOPI2,TWO56,UP,W,WSQ,XDEN,XINF,XMAX,XNUM,XSMALL,XJ0,      &
-             XJ1,XJ01,XJ02,XJ11,XJ12,XY,XY0,XY01,XY02,XY1,XY11,XY12,    &
-             XY2,XY21,XY22,Z,ZERO,ZSQ
-      DIMENSION PJ0(7),PJ1(8),PLG(4),PY0(6),PY1(7),PY2(8),P0(6),P1(6),  &
-                QJ0(5),QJ1(7),QLG(4),QY0(5),QY1(6),QY2(7),Q0(5),Q1(5)
-!-------------------------------------------------------------------
-!  Mathematical constants
-!    CONS = ln(.5) + Euler's gamma
-!-------------------------------------------------------------------
-!S    DATA ZERO,ONE,THREE,FOUR,EIGHT/0.0E0,1.0E0,3.0E0,4.0E0,8.0E0/,
-!S   1     FIVE5,SIXTY4,ONEOV8,P17/5.5E0,64.0E0,0.125E0,1.716E-1/,
-!S   2     TWO56,CONS/256.0E0,-1.1593151565841244881E-1/,
-!S   3     PI2,TWOPI/6.3661977236758134308E-1,6.2831853071795864769E0/,
-!S   4     TWOPI1,TWOPI2/6.28125E0,1.9353071795864769253E-3/
-      DATA ZERO,ONE,THREE,FOUR,EIGHT/0.0D0,1.0D0,3.0D0,4.0D0,8.0D0/,    &
-           FIVE5,SIXTY4,ONEOV8,P17/5.5D0,64.0D0,0.125D0,1.716D-1/,      &
-           TWO56,CONS/256.0D0,-1.1593151565841244881D-1/,               &
-           PI2,TWOPI/6.3661977236758134308D-1,6.2831853071795864769D0/, &
-           TWOPI1,TWOPI2/6.28125D0,1.9353071795864769253D-3/
-!-------------------------------------------------------------------
-!  Machine-dependent constants
-!-------------------------------------------------------------------
-!S    DATA XMAX/8.19E+03/,XSMALL/1.22E-09/,XINF/1.7E+38/
-      DATA XMAX/1.07D+09/,XSMALL/9.31D-10/,XINF/1.7D+38/
-!-------------------------------------------------------------------
-!  Zeroes of Bessel functions
-!-------------------------------------------------------------------
-!S    DATA XJ0/2.4048255576957727686E+0/,XJ1/5.5200781102863106496E+0/,
-!S   1     XY0/8.9357696627916752158E-1/,XY1/3.9576784193148578684E+0/,
-!S   2     XY2/7.0860510603017726976E+0/,
-!S   3     XJ01/ 616.0E+0/, XJ02/-1.4244423042272313784E-03/,
-!S   4     XJ11/1413.0E+0/, XJ12/ 5.4686028631064959660E-04/,
-!S   5     XY01/ 228.0E+0/, XY02/ 2.9519662791675215849E-03/,
-!S   6     XY11/1013.0E+0/, XY12/ 6.4716931485786837568E-04/,
-!S   7     XY21/1814.0E+0/, XY22/ 1.1356030177269762362E-04/
-      DATA XJ0/2.4048255576957727686D+0/,XJ1/5.5200781102863106496D+0/, &
-           XY0/8.9357696627916752158D-1/,XY1/3.9576784193148578684D+0/, &
-           XY2/7.0860510603017726976D+0/,                               &
-           XJ01/ 616.0D+0/, XJ02/-1.4244423042272313784D-03/,           &
-           XJ11/1413.0D+0/, XJ12/ 5.4686028631064959660D-04/,           &
-           XY01/ 228.0D+0/, XY02/ 2.9519662791675215849D-03/,           &
-           XY11/1013.0D+0/, XY12/ 6.4716931485786837568D-04/,           &
-           XY21/1814.0D+0/, XY22/ 1.1356030177269762362D-04/
-!-------------------------------------------------------------------
-!  Coefficients for rational approximation to ln(x/a)
-!--------------------------------------------------------------------
-!S    DATA PLG/-2.4562334077563243311E+01,2.3642701335621505212E+02,
-!S   1         -5.4989956895857911039E+02,3.5687548468071500413E+02/
-!S    DATA QLG/-3.5553900764052419184E+01,1.9400230218539473193E+02,
-!S   1         -3.3442903192607538956E+02,1.7843774234035750207E+02/
-      DATA PLG/-2.4562334077563243311D+01,2.3642701335621505212D+02,    &
-               -5.4989956895857911039D+02,3.5687548468071500413D+02/
-      DATA QLG/-3.5553900764052419184D+01,1.9400230218539473193D+02,    &
-               -3.3442903192607538956D+02,1.7843774234035750207D+02/
-!-------------------------------------------------------------------
-!  Coefficients for rational approximation of
-!  J0(X) / (X**2 - XJ0**2),  XSMALL  <  |X|  <=  4.0
-!--------------------------------------------------------------------
-!S    DATA PJ0/6.6302997904833794242E+06,-6.2140700423540120665E+08,
-!S   1         2.7282507878605942706E+10,-4.1298668500990866786E+11,
-!S   2        -1.2117036164593528341E-01, 1.0344222815443188943E+02,
-!S   3        -3.6629814655107086448E+04/
-!S    DATA QJ0/4.5612696224219938200E+05, 1.3985097372263433271E+08,
-!S   1         2.6328198300859648632E+10, 2.3883787996332290397E+12,
-!S   2         9.3614022392337710626E+02/
-      DATA PJ0/6.6302997904833794242D+06,-6.2140700423540120665D+08,    &
-               2.7282507878605942706D+10,-4.1298668500990866786D+11,    &
-              -1.2117036164593528341D-01, 1.0344222815443188943D+02,    &
-              -3.6629814655107086448D+04/
-      DATA QJ0/4.5612696224219938200D+05, 1.3985097372263433271D+08,    &
-               2.6328198300859648632D+10, 2.3883787996332290397D+12,    &
-               9.3614022392337710626D+02/
-!-------------------------------------------------------------------
-!  Coefficients for rational approximation of
-!  J0(X) / (X**2 - XJ1**2),  4.0  <  |X|  <=  8.0
-!-------------------------------------------------------------------
-!S    DATA PJ1/4.4176707025325087628E+03, 1.1725046279757103576E+04,
-!S   1         1.0341910641583726701E+04,-7.2879702464464618998E+03,
-!S   2        -1.2254078161378989535E+04,-1.8319397969392084011E+03,
-!S   3         4.8591703355916499363E+01, 7.4321196680624245801E+02/
-!S    DATA QJ1/3.3307310774649071172E+02,-2.9458766545509337327E+03,
-!S   1         1.8680990008359188352E+04,-8.4055062591169562211E+04,
-!S   2         2.4599102262586308984E+05,-3.5783478026152301072E+05,
-!S   3        -2.5258076240801555057E+01/
-      DATA PJ1/4.4176707025325087628D+03, 1.1725046279757103576D+04,    &
-               1.0341910641583726701D+04,-7.2879702464464618998D+03,    &
-              -1.2254078161378989535D+04,-1.8319397969392084011D+03,    &
-               4.8591703355916499363D+01, 7.4321196680624245801D+02/
-      DATA QJ1/3.3307310774649071172D+02,-2.9458766545509337327D+03,    &
-               1.8680990008359188352D+04,-8.4055062591169562211D+04,    &
-               2.4599102262586308984D+05,-3.5783478026152301072D+05,    &
-              -2.5258076240801555057D+01/
-!-------------------------------------------------------------------
-!  Coefficients for rational approximation of
-!    (Y0(X) - 2 LN(X/XY0) J0(X)) / (X**2 - XY0**2),
-!        XSMALL  <  |X|  <=  3.0
-!--------------------------------------------------------------------
-!S    DATA PY0/1.0102532948020907590E+04,-2.1287548474401797963E+06,
-!S   1         2.0422274357376619816E+08,-8.3716255451260504098E+09,
-!S   2         1.0723538782003176831E+11,-1.8402381979244993524E+01/
-!S    DATA QY0/6.6475986689240190091E+02, 2.3889393209447253406E+05,
-!S   1         5.5662956624278251596E+07, 8.1617187777290363573E+09,
-!S   2         5.8873865738997033405E+11/
-      DATA PY0/1.0102532948020907590D+04,-2.1287548474401797963D+06,    &
-               2.0422274357376619816D+08,-8.3716255451260504098D+09,    &
-               1.0723538782003176831D+11,-1.8402381979244993524D+01/
-      DATA QY0/6.6475986689240190091D+02, 2.3889393209447253406D+05,    &
-               5.5662956624278251596D+07, 8.1617187777290363573D+09,    &
-               5.8873865738997033405D+11/
-!-------------------------------------------------------------------
-!  Coefficients for rational approximation of
-!    (Y0(X) - 2 LN(X/XY1) J0(X)) / (X**2 - XY1**2),
-!        3.0  <  |X|  <=  5.5
-!--------------------------------------------------------------------
-!S    DATA PY1/-1.4566865832663635920E+04, 4.6905288611678631510E+06,
-!S   1         -6.9590439394619619534E+08, 4.3600098638603061642E+10,
-!S   2         -5.5107435206722644429E+11,-2.2213976967566192242E+13,
-!S   3          1.7427031242901594547E+01/
-!S    DATA QY1/ 8.3030857612070288823E+02, 4.0669982352539552018E+05,
-!S   1          1.3960202770986831075E+08, 3.4015103849971240096E+10,
-!S   2          5.4266824419412347550E+12, 4.3386146580707264428E+14/
-      DATA PY1/-1.4566865832663635920D+04, 4.6905288611678631510D+06,   &
-               -6.9590439394619619534D+08, 4.3600098638603061642D+10,   &
-               -5.5107435206722644429D+11,-2.2213976967566192242D+13,   &
-                1.7427031242901594547D+01/
-      DATA QY1/ 8.3030857612070288823D+02, 4.0669982352539552018D+05,   &
-                1.3960202770986831075D+08, 3.4015103849971240096D+10,   &
-                5.4266824419412347550D+12, 4.3386146580707264428D+14/
-!-------------------------------------------------------------------
-!  Coefficients for rational approximation of
-!    (Y0(X) - 2 LN(X/XY2) J0(X)) / (X**2 - XY2**2),
-!        5.5  <  |X|  <=  8.0
-!--------------------------------------------------------------------
-!S    DATA PY2/ 2.1363534169313901632E+04,-1.0085539923498211426E+07,
-!S   1          2.1958827170518100757E+09,-1.9363051266772083678E+11,
-!S   2         -1.2829912364088687306E+11, 6.7016641869173237784E+14,
-!S   3         -8.0728726905150210443E+15,-1.7439661319197499338E+01/
-!S    DATA QY2/ 8.7903362168128450017E+02, 5.3924739209768057030E+05,
-!S   1          2.4727219475672302327E+08, 8.6926121104209825246E+10,
-!S   2          2.2598377924042897629E+13, 3.9272425569640309819E+15,
-!S   3          3.4563724628846457519E+17/
-      DATA PY2/ 2.1363534169313901632D+04,-1.0085539923498211426D+07,   &
-                2.1958827170518100757D+09,-1.9363051266772083678D+11,   &
-               -1.2829912364088687306D+11, 6.7016641869173237784D+14,   &
-               -8.0728726905150210443D+15,-1.7439661319197499338D+01/
-      DATA QY2/ 8.7903362168128450017D+02, 5.3924739209768057030D+05,   &
-                2.4727219475672302327D+08, 8.6926121104209825246D+10,   &
-                2.2598377924042897629D+13, 3.9272425569640309819D+15,   &
-                3.4563724628846457519D+17/
-!-------------------------------------------------------------------
-!  Coefficients for Hart,s approximation,  |X| > 8.0
-!-------------------------------------------------------------------
-!S    DATA P0/3.4806486443249270347E+03, 2.1170523380864944322E+04,
-!S   1        4.1345386639580765797E+04, 2.2779090197304684302E+04,
-!S   2        8.8961548424210455236E-01, 1.5376201909008354296E+02/
-!S    DATA Q0/3.5028735138235608207E+03, 2.1215350561880115730E+04,
-!S   1        4.1370412495510416640E+04, 2.2779090197304684318E+04,
-!S   2        1.5711159858080893649E+02/
-!S    DATA P1/-2.2300261666214198472E+01,-1.1183429920482737611E+02,
-!S   1        -1.8591953644342993800E+02,-8.9226600200800094098E+01,
-!S   2        -8.8033303048680751817E-03,-1.2441026745835638459E+00/
-!S    DATA Q1/1.4887231232283756582E+03, 7.2642780169211018836E+03,
-!S   1        1.1951131543434613647E+04, 5.7105024128512061905E+03,
-!S   2        9.0593769594993125859E+01/
-      DATA P0/3.4806486443249270347D+03, 2.1170523380864944322D+04,     &
-              4.1345386639580765797D+04, 2.2779090197304684302D+04,     &
-              8.8961548424210455236D-01, 1.5376201909008354296D+02/
-      DATA Q0/3.5028735138235608207D+03, 2.1215350561880115730D+04,     &
-              4.1370412495510416640D+04, 2.2779090197304684318D+04,     &
-              1.5711159858080893649D+02/
-      DATA P1/-2.2300261666214198472D+01,-1.1183429920482737611D+02,    &
-              -1.8591953644342993800D+02,-8.9226600200800094098D+01,    &
-              -8.8033303048680751817D-03,-1.2441026745835638459D+00/
-      DATA Q1/1.4887231232283756582D+03, 7.2642780169211018836D+03,     &
-              1.1951131543434613647D+04, 5.7105024128512061905D+03,     &
-              9.0593769594993125859D+01/
-!-------------------------------------------------------------------
-!  Check for error conditions
-!-------------------------------------------------------------------
-      AX = ABS(ARG)
-      IF ((JINT .EQ. 1) .AND. (ARG .LE. ZERO)) THEN
-            RESULT = -XINF
-            GO TO 2000
-         ELSE IF (AX .GT. XMAX) THEN
-            RESULT = ZERO
-            GO TO 2000
-      END IF
-      IF (AX .GT. EIGHT) GO TO 800
-      IF (AX .LE. XSMALL) THEN
-         IF (JINT .EQ. 0) THEN
-               RESULT = ONE
-            ELSE
-               RESULT = PI2 * (LOG(AX) + CONS)
-         END IF
-         GO TO 2000
-      END IF
-!-------------------------------------------------------------------
-!  Calculate J0 for appropriate interval, preserving
-!     accuracy near the zero of J0
-!-------------------------------------------------------------------
-      ZSQ = AX * AX
-      IF (AX .LE. FOUR) THEN
-            XNUM = (PJ0(5) * ZSQ + PJ0(6)) * ZSQ + PJ0(7)
-            XDEN = ZSQ + QJ0(5)
-            DO 50 I = 1, 4
-               XNUM = XNUM * ZSQ + PJ0(I)
-               XDEN = XDEN * ZSQ + QJ0(I)
-   50       CONTINUE
-            PROD = ((AX - XJ01/TWO56) - XJ02) * (AX + XJ0)
-         ELSE
-            WSQ = ONE - ZSQ / SIXTY4
-            XNUM = PJ1(7) * WSQ + PJ1(8)
-            XDEN = WSQ + QJ1(7)
-            DO 220 I = 1, 6
-               XNUM = XNUM * WSQ + PJ1(I)
-               XDEN = XDEN * WSQ + QJ1(I)
-  220       CONTINUE
-            PROD = (AX + XJ1) * ((AX - XJ11/TWO56) - XJ12)
-      END IF
-      RESULT = PROD * XNUM / XDEN
-      IF (JINT .EQ. 0) GO TO 2000
-!-------------------------------------------------------------------
-!  Calculate Y0.  First find  RESJ = pi/2 ln(x/xn) J0(x),
-!    where xn is a zero of Y0
-!-------------------------------------------------------------------
-      IF (AX .LE. THREE) THEN
-            UP = (AX-XY01/TWO56)-XY02
-            XY = XY0
-         ELSE IF (AX .LE. FIVE5) THEN
-            UP = (AX-XY11/TWO56)-XY12
-            XY = XY1
-         ELSE
-            UP = (AX-XY21/TWO56)-XY22
-            XY = XY2
-      END IF
-      DOWN = AX + XY
-      IF (ABS(UP) .LT. P17*DOWN) THEN
-            W = UP/DOWN
-            WSQ = W*W
-            XNUM = PLG(1)
-            XDEN = WSQ + QLG(1)
-            DO 320 I = 2, 4
-               XNUM = XNUM*WSQ + PLG(I)
-               XDEN = XDEN*WSQ + QLG(I)
-  320       CONTINUE
-            RESJ = PI2 * RESULT * W * XNUM/XDEN
-         ELSE
-            RESJ = PI2 * RESULT * LOG(AX/XY)
-      END IF
-!-------------------------------------------------------------------
-!  Now calculate Y0 for appropriate interval, preserving
-!     accuracy near the zero of Y0
-!-------------------------------------------------------------------
-      IF (AX .LE. THREE) THEN
-            XNUM = PY0(6) * ZSQ + PY0(1)
-            XDEN = ZSQ + QY0(1)
-            DO 340 I = 2, 5
-               XNUM = XNUM * ZSQ + PY0(I)
-               XDEN = XDEN * ZSQ + QY0(I)
-  340       CONTINUE
-         ELSE IF (AX .LE. FIVE5) THEN
-            XNUM = PY1(7) * ZSQ + PY1(1)
-            XDEN = ZSQ + QY1(1)
-            DO 360 I = 2, 6
-               XNUM = XNUM * ZSQ + PY1(I)
-               XDEN = XDEN * ZSQ + QY1(I)
-  360       CONTINUE
-         ELSE
-            XNUM = PY2(8) * ZSQ + PY2(1)
-            XDEN = ZSQ + QY2(1)
-            DO 380 I = 2, 7
-               XNUM = XNUM * ZSQ + PY2(I)
-               XDEN = XDEN * ZSQ + QY2(I)
-  380       CONTINUE
-      END IF
-      RESULT = RESJ + UP * DOWN * XNUM / XDEN
-      GO TO 2000
-!-------------------------------------------------------------------
-!  Calculate J0 or Y0 for |ARG|  >  8.0
-!-------------------------------------------------------------------
-  800 Z = EIGHT / AX
-      W = AX / TWOPI
-      W = AINT(W) + ONEOV8
-      W = (AX - W * TWOPI1) - W * TWOPI2
-      ZSQ = Z * Z
-      XNUM = P0(5) * ZSQ + P0(6)
-      XDEN = ZSQ + Q0(5)
-      UP = P1(5) * ZSQ + P1(6)
-      DOWN = ZSQ + Q1(5)
-      DO 850 I = 1, 4
-         XNUM = XNUM * ZSQ + P0(I)
-         XDEN = XDEN * ZSQ + Q0(I)
-         UP = UP * ZSQ + P1(I)
-         DOWN = DOWN * ZSQ + Q1(I)
-  850 CONTINUE
-      R0 = XNUM / XDEN
-      R1 = UP / DOWN
-      IF (JINT .EQ. 0) THEN
-            RESULT = SQRT(PI2/AX) * (R0*COS(W) - Z*R1*SIN(W))
-         ELSE
-            RESULT = SQRT(PI2/AX) * (R0*SIN(W) + Z*R1*COS(W))
-      END IF
- 2000 RETURN
-!---------- Last line of CALJY0 ----------
-      END
-
-
-
-
-
-!***********************************************************************************************************************************
-!  BESJ0
-!***********************************************************************************************************************************
-
-      real(wp) FUNCTION BESJ0(X)
-!S    REAL FUNCTION BESJ0(X)
-!--------------------------------------------------------------------
-!
-! This subprogram computes approximate values for Bessel functions
-!   of the first kind of order zero for arguments  |X| <= XMAX
-!   (see comments heading CALJY0).
-!
-!--------------------------------------------------------------------
-      INTEGER JINT
-!S    REAL  X, RESULT
-      real(wp)  X, RESULT
-!--------------------------------------------------------------------
-      JINT=0
-      CALL CALJY0(X,RESULT,JINT)
-      BESJ0 = RESULT
-      RETURN
-!---------- Last line of BESJ0 ----------
-      END
-
-
-
-
-
-!***********************************************************************************************************************************
-!  BESY0
-!***********************************************************************************************************************************
-
-      real(wp) FUNCTION BESY0(X)
-!S    REAL FUNCTION BESY0(X)
-!--------------------------------------------------------------------
-!
-! This subprogram computes approximate values for Bessel functions
-!   of the second kind of order zero for arguments 0 < X <= XMAX
-!   (see comments heading CALJY0).
-!
-!--------------------------------------------------------------------
-      INTEGER JINT
-!S    REAL  X, RESULT
-      real(wp)  X, RESULT
-!--------------------------------------------------------------------
-      JINT=1
-      CALL CALJY0(X,RESULT,JINT)
-      BESY0 = RESULT
-      RETURN
-!---------- Last line of BESY0 ----------
-      END
-
-
-
-
-
-!***********************************************************************************************************************************
-!  CALJY1
-!
-!  From http://www.netlib.org/specfun
-!***********************************************************************************************************************************
-
-      SUBROUTINE CALJY1(ARG,RESULT,JINT)
-!---------------------------------------------------------------------
-!
-! This packet computes first-order Bessel functions of the first and
-!   second kind (J1 and Y1), for real arguments X, where 0 < X <= XMAX
-!   for Y1, and |X| <= XMAX for J1.  It contains two function-type
-!   subprograms,  BESJ1  and  BESY1,  and one subroutine-type
-!   subprogram,  CALJY1.  The calling statements for the primary
-!   entries are:
-!
-!           Y = BESJ1(X)
-!   and
-!           Y = BESY1(X),
-!
-!   where the entry points correspond to the functions J1(X) and Y1(X),
-!   respectively.  The routine  CALJY1  is intended for internal packet
-!   use only, all computations within the packet being concentrated in
-!   this one routine.  The function subprograms invoke  CALJY1  with
-!   the statement
-!           CALL CALJY1(ARG,RESULT,JINT),
-!   where the parameter usage is as follows:
-!
-!      Function                  Parameters for CALJY1
-!       call              ARG             RESULT          JINT
-!
-!     BESJ1(ARG)     |ARG| .LE. XMAX       J1(ARG)          0
-!     BESY1(ARG)   0 .LT. ARG .LE. XMAX    Y1(ARG)          1
-!
-!   The main computation uses unpublished minimax rational
-!   approximations for X .LE. 8.0, and an approximation from the
-!   book  Computer Approximations  by Hart, et. al., Wiley and Sons,
-!   New York, 1968, for arguments larger than 8.0   Part of this
-!   transportable packet is patterned after the machine-dependent
-!   FUNPACK program BESJ1(X), but cannot match that version for
-!   efficiency or accuracy.  This version uses rational functions
-!   that are theoretically accurate to at least 18 significant decimal
-!   digits for X <= 8, and at least 18 decimal places for X > 8.  The
-!   accuracy achieved depends on the arithmetic system, the compiler,
-!   the intrinsic functions, and proper selection of the machine-
-!   dependent constants.
-!
-!*******************************************************************
-!
-! Explanation of machine-dependent constants
-!
-!   XINF   = largest positive machine number
-!   XMAX   = largest acceptable argument.  The functions AINT, SIN
-!            and COS must perform properly for  ABS(X) .LE. XMAX.
-!            We recommend that XMAX be a small integer multiple of
-!            sqrt(1/eps), where eps is the smallest positive number
-!            such that  1+eps > 1.
-!   XSMALL = positive argument such that  1.0-(1/2)(X/2)**2 = 1.0
-!            to machine precision for all  ABS(X) .LE. XSMALL.
-!            We recommend that  XSMALL < sqrt(eps)/beta, where beta
-!            is the floating-point radix (usually 2 or 16).
-!
-!     Approximate values for some important machines are
-!
-!                          eps      XMAX     XSMALL      XINF
-!
-!  CDC 7600      (S.P.)  7.11E-15  1.34E+08  2.98E-08  1.26E+322
-!  CRAY-1        (S.P.)  7.11E-15  1.34E+08  2.98E-08  5.45E+2465
-!  IBM PC (8087) (S.P.)  5.96E-08  8.19E+03  1.22E-04  3.40E+38
-!  IBM PC (8087) (D.P.)  1.11D-16  2.68D+08  3.72D-09  1.79D+308
-!  IBM 195       (D.P.)  2.22D-16  6.87D+09  9.09D-13  7.23D+75
-!  UNIVAC 1108   (D.P.)  1.73D-18  4.30D+09  2.33D-10  8.98D+307
-!  VAX 11/780    (D.P.)  1.39D-17  1.07D+09  9.31D-10  1.70D+38
-!
-!*******************************************************************
-!*******************************************************************
-!
-! Error Returns
-!
-!  The program returns the value zero for  X .GT. XMAX, and returns
-!    -XINF when BESLY1 is called with a negative or zero argument.
-!
-!
-! Intrinsic functions required are:
-!
-!     ABS, AINT, COS, LOG, SIN, SQRT
-!
-!
-!  Author: W. J. Cody
-!          Mathematics and Computer Science Division
-!          Argonne National Laboratory
-!          Argonne, IL 60439
-!
-!  Latest modification: November 10, 1987
-!
-!--------------------------------------------------------------------
-      INTEGER I,JINT
-      DIMENSION PJ0(7),PJ1(8),PLG(4),PY0(7),PY1(9),P0(6),P1(6),         &
-                QJ0(5),QJ1(7),QLG(4),QY0(6),QY1(8),Q0(6),Q1(6)
-!S    REAL
-      real(wp)                                                  &
-         ARG,AX,DOWN,EIGHT,FOUR,HALF,PI2,PJ0,PJ1,PLG,PROD,PY0,          &
-         PY1,P0,P1,P17,QJ0,QJ1,QLG,QY0,QY1,Q0,Q1,RESJ,RESULT,           &
-         RTPI2,R0,R1,THROV8,TWOPI,TWOPI1,TWOPI2,TWO56,UP,W,WSQ,         &
-         XDEN,XINF,XMAX,XNUM,XSMALL,XJ0,XJ1,XJ01,XJ02,XJ11,XJ12,        &
-         XY,XY0,XY01,XY02,XY1,XY11,XY12,Z,ZERO,ZSQ
-!-------------------------------------------------------------------
-!  Mathematical constants
-!-------------------------------------------------------------------
-!S    DATA EIGHT/8.0E0/,
-!S   1     FOUR/4.0E0/,HALF/0.5E0/,THROV8/0.375E0/,
-!S   2     PI2/6.3661977236758134308E-1/,P17/1.716E-1/
-!S   3     TWOPI/6.2831853071795864769E+0/,ZERO/0.0E0/,
-!S   4     TWOPI1/6.28125E0/,TWOPI2/1.9353071795864769253E-03/
-!S   5     TWO56/256.0E+0/,RTPI2/7.9788456080286535588E-1/
-      DATA EIGHT/8.0D0/,                                                &
-           FOUR/4.0D0/,HALF/0.5D0/,THROV8/0.375D0/,                     &
-           PI2/6.3661977236758134308D-1/,P17/1.716D-1/                  &
-           TWOPI/6.2831853071795864769D+0/,ZERO/0.0D0/,                 &
-           TWOPI1/6.28125D0/,TWOPI2/1.9353071795864769253D-03/          &
-           TWO56/256.0D+0/,RTPI2/7.9788456080286535588D-1/
-!-------------------------------------------------------------------
-!  Machine-dependent constants
-!-------------------------------------------------------------------
-!S    DATA XMAX/8.19E+03/,XSMALL/1.22E-09/,XINF/1.7E+38/
-      DATA XMAX/1.07D+09/,XSMALL/9.31D-10/,XINF/1.7D+38/
-!-------------------------------------------------------------------
-!  Zeroes of Bessel functions
-!-------------------------------------------------------------------
-!S    DATA XJ0/3.8317059702075123156E+0/,XJ1/7.0155866698156187535E+0/,
-!S   1     XY0/2.1971413260310170351E+0/,XY1/5.4296810407941351328E+0/,
-!S   2     XJ01/ 981.0E+0/, XJ02/-3.2527979248768438556E-04/,
-!S   3     XJ11/1796.0E+0/, XJ12/-3.8330184381246462950E-05/,
-!S   4     XY01/ 562.0E+0/, XY02/ 1.8288260310170351490E-03/,
-!S   5     XY11/1390.0E+0/, XY12/-6.4592058648672279948E-06/
-      DATA XJ0/3.8317059702075123156D+0/,XJ1/7.0155866698156187535D+0/, &
-           XY0/2.1971413260310170351D+0/,XY1/5.4296810407941351328D+0/, &
-           XJ01/ 981.0D+0/, XJ02/-3.2527979248768438556D-04/,           &
-           XJ11/1796.0D+0/, XJ12/-3.8330184381246462950D-05/,           &
-           XY01/ 562.0D+0/, XY02/ 1.8288260310170351490D-03/,           &
-           XY11/1390.0D+0/, XY12/-6.4592058648672279948D-06/
-!-------------------------------------------------------------------
-!  Coefficients for rational approximation to ln(x/a)
-!--------------------------------------------------------------------
-!S    DATA PLG/-2.4562334077563243311E+01,2.3642701335621505212E+02,
-!S   1         -5.4989956895857911039E+02,3.5687548468071500413E+02/
-!S    DATA QLG/-3.5553900764052419184E+01,1.9400230218539473193E+02,
-!S   1         -3.3442903192607538956E+02,1.7843774234035750207E+02/
-      DATA PLG/-2.4562334077563243311D+01,2.3642701335621505212D+02,    &
-               -5.4989956895857911039D+02,3.5687548468071500413D+02/
-      DATA QLG/-3.5553900764052419184D+01,1.9400230218539473193D+02,    &
-               -3.3442903192607538956D+02,1.7843774234035750207D+02/
-!-------------------------------------------------------------------
-!  Coefficients for rational approximation of
-!  J1(X) / (X * (X**2 - XJ0**2)),  XSMALL  <  |X|  <=  4.0
-!--------------------------------------------------------------------
-!S    DATA PJ0/9.8062904098958257677E+05,-1.1548696764841276794E+08,
-!S   1       6.6781041261492395835E+09,-1.4258509801366645672E+11,
-!S   2      -4.4615792982775076130E+03, 1.0650724020080236441E+01,
-!S   3      -1.0767857011487300348E-02/
-!S    DATA QJ0/5.9117614494174794095E+05, 2.0228375140097033958E+08,
-!S   1       4.2091902282580133541E+10, 4.1868604460820175290E+12,
-!S   2       1.0742272239517380498E+03/
-      DATA PJ0/9.8062904098958257677D+05,-1.1548696764841276794D+08,    &
-             6.6781041261492395835D+09,-1.4258509801366645672D+11,      &
-            -4.4615792982775076130D+03, 1.0650724020080236441D+01,      &
-            -1.0767857011487300348D-02/
-      DATA QJ0/5.9117614494174794095D+05, 2.0228375140097033958D+08,    &
-             4.2091902282580133541D+10, 4.1868604460820175290D+12,      &
-             1.0742272239517380498D+03/
-!-------------------------------------------------------------------
-!  Coefficients for rational approximation of
-!  J1(X) / (X * (X**2 - XJ1**2)),  4.0  <  |X|  <=  8.0
-!-------------------------------------------------------------------
-!S    DATA PJ1/4.6179191852758252280E+00,-7.1329006872560947377E+03,
-!S   1       4.5039658105749078904E+06,-1.4437717718363239107E+09,
-!S   2       2.3569285397217157313E+11,-1.6324168293282543629E+13,
-!S   3       1.1357022719979468624E+14, 1.0051899717115285432E+15/
-!S    DATA QJ1/1.1267125065029138050E+06, 6.4872502899596389593E+08,
-!S   1       2.7622777286244082666E+11, 8.4899346165481429307E+13,
-!S   2       1.7128800897135812012E+16, 1.7253905888447681194E+18,
-!S   3       1.3886978985861357615E+03/
-      DATA PJ1/4.6179191852758252280D+00,-7.1329006872560947377D+03,    &
-             4.5039658105749078904D+06,-1.4437717718363239107D+09,      &
-             2.3569285397217157313D+11,-1.6324168293282543629D+13,      &
-             1.1357022719979468624D+14, 1.0051899717115285432D+15/
-      DATA QJ1/1.1267125065029138050D+06, 6.4872502899596389593D+08,    &
-             2.7622777286244082666D+11, 8.4899346165481429307D+13,      &
-             1.7128800897135812012D+16, 1.7253905888447681194D+18,      &
-             1.3886978985861357615D+03/
-!-------------------------------------------------------------------
-!  Coefficients for rational approximation of
-!    (Y1(X) - 2 LN(X/XY0) J1(X)) / (X**2 - XY0**2),
-!        XSMALL  <  |X|  <=  4.0
-!--------------------------------------------------------------------
-!S    DATA PY0/2.2157953222280260820E+05,-5.9157479997408395984E+07,
-!S   1         7.2144548214502560419E+09,-3.7595974497819597599E+11,
-!S   2         5.4708611716525426053E+12, 4.0535726612579544093E+13,
-!S   3        -3.1714424660046133456E+02/
-!S    DATA QY0/8.2079908168393867438E+02, 3.8136470753052572164E+05,
-!S   1         1.2250435122182963220E+08, 2.7800352738690585613E+10,
-!S   2         4.1272286200406461981E+12, 3.0737873921079286084E+14/
-      DATA PY0/2.2157953222280260820D+05,-5.9157479997408395984D+07,    &
-               7.2144548214502560419D+09,-3.7595974497819597599D+11,    &
-               5.4708611716525426053D+12, 4.0535726612579544093D+13,    &
-              -3.1714424660046133456D+02/
-      DATA QY0/8.2079908168393867438D+02, 3.8136470753052572164D+05,    &
-               1.2250435122182963220D+08, 2.7800352738690585613D+10,    &
-               4.1272286200406461981D+12, 3.0737873921079286084D+14/
-!--------------------------------------------------------------------
-!  Coefficients for rational approximation of
-!    (Y1(X) - 2 LN(X/XY1) J1(X)) / (X**2 - XY1**2),
-!        4.0  <  |X|  <=  8.0
-!--------------------------------------------------------------------
-!S    DATA PY1/ 1.9153806858264202986E+06,-1.1957961912070617006E+09,
-!S   1          3.7453673962438488783E+11,-5.9530713129741981618E+13,
-!S   2          4.0686275289804744814E+15,-2.3638408497043134724E+16,
-!S   3         -5.6808094574724204577E+18, 1.1514276357909013326E+19,
-!S   4         -1.2337180442012953128E+03/
-!S    DATA QY1/ 1.2855164849321609336E+03, 1.0453748201934079734E+06,
-!S   1          6.3550318087088919566E+08, 3.0221766852960403645E+11,
-!S   2          1.1187010065856971027E+14, 3.0837179548112881950E+16,
-!S   3          5.6968198822857178911E+18, 5.3321844313316185697E+20/
-      DATA PY1/ 1.9153806858264202986D+06,-1.1957961912070617006D+09,   &
-                3.7453673962438488783D+11,-5.9530713129741981618D+13,   &
-                4.0686275289804744814D+15,-2.3638408497043134724D+16,   &
-               -5.6808094574724204577D+18, 1.1514276357909013326D+19,   &
-               -1.2337180442012953128D+03/
-      DATA QY1/ 1.2855164849321609336D+03, 1.0453748201934079734D+06,   &
-                6.3550318087088919566D+08, 3.0221766852960403645D+11,   &
-                1.1187010065856971027D+14, 3.0837179548112881950D+16,   &
-                5.6968198822857178911D+18, 5.3321844313316185697D+20/
-!-------------------------------------------------------------------
-!  Coefficients for Hart,s approximation,  |X| > 8.0
-!-------------------------------------------------------------------
-!S    DATA P0/-1.0982405543459346727E+05,-1.5235293511811373833E+06,
-!S   1         -6.6033732483649391093E+06,-9.9422465050776411957E+06,
-!S   2         -4.4357578167941278571E+06,-1.6116166443246101165E+03/
-!S    DATA Q0/-1.0726385991103820119E+05,-1.5118095066341608816E+06,
-!S   1         -6.5853394797230870728E+06,-9.9341243899345856590E+06,
-!S   2         -4.4357578167941278568E+06,-1.4550094401904961825E+03/
-!S    DATA P1/ 1.7063754290207680021E+03, 1.8494262873223866797E+04,
-!S   1          6.6178836581270835179E+04, 8.5145160675335701966E+04,
-!S   2          3.3220913409857223519E+04, 3.5265133846636032186E+01/
-!S    DATA Q1/ 3.7890229745772202641E+04, 4.0029443582266975117E+05,
-!S   1          1.4194606696037208929E+06, 1.8194580422439972989E+06,
-!S   2          7.0871281941028743574E+05, 8.6383677696049909675E+02/
-      DATA P0/-1.0982405543459346727D+05,-1.5235293511811373833D+06,    &
-               -6.6033732483649391093D+06,-9.9422465050776411957D+06,   &
-               -4.4357578167941278571D+06,-1.6116166443246101165D+03/
-      DATA Q0/-1.0726385991103820119D+05,-1.5118095066341608816D+06,    &
-               -6.5853394797230870728D+06,-9.9341243899345856590D+06,   &
-               -4.4357578167941278568D+06,-1.4550094401904961825D+03/
-      DATA P1/ 1.7063754290207680021D+03, 1.8494262873223866797D+04,    &
-                6.6178836581270835179D+04, 8.5145160675335701966D+04,   &
-                3.3220913409857223519D+04, 3.5265133846636032186D+01/
-      DATA Q1/ 3.7890229745772202641D+04, 4.0029443582266975117D+05,    &
-                1.4194606696037208929D+06, 1.8194580422439972989D+06,   &
-                7.0871281941028743574D+05, 8.6383677696049909675D+02/
-!-------------------------------------------------------------------
-!  Check for error conditions
-!-------------------------------------------------------------------
-      AX = ABS(ARG)
-      IF ((JINT .EQ. 1) .AND. ((ARG .LE. ZERO) .OR.                     &
-         ((ARG .LT. HALF) .AND. (AX*XINF .LT. PI2)))) THEN
-            RESULT = -XINF
-            GO TO 2000
-         ELSE IF (AX .GT. XMAX) THEN
-            RESULT = ZERO
-            GO TO 2000
-      END IF
-      IF (AX .GT. EIGHT) THEN
-            GO TO 800
-         ELSE IF (AX .LE. XSMALL) THEN
-            IF (JINT .EQ. 0) THEN
-                  RESULT = ARG * HALF
-               ELSE
-                  RESULT = -PI2 / AX
-            END IF
-            GO TO 2000
-      END IF
-!-------------------------------------------------------------------
-!  Calculate J1 for appropriate interval, preserving
-!     accuracy near the zero of J1
-!-------------------------------------------------------------------
-      ZSQ = AX * AX
-      IF (AX .LE. FOUR) THEN
-            XNUM = (PJ0(7) * ZSQ + PJ0(6)) * ZSQ + PJ0(5)
-            XDEN = ZSQ + QJ0(5)
-            DO 50 I = 1, 4
-               XNUM = XNUM * ZSQ + PJ0(I)
-               XDEN = XDEN * ZSQ + QJ0(I)
-   50       CONTINUE
-            PROD = ARG * ((AX - XJ01/TWO56) - XJ02) * (AX + XJ0)
-         ELSE
-            XNUM = PJ1(1)
-            XDEN = (ZSQ + QJ1(7)) * ZSQ + QJ1(1)
-            DO 220 I = 2, 6
-               XNUM = XNUM * ZSQ + PJ1(I)
-               XDEN = XDEN * ZSQ + QJ1(I)
-  220       CONTINUE
-            XNUM = XNUM * (AX - EIGHT) * (AX + EIGHT) + PJ1(7)
-            XNUM = XNUM * (AX - FOUR) * (AX + FOUR) + PJ1(8)
-            PROD = ARG * ((AX - XJ11/TWO56) - XJ12) * (AX + XJ1)
-      END IF
-      RESULT = PROD * (XNUM / XDEN)
-      IF (JINT .EQ. 0) GO TO 2000
-!-------------------------------------------------------------------
-!  Calculate Y1.  First find  RESJ = pi/2 ln(x/xn) J1(x),
-!    where xn is a zero of Y1
-!-------------------------------------------------------------------
-      IF (AX .LE. FOUR) THEN
-            UP = (AX-XY01/TWO56)-XY02
-            XY = XY0
-         ELSE
-            UP = (AX-XY11/TWO56)-XY12
-            XY = XY1
-      END IF
-      DOWN = AX + XY
-      IF (ABS(UP) .LT. P17*DOWN) THEN
-            W = UP/DOWN
-            WSQ = W*W
-            XNUM = PLG(1)
-            XDEN = WSQ + QLG(1)
-            DO 320 I = 2, 4
-               XNUM = XNUM*WSQ + PLG(I)
-               XDEN = XDEN*WSQ + QLG(I)
-  320       CONTINUE
-            RESJ = PI2 * RESULT * W * XNUM/XDEN
-         ELSE
-            RESJ = PI2 * RESULT * LOG(AX/XY)
-      END IF
-!-------------------------------------------------------------------
-!  Now calculate Y1 for appropriate interval, preserving
-!     accuracy near the zero of Y1
-!-------------------------------------------------------------------
-      IF (AX .LE. FOUR) THEN
-            XNUM = PY0(7) * ZSQ + PY0(1)
-            XDEN = ZSQ + QY0(1)
-            DO 340 I = 2, 6
-               XNUM = XNUM * ZSQ + PY0(I)
-               XDEN = XDEN * ZSQ + QY0(I)
-  340       CONTINUE
-         ELSE
-            XNUM = PY1(9) * ZSQ + PY1(1)
-            XDEN = ZSQ + QY1(1)
-            DO 360 I = 2, 8
-               XNUM = XNUM * ZSQ + PY1(I)
-               XDEN = XDEN * ZSQ + QY1(I)
-  360       CONTINUE
-      END IF
-      RESULT = RESJ + (UP*DOWN/AX) * XNUM / XDEN
-      GO TO 2000
-!-------------------------------------------------------------------
-!  Calculate J1 or Y1 for |ARG|  >  8.0
-!-------------------------------------------------------------------
-  800 Z = EIGHT / AX
-      W = AINT(AX/TWOPI) + THROV8
-      W = (AX - W * TWOPI1) - W * TWOPI2
-      ZSQ = Z * Z
-      XNUM = P0(6)
-      XDEN = ZSQ + Q0(6)
-      UP = P1(6)
-      DOWN = ZSQ + Q1(6)
-      DO 850 I = 1, 5
-         XNUM = XNUM * ZSQ + P0(I)
-         XDEN = XDEN * ZSQ + Q0(I)
-         UP = UP * ZSQ + P1(I)
-         DOWN = DOWN * ZSQ + Q1(I)
-  850 CONTINUE
-      R0 = XNUM / XDEN
-      R1 = UP / DOWN
-      IF (JINT .EQ. 0) THEN
-            RESULT = (RTPI2/SQRT(AX)) * (R0*COS(W) - Z*R1*SIN(W))
-         ELSE
-            RESULT = (RTPI2/SQRT(AX)) * (R0*SIN(W) + Z*R1*COS(W))
-      END IF
-      IF ((JINT .EQ. 0) .AND. (ARG .LT. ZERO)) RESULT = -RESULT
- 2000 RETURN
-!---------- Last card of CALJY1 ----------
-      END
-
-
-
-
-
-!***********************************************************************************************************************************
-!  BESJ1
-!***********************************************************************************************************************************
-
-      FUNCTION BESJ1(X)
-!--------------------------------------------------------------------
-!
-! This subprogram computes approximate values for Bessel functions
-!   of the first kind of order zero for arguments  |X| <= XMAX
-!   (see comments heading CALJY1).
-!
-!--------------------------------------------------------------------
-      INTEGER JINT
-!S    REAL
-      real(wp)                                                  &
-         BESJ1,RESULT,X
-!--------------------------------------------------------------------
-      JINT=0
-      CALL CALJY1(X,RESULT,JINT)
-      BESJ1 = RESULT
-      RETURN
-!---------- Last card of BESJ1 ----------
-      END
-
-
-
-
-
-!***********************************************************************************************************************************
-!  BESY1
-!***********************************************************************************************************************************
-
-      FUNCTION BESY1(X)
-!--------------------------------------------------------------------
-!
-! This subprogram computes approximate values for Bessel functions
-!   of the second kind of order zero for arguments 0 < X <= XMAX
-!   (see comments heading CALJY1).
-!
-!--------------------------------------------------------------------
-      INTEGER JINT
-!S    REAL
-      real(wp)                                                  &
-         BESY1,RESULT,X
-!--------------------------------------------------------------------
-      JINT=1
-      CALL CALJY1(X,RESULT,JINT)
-      BESY1 = RESULT
-      RETURN
-!---------- Last card of BESY1 ----------
-      END
-
-
-
-
-
 !***********************************************************************************************************************************
 !  RJBESL
 !
@@ -9635,7 +3723,7 @@ END SUBROUTINE PRINTX
 !
 !  Intrinsic and other functions required are:
 !
-!     ABS, AINT, COS, DBLE, GAMMA (or DGAMMA), INT, MAX, MIN,
+!     ABS, AINT, COS, DBLE, GAMMA, INT, MAX, MIN,
 !
 !     REAL, SIN, SQRT
 !
@@ -9719,7 +3807,7 @@ END SUBROUTINE PRINTX
 !S    CONV(I) = REAL(I)
 !S    FUNC(X) = GAMMA(X)
       CONV(I) = DBLE(I)
-      FUNC(X) = DGAMMA(X)
+      FUNC(X) = gamma(X)
 !---------------------------------------------------------------------
 ! Check for out of range arguments.
 !---------------------------------------------------------------------
@@ -11218,7 +5306,7 @@ END SUBROUTINE PRINTX
 !
 ! Intrinsic functions required are:
 !
-!     DBLE, EXP, DGAMMA, GAMMA, INT, MAX, MIN, REAL, SQRT
+!     DBLE, EXP, GAMMA, INT, MAX, MIN, REAL, SQRT
 !
 !
 ! Acknowledgement
@@ -11279,7 +5367,7 @@ END SUBROUTINE PRINTX
 !S    CONV(N) = REAL(N)
 !S    FUNC(X) = GAMMA(X)
       CONV(N) = DBLE(N)
-      FUNC(X) = DGAMMA(X)
+      FUNC(X) = gamma(X)
 !-------------------------------------------------------------------
 ! Check for X, NB, OR IZE out of range.
 !-------------------------------------------------------------------
@@ -11768,8 +5856,7 @@ END SUBROUTINE PRINTX
 !***********************************************************************************************************************************
 
 !S    REAL
-      real(wp)                                                  &
-          FUNCTION BESK0(X)
+real(wp) FUNCTION BESK0(X)
 !--------------------------------------------------------------------
 !
 ! This function program computes approximate values for the
@@ -11782,17 +5869,16 @@ END SUBROUTINE PRINTX
 !  Latest Modification: January 19, 1988
 !
 !--------------------------------------------------------------------
-      INTEGER JINT
+INTEGER JINT
 !S    REAL
-      real(wp)                                                  &
-          X, RESULT
+real(wp)  X, RESULT
 !--------------------------------------------------------------------
-      JINT = 1
-      CALL CALCK0(X,RESULT,JINT)
-      BESK0 = RESULT
-      RETURN
+JINT = 1
+CALL CALCK0(X,RESULT,JINT)
+BESK0 = RESULT
+RETURN
 !---------- Last line of BESK0 ----------
-      END
+END
 
 
 
@@ -11803,8 +5889,7 @@ END SUBROUTINE PRINTX
 !***********************************************************************************************************************************
 
 !S    REAL
-      real(wp)                                                  &
-          FUNCTION BESEK0(X)
+real(wp)  FUNCTION BESEK0(X)
 !--------------------------------------------------------------------
 !
 ! This function program computes approximate values for the
@@ -11817,17 +5902,16 @@ END SUBROUTINE PRINTX
 !  Latest Modification: January 19, 1988
 !
 !--------------------------------------------------------------------
-      INTEGER JINT
+INTEGER JINT
 !S    REAL
-      real(wp)                                                  &
-          X, RESULT
+real(wp)                                                  &
+    X, RESULT
 !--------------------------------------------------------------------
-      JINT = 2
-      CALL CALCK0(X,RESULT,JINT)
-      BESEK0 = RESULT
-      RETURN
-!---------- Last line of BESEK0 ----------
-      END
+JINT = 2
+CALL CALCK0(X,RESULT,JINT)
+BESEK0 = RESULT
+
+END
 
 
 
@@ -12078,9 +6162,7 @@ END SUBROUTINE PRINTX
 !  BESK1
 !***********************************************************************************************************************************
 
-!S    REAL
-      real(wp)                                                  &
-          FUNCTION BESK1(X)
+real(wp) FUNCTION BESK1(X)
 !--------------------------------------------------------------------
 !
 ! This function program computes approximate values for the
@@ -12088,17 +6170,16 @@ END SUBROUTINE PRINTX
 !   for arguments  XLEAST .LE. ARG .LE. XMAX.
 !
 !--------------------------------------------------------------------
-      INTEGER JINT
+INTEGER JINT
 !S    REAL
-      real(wp)                                                  &
-          X, RESULT
+real(wp)                                                  &
+    X, RESULT
 !--------------------------------------------------------------------
-      JINT = 1
-      CALL CALCK1(X,RESULT,JINT)
-      BESK1 = RESULT
-      RETURN
-!---------- Last line of BESK1 ----------
-      END
+JINT = 1
+CALL CALCK1(X,RESULT,JINT)
+BESK1 = RESULT
+
+END function besk1
 
 
 
@@ -12108,9 +6189,7 @@ END SUBROUTINE PRINTX
 !  BESEK1
 !***********************************************************************************************************************************
 
-!S    REAL
-      real(wp)                                                  &
-          FUNCTION BESEK1(X)
+real(wp) FUNCTION BESEK1(X)
 !--------------------------------------------------------------------
 !
 ! This function program computes approximate values for the
@@ -12119,17 +6198,15 @@ END SUBROUTINE PRINTX
 !   XLEAST .LE. ARG .LE. XMAX.
 !
 !--------------------------------------------------------------------
-      INTEGER JINT
-!S    REAL
-      real(wp)                                                  &
-          X, RESULT
+INTEGER JINT
+
+real(wp) X, RESULT
 !--------------------------------------------------------------------
-      JINT = 2
-      CALL CALCK1(X,RESULT,JINT)
-      BESEK1 = RESULT
-      RETURN
-!---------- Last line of BESEK1 ----------
-      END
+JINT = 2
+CALL CALCK1(X,RESULT,JINT)
+BESEK1 = RESULT
+
+END function besek1
 
 
 
