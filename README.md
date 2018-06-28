@@ -27,7 +27,7 @@ To exit the program, type any of:
 ### Functions
 
 Available operations:
-!
+
 +           Addition
 -           Subtraction
 *           Multiplication
@@ -201,7 +201,6 @@ S-          Delete summation
 SCI         Scientific notation
 SEC         Secant
 SECH        Hyperbolic secant
-SEED        Store random number seed
 SGN         Signum
 SIN         Sine
 SINC        Sine cardinal (sinc) function

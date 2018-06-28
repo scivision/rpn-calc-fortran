@@ -16,7 +16,7 @@
 !***********************************************************************************************************************************
 
       PROGRAM RPN
-
+      use, intrinsic:: iso_fortran_env, only: stdout=>output_unit, stdin=>input_unit
       USE GLOBAL
       use funcs, only: rprintx, cprintx, printx, eval, rpush_stack, cpush_stack, push_stack, isrational, isreal, iscomplex
 
@@ -104,8 +104,9 @@
 
       DO                                                                            ! loop once for each input line
 
-         WRITE (UNIT=*, FMT='(A)', ADVANCE='NO') '  ? '
-         READ (UNIT=*, FMT='(A)') LINE
+         WRITE(stdout,'(A)', ADVANCE='NO') '  ? '
+         READ (stdin,*, iostat=ierr) LINE
+         if (ierr<0) stop
 
 !
 !     Convert the input line to all uppercase.
@@ -132,9 +133,7 @@
 
          PTR = 1
 
-!
 !     Loop for each element in the input line.
-!
 
          DO
             IDX = INDEX(LINE(PTR:), ' ') + PTR - 1                                  ! look for the next space..
@@ -167,11 +166,9 @@
             IF (LEN_TRIM(LINE(PTR:)) .EQ. 0) EXIT                                   ! exit if at end of line
          END DO
 
-!
-!     Print X register.
-!
 
-         WRITE (UNIT=*, FMT='(A)') ' '
+!     Print X register.
+
          SELECT CASE (DOMAIN_MODE)
             CASE (1)
                CALL PRINTX(STACK(1), NUMSTR)                                        ! format REAL X
@@ -181,8 +178,7 @@
                CALL RPRINTX(RNSTACK(1), RDSTACK(1), NUMSTR)                         ! format RATIONAL X
          END SELECT
 
-         WRITE (UNIT=*, FMT='(3X,A)') TRIM(NUMSTR)                                  ! print X
-         WRITE (UNIT=*, FMT='(A)') ' '
+         print '(3X,A)', TRIM(NUMSTR)                                  ! print X
 
       END DO
 
