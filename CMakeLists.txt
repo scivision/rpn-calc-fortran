@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7)
 project(RPNcalc Fortran)
 
-add_executable(rpncalc reg.f90 calc.f90)
+add_executable(rpncalc calc.f90)
 target_link_libraries(rpncalc ui)
 target_compile_options(rpncalc PRIVATE ${FFLAGS})
 
@@ -9,7 +9,12 @@ add_library(ui ui.f90)
 target_link_libraries(ui PUBLIC funcs)
 target_compile_options(ui PRIVATE ${FFLAGS})
 
+add_library(reg reg.f90)
+target_compile_options(ui PRIVATE ${FFLAGS})
+
+
 add_library(funcs funcs.f90)
+target_link_libraries(funcs PRIVATE reg)
 target_compile_options(funcs PRIVATE ${FFLAGS})
 
 #----------------------------------
