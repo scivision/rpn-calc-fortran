@@ -3,11 +3,11 @@ project(RPNcalc Fortran)
 enable_testing()
 
 add_executable(rpncalc calc.f90)
-target_link_libraries(rpncalc ui)
+target_link_libraries(rpncalc PRIVATE reg funcs ui)
 target_compile_options(rpncalc PRIVATE ${FFLAGS})
 
 add_library(ui ui.f90)
-target_link_libraries(ui PUBLIC assert funcs)
+target_link_libraries(ui PRIVATE assert reg funcs)
 target_compile_options(ui PRIVATE ${FFLAGS})
 
 add_library(reg reg.f90)

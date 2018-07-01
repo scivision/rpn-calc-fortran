@@ -1,4 +1,5 @@
 module ui
+use global
 use assert, only: wp
 use funcs
 implicit none
@@ -12,10 +13,6 @@ contains
 !***********************************************************************************************************************************
 
 SUBROUTINE PUSH_STACK (X)
-
-USE GLOBAL, only: stack_size, stack
-
-IMPLICIT NONE
 
 real(wp), INTENT(IN) :: X
 
@@ -39,8 +36,6 @@ END SUBROUTINE PUSH_STACK
 
 SUBROUTINE CPUSH_STACK (CX)
 
-USE GLOBAL, only: stack_size, cstack
-
 COMPLEX(wp), INTENT(IN) :: CX
 
 INTEGER :: I
@@ -62,8 +57,6 @@ END SUBROUTINE CPUSH_STACK
 !***********************************************************************************************************************************
 
 SUBROUTINE RPUSH_STACK (RN,RD)
-
-USE GLOBAL, only: stack_size, rnstack, rdstack
 
 INTEGER, INTENT(IN) :: RN,RD
 
@@ -89,8 +82,6 @@ END SUBROUTINE RPUSH_STACK
 
 SUBROUTINE DROP_STACK (N)
 
-USE GLOBAL, only: stack_size, stack
-
 INTEGER, INTENT(IN) :: N
 
 INTEGER :: I
@@ -109,8 +100,6 @@ END SUBROUTINE DROP_STACK
 !***********************************************************************************************************************************
 
 SUBROUTINE CDROP_STACK (N)
-
-USE GLOBAL, only: stack_size, cstack
 
 INTEGER, INTENT(IN) :: N
 
@@ -133,8 +122,6 @@ END SUBROUTINE CDROP_STACK
 
 SUBROUTINE RDROP_STACK (N)
 
-USE GLOBAL, only: stack_size, rnstack, rdstack
-
 INTEGER, INTENT(IN) :: N
 
 INTEGER :: I
@@ -155,8 +142,6 @@ END SUBROUTINE RDROP_STACK
 !***********************************************************************************************************************************
 
 SUBROUTINE PRINTX (X, NUMSTR)
-
-USE GLOBAL, only: base_mode, disp_mode, disp_digits
 
 real(wp), INTENT(IN) :: X
 CHARACTER(LEN=100), INTENT(OUT) :: NUMSTR
@@ -213,8 +198,6 @@ END SUBROUTINE PRINTX
 !***********************************************************************************************************************************
 
       SUBROUTINE CPRINTX (X, NUMSTR)
-
-      USE GLOBAL, only: disp_mode, disp_digits, base_mode
 
       COMPLEX(wp), INTENT(IN) :: X
       CHARACTER(LEN=100), INTENT(OUT) :: NUMSTR
@@ -280,10 +263,6 @@ END SUBROUTINE PRINTX
 !***********************************************************************************************************************************
 
 SUBROUTINE RPRINTX (RN, RD, NUMSTR)
-
-USE GLOBAL
-
-IMPLICIT NONE
 
 INTEGER, INTENT(IN) :: RN, RD
 CHARACTER(LEN=100), INTENT(OUT) :: NUMSTR
@@ -362,10 +341,6 @@ END SUBROUTINE RPRINTX
 !***********************************************************************************************************************************
 
 SUBROUTINE EVAL (STR)
-
-USE GLOBAL
-
-IMPLICIT NONE
 
 CHARACTER(LEN=*), INTENT(IN) :: STR
 
