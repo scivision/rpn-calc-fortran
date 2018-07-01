@@ -1,6 +1,6 @@
 #!/bin/bash
 # boilerplate to test with popular Fortran compilers, helping check for quirks
-cmd="./rpncalc"
+cmd=""
 
 set -e
 

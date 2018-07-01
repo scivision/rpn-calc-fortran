@@ -4,9 +4,17 @@
 # RPN Reverse Polish Notation Calculator -- in Fortran
 
 The `funcs.90` module provides over 100 elemental functions not found in Fortran instrinsics.
-A Fortran 2008 compiler is required such as `gfortran` and `ifort`.
+A Fortran 2008 compiler is required such as `gfortran` or `ifort`.
 
-Legacy code Author: David G. Simpson
+Specifically, RPNcalc has been tested on Linux, Mac and Windows, including:
+* Gfortran 6, 7, 8 
+* ifort 2019
+
+However, due to lack of basic Fortran 2008 support, the following compilers do NOT yet work:
+* Flang 5.0
+* PGI 2018
+
+Legacy code author: David G. Simpson
 
 ## Build
 
