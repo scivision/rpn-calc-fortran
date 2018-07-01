@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/scivision/rpn-calc-fortran.svg?branch=master)](https://travis-ci.com/scivision/rpn-calc-fortran)
+[![Build status](https://ci.appveyor.com/api/projects/status/60r7ppiawed9xbct?svg=true)](https://ci.appveyor.com/project/scivision/rpn-calc-fortran)
 
 # RPN Reverse Polish Notation Calculator -- in Fortran
 

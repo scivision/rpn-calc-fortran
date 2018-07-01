@@ -2,16 +2,12 @@ cmake_minimum_required(VERSION 3.7)
 project(RPNcalc Fortran)
 enable_testing()
 
-add_executable(rpncalc calc.f90)
-target_link_libraries(rpncalc PRIVATE reg funcs ui)
+add_executable(rpncalc ui.f90 calc.f90)
+target_link_libraries(rpncalc PRIVATE reg funcs)
 target_compile_options(rpncalc PRIVATE ${FFLAGS})
 
-add_library(ui ui.f90)
-target_link_libraries(ui PRIVATE assert reg funcs)
-target_compile_options(ui PRIVATE ${FFLAGS})
-
 add_library(reg reg.f90)
-target_compile_options(ui PRIVATE ${FFLAGS})
+target_compile_options(reg PRIVATE ${FFLAGS})
 target_link_libraries(reg PRIVATE assert)
 
 add_library(funcs funcs.f90)
