@@ -1,10 +1,54 @@
 module funcs
-use,intrinsic:: iso_fortran_env, only: wp=>real64
+use assert, only: wp
 implicit none
 
+interface csc
+  module procedure csc_r, csc_c
+end interface csc
+
+interface acsc
+  module procedure acsc_r, acsc_c
+end interface acsc
+
+interface sec
+  module procedure sec_r, sec_c
+end interface sec
+
+interface asec
+  module procedure asec_r, asec_c
+end interface asec
+
+interface cot
+  module procedure cot_r, cot_c
+end interface cot
+
+interface acot
+  module procedure acot_r, acot_c
+end interface acot
+
+interface cuberoot
+  module procedure cuberoot_r, cuberoot_c
+end interface cuberoot
+
+interface hav
+  module procedure hav_r, hav_c
+end interface hav
+
+interface ahav
+  module procedure ahav_r, ahav_c
+end interface ahav
+
+interface crd
+  module procedure crd_r, crd_c
+end interface crd
+
+interface frac
+  module procedure frac_r, frac_c
+end interface frac
+
+real(wp), parameter :: xinf = huge(0._wp), xmax = xinf, enten=xinf, xmin = tiny(0._wp)
+
 contains
-
-
 !***********************************************************************************************************************************
 !  ISDIGIT
 !
@@ -17,10 +61,6 @@ CHARACTER, INTENT(IN) :: CH
 isdigit = (CH .GE. '0') .AND. (CH .LE. '9')
 
 END FUNCTION ISDIGIT
-
-
-
-
 
 !***********************************************************************************************************************************
 !  ISPM
@@ -35,10 +75,6 @@ ispm = (CH .EQ. '+') .OR. (CH .EQ. '-')
 
 END FUNCTION ISPM
 
-
-
-
-
 !***********************************************************************************************************************************
 !  ISHEX
 !
@@ -51,10 +87,6 @@ CHARACTER, INTENT(IN) :: CH
 ishex = (((CH .GE. '0') .AND. (CH .LE. '9')) .OR. ((CH .GE. 'A') .AND. (CH .LE. 'F')))
 
 END FUNCTION ISHEX
-
-
-
-
 
 !***********************************************************************************************************************************
 !  ISREAL
@@ -183,7 +215,7 @@ END FUNCTION ISHEX
                END IF
             END DO
             READ (UNIT=STR, FMT='(B30)', IOSTAT=IERR) ITMP
-            X = DBLE(ITMP)
+            X = real(itmp, wp)
             NUM_FLAG = IERR .EQ. 0
          CASE (8)                                                                   ! OCT mode
             DO I = 1, LENSTR
@@ -194,7 +226,7 @@ END FUNCTION ISHEX
                END IF
             END DO
             READ (UNIT=STR, FMT='(O30)', IOSTAT=IERR) ITMP
-            X = DBLE(ITMP)
+            X = real(itmp, wp)
             NUM_FLAG = IERR .EQ. 0
          CASE (16)                                                                  ! HEX mode
             IF (STR.EQ.'DEC') THEN                                                  !   DEC is a valid hex integer, so check..
@@ -209,7 +241,7 @@ END FUNCTION ISHEX
                END IF
             END DO
             READ (UNIT=STR, FMT='(Z30)', IOSTAT=IERR) ITMP
-            X = DBLE(ITMP)
+            X = real(itmp, wp)
             NUM_FLAG = IERR .EQ. 0
       END SELECT
 
@@ -355,7 +387,7 @@ END FUNCTION ISHEX
          READ (UNIT=STR(COMMAIDX+1:), FMT=*, IOSTAT=IERRI) XI
       END IF
 
-      X = CMPLX(XR,XI,8)
+      X = CMPLX(XR,XI, wp)
       NUM_FLAG = (IERRR .EQ. 0) .AND. (IERRI .EQ. 0)
 
       RETURN
@@ -391,7 +423,7 @@ END FUNCTION ISHEX
             ELSE
                READ (UNIT=STR(COMMAIDX+1:), FMT='(B50)', IOSTAT=IERRI) IXI
             END IF
-            X = CMPLX(DBLE(IXR),DBLE(IXI),8)
+            X = CMPLX(real(ixr, wp),real(ixi, wp), wp)
             NUM_FLAG = (IERRR .EQ. 0) .AND. (IERRI .EQ. 0)
          CASE (8)                                                                   ! OCT mode
             DO I = 1, LENSTR
@@ -416,7 +448,7 @@ END FUNCTION ISHEX
             ELSE
                READ (UNIT=STR(COMMAIDX+1:), FMT='(O50)', IOSTAT=IERRI) IXI
             END IF
-            X = CMPLX(DBLE(IXR),DBLE(IXI),8)
+            X = CMPLX(real(ixr, wp),real(ixi, wp), wp)
             NUM_FLAG = (IERRR .EQ. 0) .AND. (IERRI .EQ. 0)
          CASE (16)                                                                  ! HEX mode
             DO I = 1, LENSTR
@@ -453,7 +485,7 @@ END FUNCTION ISHEX
                END IF
                READ (UNIT=STR(COMMAIDX+1:), FMT='(Z50)', IOSTAT=IERRI) IXI
             END IF
-            X = CMPLX(DBLE(IXR),DBLE(IXI),8)
+            X = CMPLX(real(IXR, wp), real(IXI, wp), wp)
             NUM_FLAG = (IERRR .EQ. 0) .AND. (IERRI .EQ. 0)
       END SELECT
 
@@ -639,8 +671,6 @@ END FUNCTION ISHEX
             NUM_FLAG = (IERRN .EQ. 0) .AND. (IERRD .EQ. 0)
             IF (NUM_FLAG) CALL RATNORM (NUM, DEN)
       END SELECT
-
-      RETURN
 
       END FUNCTION ISRATIONAL
 
@@ -846,9 +876,7 @@ END SUBROUTINE RMUL
 !  Multiply two rational numbers.
 !***********************************************************************************************************************************
 
-SUBROUTINE RDIV (N1, D1, N2, D2, NR, DR)
-
-IMPLICIT NONE
+elemental SUBROUTINE RDIV (N1, D1, N2, D2, NR, DR)
 
 INTEGER, INTENT(IN) :: N1, D1, N2, D2
 INTEGER, INTENT(OUT) :: NR, DR
@@ -856,8 +884,6 @@ INTEGER, INTENT(OUT) :: NR, DR
 NR = N1*D2
 DR = D1*N2
 CALL RATNORM (NR, DR)
-
-RETURN
 
 END SUBROUTINE RDIV
 
@@ -871,7 +897,7 @@ END SUBROUTINE RDIV
 !  Fractional part of a number.
 !***********************************************************************************************************************************
 
-elemental real(wp) FUNCTION FRAC (X) RESULT (Y)
+elemental real(wp) FUNCTION FRAC_r (X) RESULT (Y)
 
 real(wp), INTENT(IN) :: X
 real(wp) ::  Z
@@ -880,25 +906,15 @@ Z = ABS(X)
 Y = Z - INT(Z)
 Y = SIGN(Y,X)
 
-
-END FUNCTION FRAC
-
+END FUNCTION FRAC_r
 
 
-
-
-!***********************************************************************************************************************************
-!  CFRAC
-!
-!  Complex FRAC.
-!***********************************************************************************************************************************
-
-elemental complex(wp) FUNCTION CFRAC (X) RESULT (Y)
+elemental complex(wp) FUNCTION FRAC_c (X) result(frac)
 
 COMPLEX(wp), INTENT(IN) :: X
 real(wp) :: XR, XI, YR, YI, ZR, ZI
 
-XR = DBLE(X)
+XR = real(X, wp)
 XI = AIMAG(X)
 
 ZR = ABS(XR)
@@ -909,14 +925,9 @@ ZI = ABS(XI)
 YI = ZI - INT(ZI)
 YI = SIGN(YI,XI)
 
-Y = CMPLX(YR,YI,8)
+FRAC = CMPLX(YR,YI, wp)
 
-RETURN
-
-END FUNCTION CFRAC
-
-
-
+END FUNCTION FRAC_c
 
 
 !***********************************************************************************************************************************
@@ -958,12 +969,9 @@ real(wp) :: YR, YI
 
 YR = AINT(DBLE(X))
 YI = AINT(AIMAG(X))
-Y = CMPLX(YR,YI,8)
+Y = CMPLX(YR,YI, wp)
 
 END FUNCTION CINT
-
-
-
 
 
 !***********************************************************************************************************************************
@@ -986,17 +994,13 @@ END FUNCTION RINT
 
 
 
-
-
 !***********************************************************************************************************************************
 !  RNINT
 !
 !  Rational NINT.
 !***********************************************************************************************************************************
 
-SUBROUTINE RNINT (N, D)
-
-IMPLICIT NONE
+elemental SUBROUTINE RNINT (N, D)
 
 INTEGER, INTENT(IN OUT) :: N, D
 INTEGER :: NN, DN, TN, TD
@@ -1014,8 +1018,6 @@ ELSE
    N = TN / TD
    D = 1
 END IF
-
-RETURN
 
 END SUBROUTINE RNINT
 
@@ -1047,7 +1049,7 @@ END FUNCTION CMOD
 !  Rational MOD.
 !***********************************************************************************************************************************
 
-SUBROUTINE RMOD (N1, D1, N2, D2, NR, DR)
+elemental SUBROUTINE RMOD (N1, D1, N2, D2, NR, DR)
 
 INTEGER, INTENT(IN) :: N1, D1, N2, D2
 INTEGER, INTENT(OUT) :: NR, DR
@@ -1070,60 +1072,24 @@ CALL RATNORM (NR, DR)
 
 END SUBROUTINE RMOD
 
-
-
-
-
 !***********************************************************************************************************************************
 !  CUBEROOT
 !
 !  Computes the cube root.
 !***********************************************************************************************************************************
 
-FUNCTION CUBEROOT (X) RESULT (Y)
-
-IMPLICIT NONE
-
+elemental real(wp) FUNCTION CUBEROOT_r(X)  result(cuberoot)
 real(wp), INTENT(IN) :: X
-real(wp) :: Y
 
-real(wp), PARAMETER :: THIRD = 0.33333333333333333333333333333333333333333333333333333333333333333333333333333333333D0
+ CUBEROOT = SIGN((ABS(X))**(1._wp / 3._wp),X)
 
+END FUNCTION CUBEROOT_r
 
-Y = SIGN((ABS(X))**THIRD,X)
+elemental complex(wp) FUNCTION CUBEROOT_c (Z) result(cuberoot)
+COMPLEX(wp), INTENT(IN) :: Z 
 
-RETURN
-
-END FUNCTION CUBEROOT
-
-
-
-
-
-!***********************************************************************************************************************************
-!  CCUBEROOT
-!
-!  Computes the complex cube root.
-!***********************************************************************************************************************************
-
-FUNCTION CCUBEROOT (Z) RESULT (Y)
-
-IMPLICIT NONE
-
-COMPLEX(wp), INTENT(IN) :: Z
-COMPLEX(wp) :: Y
-
-real(wp), PARAMETER :: THIRD = 0.33333333333333333333333333333333333333333333333333333333333333333333333333333333333D0
-
-
-Y = Z**THIRD
-
-RETURN
-
-END FUNCTION CCUBEROOT
-
-
-
+ CUBEROOT = Z**(1._wp / 3._wp)
+END FUNCTION CUBEROOT_c
 
 
 !***********************************************************************************************************************************
@@ -1132,22 +1098,13 @@ END FUNCTION CCUBEROOT
 !  Complex common logarithm.
 !***********************************************************************************************************************************
 
-FUNCTION CLOG10 (X) RESULT (Y)
-
-IMPLICIT NONE
+elemental complex(wp) FUNCTION CLOG10 (X)
 
 COMPLEX(wp), INTENT(IN) :: X
-COMPLEX(wp) :: Y
-real(wp), PARAMETER :: LN10 = 2.302585092994045684017991454684364207601101488628772976033327900967572609677352480236D0
 
-Y = LOG(X)/LN10
-
-RETURN
+ CLOG10 = LOG(X) / LOG(10._wp)
 
 END FUNCTION CLOG10
-
-
-
 
 
 !***********************************************************************************************************************************
@@ -1156,29 +1113,20 @@ END FUNCTION CLOG10
 !  Combinations of N things taken R at a time.
 !***********************************************************************************************************************************
 
-FUNCTION CNR (N,R) RESULT (Y)
-
-IMPLICIT NONE
+elemental real(wp) FUNCTION CNR (N,R) RESULT (Y)
 
 INTEGER, INTENT(IN) :: N, R
-real(wp) :: Y
 INTEGER :: I, J
 
-Y = 1.0D0
+Y = 1._wp
 J = N
 
 DO I = N-R, 1, -1
-   Y = Y * DBLE(J)/DBLE(I)
+   Y = Y * real(j,wp)/real(i,wp)
    J = J - 1
 END DO
 
-RETURN
-
 END FUNCTION CNR
-
-
-
-
 
 !***********************************************************************************************************************************
 !  PNR
@@ -1186,47 +1134,25 @@ END FUNCTION CNR
 !  Permutations of N things taken R at a time.
 !***********************************************************************************************************************************
 
-FUNCTION PNR (N,R) RESULT (Y)
-
-IMPLICIT NONE
+elemental real(wp) FUNCTION PNR (N,R) RESULT (Y)
 
 INTEGER, INTENT(IN) :: N, R
-real(wp) :: Y
 INTEGER :: I, J
 
-Y = 1.0D0
+Y = 1._wp
 J = N
 
 DO I = N-R, 1, -1
-   Y = Y * DBLE(J)/DBLE(I)
+   Y = Y * real(j,wp)/real(i,wp)
    J = J - 1
 END DO
 
 DO I = R, 1, -1
-   Y = Y * DBLE(I)
+   Y = Y * real(i,wp)
 END DO
 
-RETURN
 
 END FUNCTION PNR
-
-
-
-
-!*********************************************************************************************
-!  CTAN
-!
-!  Complex tangent.
-!***********************************************************************************************************************************
-
-elemental complex(wp) FUNCTION CTAN (Z) RESULT (Y)
-
-COMPLEX(wp), INTENT(IN) :: Z
-
-Y = SIN(Z)/COS(Z)
-
-END FUNCTION CTAN
-
 
 
 
@@ -1236,39 +1162,18 @@ END FUNCTION CTAN
 !  Secant.
 !***********************************************************************************************************************************
 
-FUNCTION SEC (X) RESULT (Y)
-
+elemental real(wp) FUNCTION SEC_r (X) RESULT (sec)
 real(wp), INTENT (IN) :: X
-real(wp) :: Y
 
-Y = 1.0D0/COS(X)
-
-END FUNCTION SEC
+sec = 1._wp/COS(X)
+END FUNCTION SEC_r
 
 
-
-
-
-!***********************************************************************************************************************************
-!  CSEC
-!
-!  Complex secant.
-!***********************************************************************************************************************************
-
-FUNCTION CSEC (Z) RESULT (Y)
-
-IMPLICIT NONE
-
+elemental complex(wp) FUNCTION SEC_c(Z) result(sec)
 COMPLEX(wp), INTENT(IN) :: Z
-COMPLEX(wp) :: Y
 
-Y = 1.0D0/COS(Z)
-
-RETURN
-
-END FUNCTION CSEC
-
-
+SEC = 1._wp/COS(Z)
+END FUNCTION SEC_c
 
 
 
@@ -1278,61 +1183,37 @@ END FUNCTION CSEC
 !  Inverse secant.
 !***********************************************************************************************************************************
 
-real(wp) FUNCTION ASEC (Y) RESULT (X)
-
+elemental real(wp) FUNCTION ASEC_r (Y) RESULT (X)
 real(wp), INTENT (IN) :: Y
 
-X = ACOS(1.0D0/Y)
+X = ACOS(1._wp/Y)
+END FUNCTION ASEC_r
 
-END FUNCTION ASEC
 
-!***********************************************************************************************************************************
-!  CASEC
-!
-!  Complex inverse secant.
-!***********************************************************************************************************************************
-
-elemental complex(wp) FUNCTION CASEC (Z) RESULT (Y)
-
+elemental complex(wp) FUNCTION ASEC_c (Z) RESULT (Y)
 COMPLEX(wp), INTENT(IN) :: Z
 
-Y = ACOS(1.0D0/Z)
-
-END FUNCTION CASEC
+Y = ACOS(1._wp/Z)
+END FUNCTION ASEC_c
 !***********************************************************************************************************************************
 !  CSC
 !
 !  Cosecant.
 !***********************************************************************************************************************************
 
-elemental real(wp) FUNCTION CSC (X) RESULT (Y)
-
+elemental real(wp) FUNCTION CSC_r(X) result(csc)
 real(wp), INTENT (IN) :: X
 
-Y = 1.0D0/SIN(X)
+ CSC = 1._wp/SIN(X)
+END FUNCTION CSC_r
 
-END FUNCTION CSC
-!***********************************************************************************************************************************
-!  CCSC
-!
-!  Complex cosecant.
-!***********************************************************************************************************************************
 
-FUNCTION CCSC (Z) RESULT (Y)
-
-IMPLICIT NONE
-
+elemental complex(wp) FUNCTION CSC_c(Z) result(csc)
 COMPLEX(wp), INTENT(IN) :: Z
-COMPLEX(wp) :: Y
 
-Y = 1.0D0/SIN(Z)
+ CSC = 1._wp/SIN(Z)
 
-RETURN
-
-END FUNCTION CCSC
-
-
-
+END FUNCTION CSC_c
 
 
 !***********************************************************************************************************************************
@@ -1341,39 +1222,19 @@ END FUNCTION CCSC
 !  Inverse cosecant.
 !***********************************************************************************************************************************
 
-FUNCTION ACSC (Y) RESULT (X)
-
-IMPLICIT NONE
-
+elemental real(wp) FUNCTION ACSC_r(Y) result(acsc)
 real(wp), INTENT (IN) :: Y
-real(wp) :: X
 
-X = ASIN(1.0D0/Y)
-
-RETURN
-
-END FUNCTION ACSC
+ACSC = ASIN(1._wp/Y)
+END FUNCTION ACSC_r
 
 
-
-
-
-!***********************************************************************************************************************************
-!  CACSC
-!
-!  Complex inverse cosecant.
-!***********************************************************************************************************************************
-
-elemental complex(wp) FUNCTION CACSC (Z) RESULT (Y)
-
+elemental complex(wp) FUNCTION ACSC_c(Z) RESULT(acsc)
 COMPLEX(wp), INTENT(IN) :: Z
 
-Y = ASIN(1.0D0/Z)
+acsc = ASIN(1._wp/Z)
 
-END FUNCTION CACSC
-
-
-
+END FUNCTION ACSC_c
 
 
 !***********************************************************************************************************************************
@@ -1382,45 +1243,19 @@ END FUNCTION CACSC
 !  Cotangent.
 !***********************************************************************************************************************************
 
-FUNCTION COT (X) RESULT (Y)
-
-IMPLICIT NONE
-
+elemental real(wp) FUNCTION COT_r(X) result(cot)
 real(wp), INTENT (IN) :: X
-real(wp) :: Y
 
-Y = 1.0D0/TAN(X)
-
-RETURN
-
-END FUNCTION COT
+ COT = 1._wp/TAN(X)
+END FUNCTION COT_r
 
 
-
-
-
-!***********************************************************************************************************************************
-!  CCOT
-!
-!  Complex cotangent.
-!***********************************************************************************************************************************
-
-FUNCTION CCOT (Z) RESULT (Y)
-
-IMPLICIT NONE
-
+elemental complex(wp) FUNCTION COT_c(Z) result(cot)
 COMPLEX(wp), INTENT(IN) :: Z
-COMPLEX(wp) :: Y
 
-Y = COS(Z)/SIN(Z)
+ COT = COS(Z)/SIN(Z)
 
-RETURN
-
-END FUNCTION CCOT
-
-
-
-
+END FUNCTION COT_c
 
 !***********************************************************************************************************************************
 !  ACOT
@@ -1428,22 +1263,19 @@ END FUNCTION CCOT
 !  Inverse cotangent.
 !***********************************************************************************************************************************
 
-FUNCTION ACOT (Y) RESULT (X)
-
-IMPLICIT NONE
-
+elemental real(wp) FUNCTION ACOT_r (Y) result(acot)
 real(wp), INTENT (IN) :: Y
-real(wp) :: X
 
-X = ATAN(1.0D0/Y)
+ACOT = ATAN(1._wp/Y)
 
-RETURN
-
-END FUNCTION ACOT
+END FUNCTION ACOT_r
 
 
+elemental complex(wp) FUNCTION ACOT_c(Y) result (Acot)
+complex(wp), INTENT (IN) :: Y
 
-
+ACOT = ATAN(1._wp/Y)
+END FUNCTION ACOT_c
 
 !***********************************************************************************************************************************
 !  ACOT2
@@ -1451,47 +1283,14 @@ END FUNCTION ACOT
 !  Inverse cotangent (two arguments).
 !***********************************************************************************************************************************
 
-FUNCTION ACOT2 (Y,Z) RESULT (X)
-
-IMPLICIT NONE
+elemental real(wp) FUNCTION ACOT2 (Y,Z) 
 
 real(wp), INTENT (IN) :: Y                                           ! cotangent numerator
 real(wp), INTENT (IN) :: Z                                           ! cotangent denominator
-real(wp) :: X
 
-X = ATAN2(Z,Y)
-
-RETURN
+ACOT2 = ATAN2(Z,Y)
 
 END FUNCTION ACOT2
-
-
-
-
-
-!***********************************************************************************************************************************
-!  CACOT
-!
-!  Complex inverse cotangent.
-!***********************************************************************************************************************************
-
-FUNCTION CACOT (Z) RESULT (Y)
-
-IMPLICIT NONE
-
-COMPLEX(wp), INTENT(IN) :: Z
-COMPLEX(wp) :: Y
-
-COMPLEX(wp), PARAMETER  :: II = (0.0D0,1.0D0)
-
-Y = -0.5D0*II*LOG((II*Z-1.0D0)/(II*Z+1.0D0))
-
-RETURN
-
-END FUNCTION CACOT
-
-
-
 
 
 !***********************************************************************************************************************************
@@ -1500,22 +1299,12 @@ END FUNCTION CACOT
 !  Exsecant.
 !***********************************************************************************************************************************
 
-FUNCTION EXSEC (X) RESULT (Y)
-
-IMPLICIT NONE
-
+elemental real(wp) FUNCTION EXSEC (X)
 real(wp), INTENT (IN) :: X
-real(wp) :: Y
-
-Y = 1.0D0/COS(X) - 1.0D0
-
-RETURN
+ 
+EXSEC = 1._wp/COS(X) - 1._wp
 
 END FUNCTION EXSEC
-
-
-
-
 
 !***********************************************************************************************************************************
 !  CEXSEC
@@ -1526,13 +1315,9 @@ END FUNCTION EXSEC
 elemental complex(wp) FUNCTION CEXSEC (Z)
 
 COMPLEX(wp), INTENT(IN) :: Z
- cexsec = 1.0D0/COS(Z) - 1.0D0
+ cexsec = 1._wp/COS(Z) - 1._wp
 
 END FUNCTION CEXSEC
-
-
-
-
 
 !***********************************************************************************************************************************
 !  AEXSEC
@@ -1540,22 +1325,12 @@ END FUNCTION CEXSEC
 !  Inverse exsecant.
 !***********************************************************************************************************************************
 
-FUNCTION AEXSEC (Y) RESULT (X)
-
-IMPLICIT NONE
-
+elemental real(wp) FUNCTION AEXSEC (Y)
 real(wp), INTENT (IN) :: Y
-real(wp) :: X
 
-X = ACOS(1.0D0 / (Y + 1.0D0))
-
-RETURN
+AEXSEC = ACOS(1._wp / (Y + 1._wp))
 
 END FUNCTION AEXSEC
-
-
-
-
 
 !***********************************************************************************************************************************
 !  CAEXSEC
@@ -1567,12 +1342,9 @@ elemental complex(wp) FUNCTION CAEXSEC (Y) RESULT (X)
 
 COMPLEX(wp), INTENT (IN) :: Y
 
-X = ACOS(1.0D0 / (Y + 1.0D0))
+X = ACOS(1._wp / (Y + 1._wp))
 
 END FUNCTION CAEXSEC
-
-
-
 
 
 !***********************************************************************************************************************************
@@ -1581,22 +1353,12 @@ END FUNCTION CAEXSEC
 !  Versine.
 !***********************************************************************************************************************************
 
-FUNCTION VERS (X) RESULT (Y)
-
-IMPLICIT NONE
-
+elemental real(wp) FUNCTION VERS (X) 
 real(wp), INTENT (IN) :: X
-real(wp) :: Y
 
-Y = 1.0D0 - COS(X)
-
-RETURN
+VERS = 1._wp - COS(X)
 
 END FUNCTION VERS
-
-
-
-
 
 !***********************************************************************************************************************************
 !  CVERS
@@ -1604,22 +1366,12 @@ END FUNCTION VERS
 !  Complex versine.
 !***********************************************************************************************************************************
 
-FUNCTION CVERS (Z) RESULT (Y)
-
-IMPLICIT NONE
-
+elemental complex(wp) FUNCTION CVERS (Z)
 COMPLEX(wp), INTENT(IN) :: Z
-COMPLEX(wp) :: Y
 
-Y = 1.0D0 - COS(Z)
-
-RETURN
+ CVERS = 1._wp - COS(Z)
 
 END FUNCTION CVERS
-
-
-
-
 
 !***********************************************************************************************************************************
 !  AVERS
@@ -1627,22 +1379,12 @@ END FUNCTION CVERS
 !  Inverse versine.
 !***********************************************************************************************************************************
 
-FUNCTION AVERS (Y) RESULT (X)
-
-IMPLICIT NONE
-
+elemental real(wp) FUNCTION AVERS (Y)
 real(wp), INTENT (IN) :: Y
-real(wp) :: X
 
-X = ACOS(1.0D0 - Y)
-
-RETURN
+AVERS = ACOS(1._wp - Y)
 
 END FUNCTION AVERS
-
-
-
-
 
 !***********************************************************************************************************************************
 !  CAVERS
@@ -1654,7 +1396,7 @@ elemental complex(wp) FUNCTION CAVERS (Y) RESULT (X)
 
 COMPLEX(wp), INTENT (IN) :: Y
 
-X = acos(1.0D0 - Y)
+X = acos(1._wp - Y)
 
 END FUNCTION CAVERS
 
@@ -1669,7 +1411,7 @@ elemental real(wp) FUNCTION COVERS (X) RESULT (Y)
 
 real(wp), INTENT (IN) :: X
 
-Y = 1.0D0 - SIN(X)
+Y = 1._wp - SIN(X)
 
 END FUNCTION COVERS
 
@@ -1682,14 +1424,10 @@ END FUNCTION COVERS
 
 FUNCTION CCOVERS (Z) RESULT (Y)
 
-IMPLICIT NONE
-
 COMPLEX(wp), INTENT(IN) :: Z
 COMPLEX(wp) :: Y
 
-Y = 1.0D0 - SIN(Z)
-
-RETURN
+Y = 1._wp - SIN(Z)
 
 END FUNCTION CCOVERS
 
@@ -1703,16 +1441,11 @@ END FUNCTION CCOVERS
 !  Inverse coversine.
 !***********************************************************************************************************************************
 
-FUNCTION ACOVERS (Y) RESULT (X)
-
-IMPLICIT NONE
+elemental real(wp) FUNCTION ACOVERS (Y) RESULT (X)
 
 real(wp), INTENT (IN) :: Y
-real(wp) :: X
 
-X = ASIN(1.0D0 - Y)
-
-RETURN
+X = ASIN(1._wp - Y)
 
 END FUNCTION ACOVERS
 
@@ -1730,7 +1463,7 @@ elemental complex(wp) FUNCTION CACOVERS (Y) RESULT (X)
 
 COMPLEX(wp), INTENT (IN) :: Y
 
-X = ASIN(1.0D0 - Y)
+X = ASIN(1._wp - Y)
 
 END FUNCTION CACOVERS
 
@@ -1741,29 +1474,18 @@ END FUNCTION CACOVERS
 !  Haversine.
 !***********************************************************************************************************************************
 
-elemental real(wp) FUNCTION HAV (X) RESULT (Y)
-
+elemental real(wp) FUNCTION HAV_r(X) RESULT (Y)
 real(wp), INTENT (IN) :: X
 
 Y = (SIN(0.5D0*X))**2
+END FUNCTION HAV_r
 
-END FUNCTION HAV
 
-
-!***********************************************************************************************************************************
-!  CHAV
-!
-!  Complex haversine.
-!***********************************************************************************************************************************
-
-elemental complex(wp) FUNCTION CHAV (Z) RESULT (Y)
-
+elemental complex(wp) FUNCTION HAV_c(Z) RESULT (Y)
 COMPLEX(wp), INTENT(IN) :: Z
 
 Y = (SIN(0.5D0*Z))**2
-
-
-END FUNCTION CHAV
+END FUNCTION HAV_c
 
 
 
@@ -1773,33 +1495,19 @@ END FUNCTION CHAV
 !  Inverse haversine.
 !***********************************************************************************************************************************
 
-FUNCTION AHAV (Y) RESULT (X)
-
-IMPLICIT NONE
+elemental real(wp) FUNCTION AHAV_r(Y) RESULT (X)
 
 real(wp), INTENT (IN) :: Y
-real(wp) :: X
 
-X = 2.0D0*ASIN(SQRT(Y))
-
-RETURN
-
-END FUNCTION AHAV
+X = 2._wp*ASIN(SQRT(Y))
+END FUNCTION AHAV_r
 
 
-!***********************************************************************************************************************************
-!  CAHAV
-!
-!  Complex inverse haversine.
-!***********************************************************************************************************************************
-
-elemental complex(wp) FUNCTION CAHAV (Y) RESULT (X)
-
+elemental complex(wp) FUNCTION AHAV_c(Y) RESULT (X)
 COMPLEX(wp), INTENT (IN) :: Y
 
-X = 2.0D0*asin(SQRT(Y))
-
-END FUNCTION CAHAV
+X = 2._wp*asin(SQRT(Y))
+END FUNCTION AHAV_c
 
 
 !***********************************************************************************************************************************
@@ -1808,40 +1516,20 @@ END FUNCTION CAHAV
 !  Chord (of Ptolemy).
 !***********************************************************************************************************************************
 
-FUNCTION CRD (X) RESULT (Y)
-
-IMPLICIT NONE
-
+elemental real(wp) FUNCTION CRD_r (X) result(crd)
 real(wp), INTENT (IN) :: X
-real(wp) :: Y
 
-Y = 2.0D0*SIN(0.5D0*X)
+ CRD = 2._wp*SIN(0.5_wp*X)
 
-RETURN
-
-END FUNCTION CRD
+END FUNCTION CRD_r
 
 
-
-
-
-!***********************************************************************************************************************************
-!  CCRD
-!
-!  Complex chord (of Ptolemy).
-!***********************************************************************************************************************************
-
-FUNCTION CCRD (Z) RESULT (Y)
-
-IMPLICIT NONE
-
+elemental complex(wp) FUNCTION CRD_c (Z) RESULT (crd)
 COMPLEX(wp), INTENT(IN) :: Z
-COMPLEX(wp) :: Y
 
-Y = 2.0D0*SIN(0.5D0*Z)
+ CRD = 2._wp*SIN(0.5_wp*Z)
 
-
-END FUNCTION CCRD
+END FUNCTION CRD_c
 
 
 
@@ -1882,7 +1570,7 @@ elemental real(wp) FUNCTION LOG1P (X) RESULT (Y)
 real(wp), INTENT(IN) :: X
 real(wp) :: Z
 
-Z = 1.0D0 + X
+Z = 1._wp + X
 Y = LOG(Z) - ((Z-1.0D0)-X)/Z                                                  ! cancels errors with IEEE arithmetic
 
 END FUNCTION LOG1P
@@ -1899,7 +1587,7 @@ elemental real(wp) FUNCTION SECH (X)
 
 real(wp), INTENT (IN) :: X
 
-sech = 1.0D0/COSH(X)
+sech = 1._wp/COSH(X)
 
 END FUNCTION SECH
 
@@ -1914,7 +1602,7 @@ END FUNCTION SECH
 elemental complex(wp) FUNCTION CSECH (Z) RESULT (Y)
 COMPLEX(wp), INTENT (IN) :: Z
 
-Y = 1.0D0/cosh(Z)
+Y = 1._wp/cosh(Z)
 
 END FUNCTION CSECH
 
@@ -1929,7 +1617,7 @@ END FUNCTION CSECH
 elemental real(wp) FUNCTION ASECH (Y)
 real(wp), INTENT (IN) :: Y
 
-asech = ACOSH(1.0D0/Y)
+asech = ACOSH(1._wp/Y)
 
 END FUNCTION ASECH
 
@@ -1946,7 +1634,7 @@ END FUNCTION ASECH
 elemental complex(wp) FUNCTION CASECH(Y)
 COMPLEX(wp), INTENT (IN) :: Y
 
-casech = ACOSH(1.0D0/Y)
+casech = ACOSH(1._wp/Y)
 
 END FUNCTION CASECH
 
@@ -1960,7 +1648,7 @@ elemental real(wp) FUNCTION CSCH (X) RESULT (Y)
 
 real(wp), INTENT (IN) :: X
 
-Y = 1.0D0/SINH(X)
+Y = 1._wp/SINH(X)
 
 END FUNCTION CSCH
 
@@ -1974,7 +1662,7 @@ elemental complex(wp) FUNCTION CCSCH (Z) RESULT (Y)
 
 COMPLEX(wp), INTENT (IN) :: Z
 
-Y = 1.0D0 / SINH(Z)
+Y = 1._wp / SINH(Z)
 
 END FUNCTION CCSCH
 
@@ -1988,7 +1676,7 @@ elemental real(wp) FUNCTION ACSCH (Y) RESULT (X)
 
 real(wp), INTENT (IN) :: Y
 
-X = ASINH(1.0D0/Y)
+X = ASINH(1._wp/Y)
 
 
 END FUNCTION ACSCH
@@ -2003,7 +1691,7 @@ elemental complex(wp) FUNCTION CACSCH (Y) RESULT (X)
 
 COMPLEX(wp), INTENT (IN) :: Y
 
-X = ASINH(1.0D0/Y)
+X = ASINH(1._wp/Y)
 
 END FUNCTION CACSCH
 
@@ -2021,7 +1709,7 @@ elemental real(wp) FUNCTION COTH (X)
 
 real(wp), INTENT (IN) :: X
 
-coth = 1.0D0/TANH(X)
+coth = 1._wp/TANH(X)
 
 
 END FUNCTION COTH
@@ -2061,7 +1749,7 @@ END FUNCTION CCOTH
 elemental real(wp) FUNCTION ACOTH (Y)
 real(wp), INTENT (IN) :: Y
 
-ACOTH = ATANH(1.0D0/Y)
+ACOTH = ATANH(1._wp/Y)
 
 END FUNCTION ACOTH
 
@@ -2092,7 +1780,7 @@ elemental real(wp) FUNCTION SINC (X) RESULT (Y)
 real(wp), INTENT(IN) :: X
 
 IF (X .EQ. 0.0D0) THEN
-   Y = 1.0D0
+   Y = 1._wp
 ELSE
    Y = SIN(X)/X
 END IF
@@ -2118,7 +1806,7 @@ COMPLEX(wp), INTENT(IN) :: Z
 COMPLEX(wp) :: Y
 
 IF (Z .EQ. (0.0D0,0.0D0)) THEN
-   Y = (1.0D0,0.0D0)
+   Y = (1._wp,0.0D0)
 ELSE
    Y = SIN(Z)/Z
 END IF
@@ -2145,7 +1833,7 @@ real(wp), INTENT(IN) :: X
 real(wp) :: Y
 
 IF (X .EQ. 0.0D0) THEN
-   Y = 1.0D0
+   Y = 1._wp
 ELSE
    Y = TAN(X)/X
 END IF
@@ -2167,9 +1855,9 @@ elemental complex(wp) FUNCTION CTANC (Z) RESULT (Y)
 COMPLEX(wp), INTENT(IN) :: Z
 
 IF (Z .EQ. (0.0D0,0.0D0)) THEN
-   Y = (1.0D0,0.0D0)
+   Y = (1._wp,0.0D0)
 ELSE
-   Y = CTAN(Z)/Z
+   Y = TAN(Z)/Z
 END IF
 
 END FUNCTION CTANC
@@ -2187,7 +1875,7 @@ elemental real(wp) FUNCTION SINHC (X) RESULT (Y)
 real(wp), INTENT(IN) :: X
 
 IF (X .EQ. 0.0D0) THEN
-   Y = 1.0D0
+   Y = 1._wp
 ELSE
    Y = SINH(X)/X
 END IF
@@ -2207,7 +1895,7 @@ COMPLEX(wp), INTENT(IN) :: Z
 
 
 IF (Z .EQ. (0.0D0,0.0D0)) THEN
-   Y = (1.0D0,0.0D0)
+   Y = (1._wp,0.0D0)
 ELSE
    Y = SINH(Z)/Z
 END IF
@@ -2229,17 +1917,14 @@ elemental real(wp) FUNCTION TANHC (X) RESULT (Y)
 real(wp), INTENT(IN) :: X
 
 
-IF (X .EQ. 0.0D0) THEN
-   Y = 1.0D0
+IF (X .EQ. 0._wp) THEN
+   Y = 1._wp
 ELSE
-   Y = TANH(X)/X
+   Y = TANH(X) / X
 END IF
 
 
 END FUNCTION TANHC
-
-
-
 
 
 !***********************************************************************************************************************************
@@ -2252,10 +1937,10 @@ elemental complex(wp) FUNCTION CTANHC (Z) RESULT (Y)
 
 COMPLEX(wp), INTENT(IN) :: Z
 
-IF (Z .EQ. (0.0D0,0.0D0)) THEN
-   Y = (1.0D0,0.0D0)
+IF (Z .EQ. (0._wp, 0._wp)) THEN
+   Y = (1._wp, 0._wp)
 ELSE
-   Y = TANH(Z)/Z
+   Y = TANH(Z) / Z
 END IF
 
 END FUNCTION CTANHC
@@ -2442,7 +2127,7 @@ END FUNCTION CTANHC
                1.7463965060678569906D+01, 8.8427520398873480342D-01/
 !----------------------------------------------------------------------
 !S    CONV(I) = REAL(I)
-      CONV(I) = DBLE(I)
+      CONV(I) = real(i,wp)
       X = XX
       W = ABS(X)
       AUG = ZERO
@@ -2566,7 +2251,7 @@ END FUNCTION CTANHC
       END IF
 
       IF (Y .EQ. 0.0D0) THEN                                                        ! if real Z
-         R = CMPLX(GAMMA(X),0.0D0,8)
+         R = CMPLX(GAMMA(X),0.0D0, wp)
          RETURN
       END IF
 
@@ -2577,11 +2262,11 @@ END FUNCTION CTANHC
 !
 
       SUM = 0.0D0
-      PSUM = HUGE(0.0D0)
+      PSUM = HUGE(0._wp)
 
       J = 0
       DO
-         SUM = SUM + Y/(DBLE(J)+X) - ATAN2(Y,DBLE(J)+X)
+         SUM = SUM + Y/(real(j,wp)+X) - ATAN2(Y, real(J,wp)+X)
          IF (ABS((SUM-PSUM)/SUM) .LE. EPS) EXIT
          PSUM = SUM
          J = J + 1
@@ -2590,19 +2275,19 @@ END FUNCTION CTANHC
 
       THETA = Y*PSI(X) + SUM
 
-      PROD = 1.0D0
-      PPROD = HUGE(0.0D0)
+      PROD = 1._wp
+      PPROD = HUGE(0._wp)
 
       J = 0
       DO
-         PROD = PROD * ABS(DBLE(J)+X)/SQRT(Y**2+(DBLE(J)+X)**2)
+         PROD = PROD * ABS(real(j,wp)+X)/SQRT(Y**2+(real(J,wp)+X)**2)
          IF (ABS((PROD-PPROD)/PROD) .LE. EPS) EXIT
          PPROD = PROD
          J = J + 1
          IF (J .LT. 0) EXIT
       END DO
 
-      R = CMPLX(COS(THETA),SIN(THETA),8) * ABS(gamma(X)) * PROD
+      R = CMPLX(COS(THETA),SIN(THETA), wp) * ABS(gamma(X)) * PROD
 
       RETURN
 
@@ -2611,11 +2296,11 @@ END FUNCTION CTANHC
 !
 
   100 SUM = 0.0D0
-      PSUM = HUGE(0.0D0)
+      PSUM = HUGE(0._wp)
 
       J = 1
       DO
-         SUM = SUM + Y/DBLE(J) - ATAN2(Y,DBLE(J))
+         SUM = SUM + Y/real(j,wp) - ATAN2(Y,real(j,wp))
          IF (ABS((SUM-PSUM)/SUM) .LE. EPS) EXIT
          PSUM = SUM
          J = J + 1
@@ -2624,7 +2309,7 @@ END FUNCTION CTANHC
 
       THETA = -EULER*Y + SUM
 
-      R = SQRT((PI/Y)*CSCH(PI*Y)) * CMPLX(SIN(THETA),-COS(THETA),8)
+      R = SQRT((PI/Y)*CSCH(PI*Y)) * CMPLX(SIN(THETA),-COS(THETA), wp)
 
       END FUNCTION CGAMMA
 
@@ -2638,17 +2323,13 @@ END FUNCTION CTANHC
 !  Beta function.
 !***********************************************************************************************************************************
 
-      elemental real(wp) FUNCTION BETA (X,Y) RESULT (R)
+elemental real(wp) FUNCTION BETA (X,Y) RESULT (R)
 
-      real(wp), INTENT(IN) :: X, Y
- 
-      R = gamma(X)*gamma(Y)/gamma(X+Y)
+real(wp), INTENT(IN) :: X, Y
 
-      END FUNCTION BETA
+R = gamma(X)*gamma(Y)/gamma(X+Y)
 
-
-
-
+END FUNCTION BETA
 
 !***********************************************************************************************************************************
 !  CBETA
@@ -2656,18 +2337,14 @@ END FUNCTION CTANHC
 !  Complex beta function.
 !***********************************************************************************************************************************
 
-      complex(wp) FUNCTION CBETA (X,Y) RESULT (R)
+complex(wp) FUNCTION CBETA (X,Y) RESULT (R)
 
-      COMPLEX(wp), INTENT(IN) :: X, Y
-
-
-      R = CGAMMA(X)*CGAMMA(Y)/CGAMMA(X+Y)
-
-      END FUNCTION CBETA
+COMPLEX(wp), INTENT(IN) :: X, Y
 
 
+R = CGAMMA(X)*CGAMMA(Y)/CGAMMA(X+Y)
 
-
+END FUNCTION CBETA
 
 !***********************************************************************************************************************************
 !  RBETA
@@ -2675,409 +2352,47 @@ END FUNCTION CTANHC
 !  Rational beta function.
 !***********************************************************************************************************************************
 
-      elemental SUBROUTINE RBETA (X, Y, N, D)
+elemental SUBROUTINE RBETA (X, Y, N, D)
 
-      INTEGER, INTENT(IN) :: X, Y
-      INTEGER, INTENT(OUT) :: N, D
-      INTEGER :: I
-
-
-      N = 1
-
-      DO I = 2, X-1
-         N = N * I
-      END DO
-
-      DO I = 2, Y-1
-         N = N * I
-      END DO
-
-      D = 1
-
-      DO I = 2, X+Y-1
-         D = D * I
-      END DO
-
-      CALL RATNORM (N, D)
-
-      END SUBROUTINE RBETA
+INTEGER, INTENT(IN) :: X, Y
+INTEGER, INTENT(OUT) :: N, D
+INTEGER :: I
 
 
+N = 1
 
+DO I = 2, X-1
+   N = N * I
+END DO
+
+DO I = 2, Y-1
+   N = N * I
+END DO
+
+D = 1
+
+DO I = 2, X+Y-1
+   D = D * I
+END DO
+
+CALL RATNORM (N, D)
+
+END SUBROUTINE RBETA
 
 
 !***********************************************************************************************************************************
 !  ERROR FUNCTIONS
 !
 !  From http://www.netlib.org/specfun
-!***********************************************************************************************************************************
-
-      SUBROUTINE CALERF(ARG,RESULT,JINT)
-!------------------------------------------------------------------
 !
-! This packet evaluates  erf(x),  erfc(x),  and  exp(x*x)*erfc(x)
-!   for a real argument  x.  It contains three FUNCTION type
-!   subprograms: ERF, ERFC, and ERFCX (or DERF, DERFC, and DERFCX),
-!   and one SUBROUTINE type subprogram, CALERF.  The calling
-!   statements for the primary entries are:
-!
-!                   Y=ERF(X)     (or   Y=DERF(X)),
-!
-!                   Y=ERFC(X)    (or   Y=DERFC(X)),
-!   and
-!                   Y=ERFCX(X)   (or   Y=DERFCX(X)).
-!
-!   The routine  CALERF  is intended for internal packet use only,
-!   all computations within the packet being concentrated in this
-!   routine.  The function subprograms invoke  CALERF  with the
-!   statement
-!
-!          CALL CALERF(ARG,RESULT,JINT)
-!
-!   where the parameter usage is as follows
-!
-!      Function                     Parameters for CALERF
-!       call              ARG                  Result          JINT
-!
-!     ERF(ARG)      ANY REAL ARGUMENT         ERF(ARG)          0
-!     ERFC(ARG)     ABS(ARG) .LT. XBIG        ERFC(ARG)         1
-!     ERFCX(ARG)    XNEG .LT. ARG .LT. XMAX   ERFCX(ARG)        2
-!
-!   The main computation evaluates near-minimax approximations
-!   from "Rational Chebyshev approximations for the error function"
-!   by W. J. Cody, Math. Comp., 1969, PP. 631-638.  This
-!   transportable program uses rational functions that theoretically
-!   approximate  erf(x)  and  erfc(x)  to at least 18 significant
-!   decimal digits.  The accuracy achieved depends on the arithmetic
-!   system, the compiler, the intrinsic functions, and proper
-!   selection of the machine-dependent constants.
-!
-!*******************************************************************
-!*******************************************************************
-!
-! Explanation of machine-dependent constants
-!
-!   XMIN   = the smallest positive floating-point number.
-!   XINF   = the largest positive finite floating-point number.
-!   XNEG   = the largest negative argument acceptable to ERFCX;
-!            the negative of the solution to the equation
-!            2*exp(x*x) = XINF.
-!   XSMALL = argument below which erf(x) may be represented by
-!            2*x/sqrt(pi)  and above which  x*x  will not underflow.
-!            A conservative value is the largest machine number X
-!            such that   1.0 + X = 1.0   to machine precision.
-!   XBIG   = largest argument acceptable to ERFC;  solution to
-!            the equation:  W(x) * (1-0.5/x**2) = XMIN,  where
-!            W(x) = exp(-x*x)/[x*sqrt(pi)].
-!   XHUGE  = argument above which  1.0 - 1/(2*x*x) = 1.0  to
-!            machine precision.  A conservative value is
-!            1/[2*sqrt(XSMALL)]
-!   XMAX   = largest acceptable argument to ERFCX; the minimum
-!            of XINF and 1/[sqrt(pi)*XMIN].
-!
-!   Approximate values for some important machines are:
-!
-!                          XMIN       XINF        XNEG     XSMALL
-!
-!  CDC 7600      (S.P.)  3.13E-294   1.26E+322   -27.220  7.11E-15
-!  CRAY-1        (S.P.)  4.58E-2467  5.45E+2465  -75.345  7.11E-15
-!  IEEE (IBM/XT,
-!    SUN, etc.)  (S.P.)  1.18E-38    3.40E+38     -9.382  5.96E-8
-!  IEEE (IBM/XT,
-!    SUN, etc.)  (D.P.)  2.23D-308   1.79D+308   -26.628  1.11D-16
-!  IBM 195       (D.P.)  5.40D-79    7.23E+75    -13.190  1.39D-17
-!  UNIVAC 1108   (D.P.)  2.78D-309   8.98D+307   -26.615  1.73D-18
-!  VAX D-Format  (D.P.)  2.94D-39    1.70D+38     -9.345  1.39D-17
-!  VAX G-Format  (D.P.)  5.56D-309   8.98D+307   -26.615  1.11D-16
-!
-!
-!                          XBIG       XHUGE       XMAX
-!
-!  CDC 7600      (S.P.)  25.922      8.39E+6     1.80X+293
-!  CRAY-1        (S.P.)  75.326      8.39E+6     5.45E+2465
-!  IEEE (IBM/XT,
-!    SUN, etc.)  (S.P.)   9.194      2.90E+3     4.79E+37
-!  IEEE (IBM/XT,
-!    SUN, etc.)  (D.P.)  26.543      6.71D+7     2.53D+307
-!  IBM 195       (D.P.)  13.306      1.90D+8     7.23E+75
-!  UNIVAC 1108   (D.P.)  26.582      5.37D+8     8.98D+307
-!  VAX D-Format  (D.P.)   9.269      1.90D+8     1.70D+38
-!  VAX G-Format  (D.P.)  26.569      6.71D+7     8.98D+307
-!
-!*******************************************************************
-!*******************************************************************
-!
-! Error returns
-!
-!  The program returns  ERFC = 0      for  ARG .GE. XBIG;
-!
-!                       ERFCX = XINF  for  ARG .LT. XNEG;
-!      and
-!                       ERFCX = 0     for  ARG .GE. XMAX.
-!
-!
-! Intrinsic functions required are:
-!
-!     ABS, AINT, EXP
-!
-!
-!  Author: W. J. Cody
-!          Mathematics and Computer Science Division
-!          Argonne National Laboratory
-!          Argonne, IL 60439
-!
-!  Latest modification: March 19, 1990
-!
-!------------------------------------------------------------------
-      INTEGER I,JINT
-!S    REAL
-      real(wp)                                                  &
-           A,ARG,B,C,D,DEL,FOUR,HALF,P,ONE,Q,RESULT,SIXTEN,SQRPI,       &
-           TWO,THRESH,X,XBIG,XDEN,XHUGE,XINF,XMAX,XNEG,XNUM,XSMALL,     &
-           Y,YSQ,ZERO
-      DIMENSION A(5),B(4),C(9),D(8),P(6),Q(5)
-!------------------------------------------------------------------
-!  Mathematical constants
-!------------------------------------------------------------------
-!S    DATA FOUR,ONE,HALF,TWO,ZERO/4.0E0,1.0E0,0.5E0,2.0E0,0.0E0/,
-!S   1     SQRPI/5.6418958354775628695E-1/,THRESH/0.46875E0/,
-!S   2     SIXTEN/16.0E0/
-      DATA FOUR,ONE,HALF,TWO,ZERO/4.0D0,1.0D0,0.5D0,2.0D0,0.0D0/,       &
-           SQRPI/5.6418958354775628695D-1/,THRESH/0.46875D0/,           &
-           SIXTEN/16.0D0/
-!------------------------------------------------------------------
-!  Machine-dependent constants
-!------------------------------------------------------------------
-!S    DATA XINF,XNEG,XSMALL/3.40E+38,-9.382E0,5.96E-8/,
-!S   1     XBIG,XHUGE,XMAX/9.194E0,2.90E3,4.79E37/
-      DATA XINF,XNEG,XSMALL/1.79D308,-26.628D0,1.11D-16/,               &
-           XBIG,XHUGE,XMAX/26.543D0,6.71D7,2.53D307/
-!------------------------------------------------------------------
-!  Coefficients for approximation to  erf  in first interval
-!------------------------------------------------------------------
-!S    DATA A/3.16112374387056560E00,1.13864154151050156E02,
-!S   1       3.77485237685302021E02,3.20937758913846947E03,
-!S   2       1.85777706184603153E-1/
-!S    DATA B/2.36012909523441209E01,2.44024637934444173E02,
-!S   1       1.28261652607737228E03,2.84423683343917062E03/
-      DATA A/3.16112374387056560D00,1.13864154151050156D02,             &
-             3.77485237685302021D02,3.20937758913846947D03,             &
-             1.85777706184603153D-1/
-      DATA B/2.36012909523441209D01,2.44024637934444173D02,             &
-             1.28261652607737228D03,2.84423683343917062D03/
-!------------------------------------------------------------------
-!  Coefficients for approximation to  erfc  in second interval
-!------------------------------------------------------------------
-!S    DATA C/5.64188496988670089E-1,8.88314979438837594E0,
-!S   1       6.61191906371416295E01,2.98635138197400131E02,
-!S   2       8.81952221241769090E02,1.71204761263407058E03,
-!S   3       2.05107837782607147E03,1.23033935479799725E03,
-!S   4       2.15311535474403846E-8/
-!S    DATA D/1.57449261107098347E01,1.17693950891312499E02,
-!S   1       5.37181101862009858E02,1.62138957456669019E03,
-!S   2       3.29079923573345963E03,4.36261909014324716E03,
-!S   3       3.43936767414372164E03,1.23033935480374942E03/
-      DATA C/5.64188496988670089D-1,8.88314979438837594D0,              &
-             6.61191906371416295D01,2.98635138197400131D02,             &
-             8.81952221241769090D02,1.71204761263407058D03,             &
-             2.05107837782607147D03,1.23033935479799725D03,             &
-             2.15311535474403846D-8/
-      DATA D/1.57449261107098347D01,1.17693950891312499D02,             &
-             5.37181101862009858D02,1.62138957456669019D03,             &
-             3.29079923573345963D03,4.36261909014324716D03,             &
-             3.43936767414372164D03,1.23033935480374942D03/
-!------------------------------------------------------------------
-!  Coefficients for approximation to  erfc  in third interval
-!------------------------------------------------------------------
-!S    DATA P/3.05326634961232344E-1,3.60344899949804439E-1,
-!S   1       1.25781726111229246E-1,1.60837851487422766E-2,
-!S   2       6.58749161529837803E-4,1.63153871373020978E-2/
-!S    DATA Q/2.56852019228982242E00,1.87295284992346047E00,
-!S   1       5.27905102951428412E-1,6.05183413124413191E-2,
-!S   2       2.33520497626869185E-3/
-      DATA P/3.05326634961232344D-1,3.60344899949804439D-1,             &
-             1.25781726111229246D-1,1.60837851487422766D-2,             &
-             6.58749161529837803D-4,1.63153871373020978D-2/
-      DATA Q/2.56852019228982242D00,1.87295284992346047D00,             &
-             5.27905102951428412D-1,6.05183413124413191D-2,             &
-             2.33520497626869185D-3/
-!------------------------------------------------------------------
-      X = ARG
-      Y = ABS(X)
-      IF (Y .LE. THRESH) THEN
-!------------------------------------------------------------------
-!  Evaluate  erf  for  |X| <= 0.46875
-!------------------------------------------------------------------
-            YSQ = ZERO
-            IF (Y .GT. XSMALL) YSQ = Y * Y
-            XNUM = A(5)*YSQ
-            XDEN = YSQ
-            DO 20 I = 1, 3
-               XNUM = (XNUM + A(I)) * YSQ
-               XDEN = (XDEN + B(I)) * YSQ
-   20       CONTINUE
-            RESULT = X * (XNUM + A(4)) / (XDEN + B(4))
-            IF (JINT .NE. 0) RESULT = ONE - RESULT
-            IF (JINT .EQ. 2) RESULT = EXP(YSQ) * RESULT
-            return
-!------------------------------------------------------------------
-!  Evaluate  erfc  for 0.46875 <= |X| <= 4.0
-!------------------------------------------------------------------
-         ELSE IF (Y .LE. FOUR) THEN
-            XNUM = C(9)*Y
-            XDEN = Y
-            DO 120 I = 1, 7
-               XNUM = (XNUM + C(I)) * Y
-               XDEN = (XDEN + D(I)) * Y
-  120       CONTINUE
-            RESULT = (XNUM + C(8)) / (XDEN + D(8))
-            IF (JINT .NE. 2) THEN
-               YSQ = AINT(Y*SIXTEN)/SIXTEN
-               DEL = (Y-YSQ)*(Y+YSQ)
-               RESULT = EXP(-YSQ*YSQ) * EXP(-DEL) * RESULT
-            END IF
-!------------------------------------------------------------------
-!  Evaluate  erfc  for |X| > 4.0
-!------------------------------------------------------------------
-         ELSE
-            RESULT = ZERO
-            IF (Y .GE. XBIG) THEN
-               IF ((JINT .NE. 2) .OR. (Y .GE. XMAX)) GO TO 300
-               IF (Y .GE. XHUGE) THEN
-                  RESULT = SQRPI / Y
-                  GO TO 300
-               END IF
-            END IF
-            YSQ = ONE / (Y * Y)
-            XNUM = P(6)*YSQ
-            XDEN = YSQ
-            DO 240 I = 1, 4
-               XNUM = (XNUM + P(I)) * YSQ
-               XDEN = (XDEN + Q(I)) * YSQ
-  240       CONTINUE
-            RESULT = YSQ *(XNUM + P(5)) / (XDEN + Q(5))
-            RESULT = (SQRPI -  RESULT) / Y
-            IF (JINT .NE. 2) THEN
-               YSQ = AINT(Y*SIXTEN)/SIXTEN
-               DEL = (Y-YSQ)*(Y+YSQ)
-               RESULT = EXP(-YSQ*YSQ) * EXP(-DEL) * RESULT
-            END IF
-      END IF
-!------------------------------------------------------------------
-!  Fix up for negative argument, erf, etc.
-!------------------------------------------------------------------
-  300 IF (JINT .EQ. 0) THEN
-            RESULT = (HALF - RESULT) + HALF
-            IF (X .LT. ZERO) RESULT = -RESULT
-         ELSE IF (JINT .EQ. 1) THEN
-            IF (X .LT. ZERO) RESULT = TWO - RESULT
-         ELSE
-            IF (X .LT. ZERO) THEN
-               IF (X .LT. XNEG) THEN
-                     RESULT = XINF
-                  ELSE
-                     YSQ = AINT(X*SIXTEN)/SIXTEN
-                     DEL = (X-YSQ)*(X+YSQ)
-                     Y = EXP(YSQ*YSQ) * EXP(DEL)
-                     RESULT = (Y+Y) - RESULT
-               END IF
-            END IF
-      END IF
-
-      END subroutine calerf
-!S    REAL FUNCTION ERF(X)
-
-
-
-
-
-!***********************************************************************************************************************************
-!  DERF
-!***********************************************************************************************************************************
-
-      real(wp) FUNCTION DERF(X)
-!--------------------------------------------------------------------
-!
-! This subprogram computes approximate values for erf(x).
-!   (see comments heading CALERF).
-!
-!   Author/date: W. J. Cody, January 8, 1985
-!
-!--------------------------------------------------------------------
-      INTEGER JINT
-!S    REAL             X, RESULT
-      real(wp) X, RESULT
-!------------------------------------------------------------------
-      JINT = 0
-      CALL CALERF(X,RESULT,JINT)
-!S    ERF = RESULT
-      DERF = RESULT
-      RETURN
-!---------- Last card of DERF ----------
-      END
-!S    REAL FUNCTION ERFC(X)
-
-
-
-
-
-!***********************************************************************************************************************************
-!  DERFC
-!***********************************************************************************************************************************
-
-      real(wp) FUNCTION DERFC(X)
-!--------------------------------------------------------------------
-!
-! This subprogram computes approximate values for erfc(x).
-!   (see comments heading CALERF).
-!
-!   Author/date: W. J. Cody, January 8, 1985
-!
-!--------------------------------------------------------------------
-      INTEGER JINT
-!S    REAL             X, RESULT
-      real(wp) X, RESULT
-!------------------------------------------------------------------
-      JINT = 1
-      CALL CALERF(X,RESULT,JINT)
-!S    ERFC = RESULT
-      DERFC = RESULT
-      RETURN
-!---------- Last card of DERFC ----------
-      END
-!S    REAL FUNCTION ERFCX(X)
-
-
-
-
-
-!***********************************************************************************************************************************
 !  DERFCX
 !***********************************************************************************************************************************
 
-      real(wp) FUNCTION DERFCX(X)
-!------------------------------------------------------------------
-!
-! This subprogram computes approximate values for exp(x*x) * erfc(x).
-!   (see comments heading CALERF).
-!
-!   Author/date: W. J. Cody, March 30, 1987
-!
-!------------------------------------------------------------------
-      INTEGER JINT
-!S    REAL             X, RESULT
-      real(wp) X, RESULT
-!------------------------------------------------------------------
-      JINT = 2
-      CALL CALERF(X,RESULT,JINT)
-!S    ERFCX = RESULT
-      DERFCX = RESULT
-      RETURN
-!---------- Last card of DERFCX ----------
-      END
+elemental real(wp) FUNCTION ERFCX(X)
+real(wp), intent(in) :: X
 
-
-
+erfcx = exp(x*x)*erfc(x)
+END FUNCTION ERFCX
 
 
 !***********************************************************************************************************************************
@@ -3127,8 +2442,8 @@ END FUNCTION CTANHC
       N1 = INT(NU)
       N2 = N1 + 1
       GO TO 300
-  100 IF (R .GT. 1.0D0) GO TO 200
-      R = 1.0D0/R
+  100 IF (R .GT. 1._wp) GO TO 200
+      R = 1._wp/R
   200 N2 = N2 + N1*INT(R)
       D2 = D2 + D1*INT(R)
       N1 = N1 + N2
@@ -3136,19 +2451,19 @@ END FUNCTION CTANHC
   300 R = 0.0D0
       IF (NU*D1 .EQ. DBLE(N1)) GO TO 400
       R = (N2-NU*D2)/(NU*D1-N1)
-      IF (R .GT. 1.0D0) GO TO 400
+      IF (R .GT. 1._wp) GO TO 400
       T = N2
       N2 = N1
       N1 = T
       T = D2
       D2 = D1
       D1 = T
-  400 EPS = ABS(1.0D0 - (N1/(NU*D1)))
+  400 EPS = ABS(1._wp - (N1/(NU*D1)))
       IF (EPS .LE. TOL1) GO TO 600
-      M = 1.0D0
+      M = 1._wp
   500 M = 10*M
-      IF (M*EPS .LT. 1.0D0) GO TO 500
-      EPS = (1.0D0/M)*INT(0.5D0+M*EPS)
+      IF (M*EPS .LT. 1._wp) GO TO 500
+      EPS = (1._wp/M)*INT(0.5D0+M*EPS)
   600 IF (EPS .LE. TOL1) THEN
          NUM = N1
          DEN = D1
@@ -3160,11 +2475,6 @@ END FUNCTION CTANHC
       RETURN
 
       END SUBROUTINE DEC_TO_FRAC
-
-
-
-
-
 !***********************************************************************************************************************************
 !  H2HMSD
 !
@@ -3222,23 +2532,12 @@ END FUNCTION CTANHC
 !  Returns .TRUE. if X has a fractional part (i.e. if X is not an integer)
 !***********************************************************************************************************************************
 
-      elemental logical FUNCTION ISFRAC (X) RESULT (Y)
+elemental logical FUNCTION ISFRAC (X) RESULT (Y)
+real(wp), INTENT(IN) :: X
+real(wp), PARAMETER :: EPS = 1.0D-8
 
-      real(wp), INTENT(IN) :: X
-
-      real(wp), PARAMETER :: EPS = 1.0D-8
-
-
-      IF ((ABS(X)-INT(ABS(X))) .GT. EPS) THEN
-         Y = .TRUE.
-      ELSE
-         Y = .FALSE.
-      END IF
-
-      END FUNCTION ISFRAC
-
-
-
+y = (ABS(X)-INT(ABS(X))) > EPS
+END FUNCTION ISFRAC
 
 
 !***********************************************************************************************************************************
@@ -3247,27 +2546,11 @@ END FUNCTION CTANHC
 !  Returns .TRUE. if X has no fractional part (i.e. if X is an integer)
 !***********************************************************************************************************************************
 
-      FUNCTION ISINT (X) RESULT (Y)
+elemental logical FUNCTION ISINT (X)
+real(wp), INTENT(IN) :: X
 
-      IMPLICIT NONE
-
-      real(wp), INTENT(IN) :: X
-      LOGICAL :: Y
-      real(wp), PARAMETER :: EPS = 1.0D-8
-
-
-      IF ((ABS(X)-INT(ABS(X))) .GT. EPS) THEN
-         Y = .FALSE.
-      ELSE
-         Y = .TRUE.
-      END IF
-
-      RETURN
-
-      END FUNCTION ISINT
-
-
-
+isint = (ABS(X)-INT(ABS(X))) < epsilon(0._wp)
+END FUNCTION ISINT
 
 
 !***********************************************************************************************************************************
@@ -3276,33 +2559,27 @@ END FUNCTION CTANHC
 !  Convert a fraction from improper format to mixed format.
 !***********************************************************************************************************************************
 
-      SUBROUTINE FRAC_TO_MIXED (AN, AD, A1, A2, A3)
+elemental SUBROUTINE FRAC_TO_MIXED (AN, AD, A1, A2, A3)
 
-      IMPLICIT NONE
-      INTEGER, INTENT(IN) :: AN, AD
-      INTEGER, INTENT(OUT) :: A1, A2, A3
-      INTEGER :: ANN, ADN
-      LOGICAL :: NEGFLAG
+INTEGER, INTENT(IN) :: AN, AD
+INTEGER, INTENT(OUT) :: A1, A2, A3
+INTEGER :: ANN, ADN
+LOGICAL :: NEGFLAG
 
-      ANN = AN                                                                      ! normalize the input fraction
-      ADN = AD
-      CALL RATNORM (ANN,ADN)
+ANN = AN                                                                      ! normalize the input fraction
+ADN = AD
+CALL RATNORM (ANN,ADN)
 
-      NEGFLAG = ANN .LT. 0                                                          ! save the sign of the fraction..
-      ANN = ABS (ANN)                                                               ! ..and take its absolute value
+NEGFLAG = ANN .LT. 0                                                          ! save the sign of the fraction..
+ANN = ABS (ANN)                                                               ! ..and take its absolute value
 
-      A1 = ANN / ADN                                                                ! find components of mixed fraction
-      A2 = ANN - A1*ADN
-      A3 = ADN
+A1 = ANN / ADN                                                                ! find components of mixed fraction
+A2 = ANN - A1*ADN
+A3 = ADN
 
-      IF (NEGFLAG) A1 = -A1                                                         ! restore the sign (assign to A1)
+IF (NEGFLAG) A1 = -A1                                                         ! restore the sign (assign to A1)
 
-      RETURN
-
-      END SUBROUTINE FRAC_TO_MIXED
-
-
-
+END SUBROUTINE FRAC_TO_MIXED
 
 
 !***********************************************************************************************************************************
@@ -3313,46 +2590,42 @@ END FUNCTION CTANHC
 !  Algorithm from "Atlas for Computing Mathematical Functions" by W.J. Thompson, Wiley, 1997.
 !***********************************************************************************************************************************
 
-      FUNCTION RIEMANNZETA (S,EPS) RESULT (ZETA)
+elemental real(wp) FUNCTION RIEMANNZETA (S,EPS)
 
 !     Riemann zeta - 1  for  x > 1
 
-      IMPLICIT NONE
+real(wp), INTENT(IN) :: S, EPS
 
-      real(wp), INTENT(IN) :: S, EPS
-      real(wp) :: ZETA
 
-      real(wp) :: NSTERM, SUM, FN, NEGS
-      INTEGER :: N,K
+real(wp) :: NSTERM, SUM, FN, NEGS
+INTEGER :: N,K
 
 !     Estimate N for accuracy  eps
 
-      NSTERM = S*(S+1.0D00)*(S+2.0D00)* &
-        (S+3.0D00)*(S+4.0D00)/30240.0D00
-      N = (NSTERM*(2.0D00**S)/EPS) &
-          **(1.0D00/(S+5.0D00))
-      IF ( N < 10 )  THEN
-         N = 10
-      END IF
+NSTERM = S*(S+1.0D00)*(S+2.0D00)* &
+  (S+3.0D00)*(S+4.0D00)/30240.0D00
+N = (NSTERM*(2.0D00**S)/EPS) &
+    **(1._wp/(S+5.0D00))
+IF ( N < 10 )  THEN
+   N = 10
+END IF
 
-      FN = N
-      NEGS = -S
+FN = N
+NEGS = -S
 !     Direct sum
-      SUM = 0.0D00
-      DO K =2, N-1
-         SUM = SUM+K**NEGS
-      END DO
+SUM = 0.0D00
+DO K =2, N-1
+   SUM = SUM+K**NEGS
+END DO
 
 !     Add Euler-Maclaurin correction terms
-      SUM = SUM+(FN**NEGS)*(0.5D00+FN/(S-1.0D00) &
-        +S*(1.0D00-(S+1.0D00)*(S+2.0D00)/ &
-        (60.0D00*FN*FN)) &
-        /(12.0D00*FN))+NSTERM/(FN**(S+5.0D00))
-      ZETA = SUM
+SUM = SUM+(FN**NEGS)*(0.5D00+FN/(S-1.0D00) &
+  +S*(1._wp-(S+ 1._wp)*(S+2.0D00)/ &
+  (60.0D00*FN*FN)) &
+  /(12.0D00*FN))+NSTERM/(FN**(S+5.0D00))
+riemannZETA = SUM
 
-      RETURN
-
-      END FUNCTION RIEMANNZETA
+END FUNCTION RIEMANNZETA
 
 
 
@@ -3364,25 +2637,18 @@ END FUNCTION CTANHC
 !  Real linear regression.
 !***********************************************************************************************************************************
 
-      SUBROUTINE LINREG (M, B, R)
+elemental SUBROUTINE LINREG (M, B, R)
 
-      USE GLOBAL
+USE GLOBAL
 
-      IMPLICIT NONE
+real(wp), INTENT(OUT) :: M, B, R
 
-      real(wp), INTENT(OUT) :: M, B, R
-
-      M = (NN*SUMXY-SUMX*SUMY)/(NN*SUMX2-SUMX**2)
-      B = (SUMY*SUMX2-SUMX*SUMXY)/(NN*SUMX2-SUMX**2)
-      R = (SUMXY-SUMX*SUMY/NN)/SQRT((SUMX2-SUMX**2/NN)*(SUMY2-SUMY**2/NN))
-
-      RETURN
-
-      END SUBROUTINE LINREG
+M = (NN*SUMXY-SUMX*SUMY)/(NN*SUMX2-SUMX**2)
+B = (SUMY*SUMX2-SUMX*SUMXY)/(NN*SUMX2-SUMX**2)
+R = (SUMXY-SUMX*SUMY/NN)/SQRT((SUMX2-SUMX**2/NN)*(SUMY2-SUMY**2/NN))
 
 
-
-
+END SUBROUTINE LINREG
 
 !***********************************************************************************************************************************
 !  CLINREG
@@ -3390,73 +2656,61 @@ END FUNCTION CTANHC
 !  Complex linear regression.
 !***********************************************************************************************************************************
 
-      SUBROUTINE CLINREG (M, B, R)
+elemental SUBROUTINE CLINREG (M, B, R)
 
-      USE GLOBAL, only: cnn, csumxy, csumx, csumx2, csumy, csumy2
+USE GLOBAL, only: cnn, csumxy, csumx, csumx2, csumy, csumy2
 
-      COMPLEX(wp), INTENT(OUT) :: M, B, R
+COMPLEX(wp), INTENT(OUT) :: M, B, R
 
-      M = (CNN*CSUMXY-CSUMX*CSUMY)/(CNN*CSUMX2-CSUMX**2)
-      B = (CSUMY*CSUMX2-CSUMX*CSUMXY)/(CNN*CSUMX2-CSUMX**2)
-      R = (CSUMXY-CSUMX*CSUMY/CNN)/SQRT((CSUMX2-CSUMX**2/CNN)*(CSUMY2-CSUMY**2/CNN))
+M = (CNN*CSUMXY-CSUMX*CSUMY)/(CNN*CSUMX2-CSUMX**2)
+B = (CSUMY*CSUMX2-CSUMX*CSUMXY)/(CNN*CSUMX2-CSUMX**2)
+R = (CSUMXY-CSUMX*CSUMY/CNN)/SQRT((CSUMX2-CSUMX**2/CNN)*(CSUMY2-CSUMY**2/CNN))
 
-      END SUBROUTINE CLINREG
-
-
-
-
-
+END SUBROUTINE CLINREG
 !***********************************************************************************************************************************
 !  RLINREG
 !
 !  Rational linear regression.
 !***********************************************************************************************************************************
 
-      SUBROUTINE RLINREG (NM, DM, NB, DB, R)
+elemental SUBROUTINE RLINREG (NM, DM, NB, DB, R)
 
-      USE GLOBAL
+USE GLOBAL
 
-      IMPLICIT NONE
-
-      INTEGER, INTENT(OUT) :: NM, DM, NB, DB
-      real(wp), INTENT(OUT) :: R
-      INTEGER :: NUM, DEN, NUM2, DEN2, NUM3, DEN3, NUM4, DEN4
-      real(wp) :: DNN, DSUMX, DSUMX2, DSUMY, DSUMY2, DSUMXY
+INTEGER, INTENT(OUT) :: NM, DM, NB, DB
+real(wp), INTENT(OUT) :: R
+INTEGER :: NUM, DEN, NUM2, DEN2, NUM3, DEN3, NUM4, DEN4
+real(wp) :: DNN, DSUMX, DSUMX2, DSUMY, DSUMY2, DSUMXY
 
 
-      CALL RMUL(RNNN,RDNN,RNSUMXY,RDSUMXY,NUM,DEN)
-      CALL RMUL(RNSUMX,RDSUMX,RNSUMY,RDSUMY,NUM2,DEN2)
-      CALL RSUB(NUM,DEN,NUM2,DEN2,NUM3,DEN3)
-      CALL RMUL(RNNN,RDNN,RNSUMX2,RDSUMX2,NUM,DEN)
-      CALL RMUL(RNSUMX,RDSUMX,RNSUMX,RDSUMX,NUM2,DEN2)
-      CALL RSUB(NUM,DEN,NUM2,DEN2,NUM4,DEN4)
+CALL RMUL(RNNN,RDNN,RNSUMXY,RDSUMXY,NUM,DEN)
+CALL RMUL(RNSUMX,RDSUMX,RNSUMY,RDSUMY,NUM2,DEN2)
+CALL RSUB(NUM,DEN,NUM2,DEN2,NUM3,DEN3)
+CALL RMUL(RNNN,RDNN,RNSUMX2,RDSUMX2,NUM,DEN)
+CALL RMUL(RNSUMX,RDSUMX,RNSUMX,RDSUMX,NUM2,DEN2)
+CALL RSUB(NUM,DEN,NUM2,DEN2,NUM4,DEN4)
 
-      CALL RDIV(NUM3,DEN3,NUM4,DEN4,NM,DM)
+CALL RDIV(NUM3,DEN3,NUM4,DEN4,NM,DM)
 
-      CALL RMUL(RNSUMY,RDSUMY,RNSUMX2,RDSUMX2,NUM,DEN)
-      CALL RMUL(RNSUMX,RDSUMX,RNSUMXY,RDSUMXY,NUM2,DEN2)
-      CALL RSUB(NUM,DEN,NUM2,DEN2,NUM3,DEN3)
-      CALL RMUL(RNNN,RDNN,RNSUMX2,RDSUMX2,NUM,DEN)
-      CALL RMUL(RNSUMX,RDSUMX,RNSUMX,RDSUMX,NUM2,DEN2)
-      CALL RSUB(NUM,DEN,NUM2,DEN2,NUM4,DEN4)
+CALL RMUL(RNSUMY,RDSUMY,RNSUMX2,RDSUMX2,NUM,DEN)
+CALL RMUL(RNSUMX,RDSUMX,RNSUMXY,RDSUMXY,NUM2,DEN2)
+CALL RSUB(NUM,DEN,NUM2,DEN2,NUM3,DEN3)
+CALL RMUL(RNNN,RDNN,RNSUMX2,RDSUMX2,NUM,DEN)
+CALL RMUL(RNSUMX,RDSUMX,RNSUMX,RDSUMX,NUM2,DEN2)
+CALL RSUB(NUM,DEN,NUM2,DEN2,NUM4,DEN4)
 
-      CALL RDIV(NUM3,DEN3,NUM4,DEN4,NB,DB)
+CALL RDIV(NUM3,DEN3,NUM4,DEN4,NB,DB)
 
-      DNN = DBLE(RNNN)/DBLE(RDNN)
-      DSUMX = DBLE(RNSUMX)/DBLE(RDSUMX)
-      DSUMX2 = DBLE(RNSUMX2)/DBLE(RDSUMX2)
-      DSUMY = DBLE(RNSUMY)/DBLE(RDSUMY)
-      DSUMY2 = DBLE(RNSUMY2)/DBLE(RDSUMY2)
-      DSUMXY = DBLE(RNSUMXY)/DBLE(RDSUMXY)
+DNN = DBLE(RNNN)/DBLE(RDNN)
+DSUMX = DBLE(RNSUMX)/DBLE(RDSUMX)
+DSUMX2 = DBLE(RNSUMX2)/DBLE(RDSUMX2)
+DSUMY = DBLE(RNSUMY)/DBLE(RDSUMY)
+DSUMY2 = DBLE(RNSUMY2)/DBLE(RDSUMY2)
+DSUMXY = DBLE(RNSUMXY)/DBLE(RDSUMXY)
 
-      R = (DSUMXY-DSUMX*DSUMY/DNN)/SQRT((DSUMX2-DSUMX**2/DNN)*(DSUMY2-DSUMY**2/DNN))
+R = (DSUMXY-DSUMX*DSUMY/DNN)/SQRT((DSUMX2-DSUMX**2/DNN)*(DSUMY2-DSUMY**2/DNN))
 
-      RETURN
-
-      END SUBROUTINE RLINREG
-
-
-
+END SUBROUTINE RLINREG
 
 
 !***********************************************************************************************************************************
@@ -3467,7 +2721,7 @@ END FUNCTION CTANHC
 
       elemental real(wp) FUNCTION REDUCE (THETA, ANGLE_MIN) RESULT (RHO)
 
-      real(wp), PARAMETER :: TWOPI = 6.28318530717958647692528676655900576839433879875021164194988918461563281257241799726D0
+      real(wp), PARAMETER :: TWOPI = 2*4._wp*atan(1._wp)
 
       real(wp), INTENT(IN) :: THETA
       real(wp), INTENT(IN) :: ANGLE_MIN
@@ -3554,9 +2808,9 @@ END FUNCTION CTANHC
 !     Compute parameters.
 !
 
-      ALPHA = (THREE_PI_SQR + ONEP6_PI*(PI-ABS(M))/(1.0D0+ECC)) / (PI_SQR - 6.0D0)
-      D = 3.0D0*(1.0D0-ECC) + ALPHA*ECC
-      Q = 2.0D0*ALPHA*D*(1.0D0-ECC)-M**2
+      ALPHA = (THREE_PI_SQR + ONEP6_PI*(PI-ABS(M))/(1._wp+ECC)) / (PI_SQR - 6.0D0)
+      D = 3.0D0*(1._wp-ECC) + ALPHA*ECC
+      Q = 2.0D0*ALPHA*D*(1._wp-ECC)-M**2
       R = 3.0D0*ALPHA*D*(D-1.0D0+ECC)*M + M**3
       W = (ABS(R) + SQRT(Q**3 + R**2)) ** TWO_THIRDS
 
@@ -3580,9 +2834,9 @@ END FUNCTION CTANHC
 !
 
       F  = E1 - ECC*SE - M
-      F1 = 1.0D0 - ECC*COS(E1)
+      F1 = 1._wp - ECC*COS(E1)
       F2 = ECC*SE
-      F3 = 1.0D0 - F1
+      F3 = 1._wp - F1
       F4 = -F2
 
 !
@@ -3603,7 +2857,7 @@ END FUNCTION CTANHC
 !     Put E5 in the range [0, 2*PI) and return.
 !
 
-      E5 = REDUCE (E5, 0.0D0)
+      E5 = REDUCE (E5, 0._wp)
 
       END FUNCTION KEPLER
 
@@ -3756,7 +3010,7 @@ END FUNCTION CTANHC
       INTEGER I,J,K,L,M,MAGX,N,NB,NBMX,NCALC,NEND,NSTART
 
       real(wp) :: ALPHA,ALPEM,ALP2EM,B,CAPP,CAPQ,CONV,EIGHTH,EM,EN,ENMTEN,ENSIG,   &
-       ENTEN,FACT,FOUR,FUNC,GNU,HALF,HALFX,ONE,ONE30,P,PI2,PLAST,       &
+       FACT,FOUR,FUNC,GNU,HALF,HALFX,ONE,ONE30,P,PI2,PLAST,       &
        POLD,PSAVE,PSAVEL,RTNSIG,S,SUM,T,T1,TEMPA,TEMPB,TEMPC,TEST,      &
        THREE,THREE5,TOVER,TWO,TWOFIV,TWOPI1,TWOPI2,X,XC,XIN,XK,XLARGE,  &
        XM,VCOS,VSIN,Z,ZERO
@@ -3784,7 +3038,7 @@ END FUNCTION CTANHC
 !---------------------------------------------------------------------
 !S    DATA ENTEN, ENSIG, RTNSIG /1.0E38,1.0E8,1.0E-2/
 !S    DATA ENMTEN, XLARGE /1.2E-37,1.0E4/
-      DATA ENTEN, ENSIG, RTNSIG /1.0D38,1.0D17,1.0D-4/
+      DATA ENSIG, RTNSIG /1.0D17,1.0D-4/
       DATA ENMTEN, XLARGE /1.2D-37,1.0D4/
 !---------------------------------------------------------------------
 !     Factorial(N)
@@ -3806,7 +3060,7 @@ END FUNCTION CTANHC
 !---------------------------------------------------------------------
 !S    CONV(I) = REAL(I)
 !S    FUNC(X) = GAMMA(X)
-      CONV(I) = DBLE(I)
+      CONV(I) = real(i,wp)
       FUNC(X) = gamma(X)
 !---------------------------------------------------------------------
 ! Check for out of range arguments.
@@ -4272,7 +3526,7 @@ END FUNCTION CTANHC
         ALFA,ALPHA,AYE,B,BY,C,CH,COSMU,D,DEL,DEN,DDIV,DIV,DMU,D1,D2,    &
         E,EIGHT,EN,ENU,EN1,EPS,EVEN,EX,F,FIVPI,G,GAMMA,H,HALF,ODD,      &
         ONBPI,ONE,ONE5,P,PA,PA1,PI,PIBY2,PIM5,Q,QA,QA1,Q0,R,S,SINMU,    &
-        SQ2BPI,TEN9,TERM,THREE,THRESH,TWO,TWOBYX,X,XINF,XLARGE,XMIN,    &
+        SQ2BPI,TEN9,TERM,THREE,THRESH,TWO,TWOBYX,X,XINF,XLARGE,    &
         XNA,X2,YA,YA1,ZERO
       DIMENSION BY(NB),CH(21)
 !----------------------------------------------------------------------
@@ -4298,7 +3552,7 @@ END FUNCTION CTANHC
 !----------------------------------------------------------------------
 !S    DATA DEL,XMIN,XINF,EPS/1.0E-4,2.36E-38,3.40E38,5.96E-8/
 !S    DATA THRESH,XLARGE/8.0E0,1.0E4/
-      DATA DEL,XMIN,XINF,EPS/1.0D-8,4.46D-308,1.79D308,1.11D-16/
+      DATA DEL,EPS/1.0D-8,1.11D-16/
       DATA THRESH,XLARGE/16.0D0,1.0D8/
 !----------------------------------------------------------------------
 !  Coefficients for Chebyshev polynomial expansion of
@@ -4709,7 +3963,7 @@ END FUNCTION CTANHC
 !  Machine-dependent constants
 !--------------------------------------------------------------------
 !S    DATA XSMALL/2.98E-8/,XINF/3.40E38/,XMAX/91.9E0/
-      DATA XSMALL/5.55D-17/,XINF/1.79D308/,XMAX/713.986D0/
+      DATA XSMALL/5.55D-17/,XMAX/713.986_wp/
 !--------------------------------------------------------------------
 !  Coefficients for XSMALL .LE. ABS(ARG) .LT. 15.0
 !--------------------------------------------------------------------
@@ -5005,7 +4259,7 @@ END FUNCTION CTANHC
 !  Machine-dependent constants
 !--------------------------------------------------------------------
 !S    DATA XSMALL/2.98E-8/,XINF/3.4E38/,XMAX/91.906E0/
-      DATA XSMALL/5.55D-17/,XINF/1.79D308/,XMAX/713.987D0/
+      DATA XSMALL/5.55D-17/,XMAX/713.987_wp/
 !--------------------------------------------------------------------
 !  Coefficients for XSMALL .LE. ABS(ARG) .LT. 15.0
 !--------------------------------------------------------------------
@@ -5342,11 +4596,11 @@ END FUNCTION CTANHC
 !-------------------------------------------------------------------
       INTEGER IZE,K,L,MAGX,N,NB,NBMX,NCALC,NEND,NSIG,NSTART
 !S    REAL              GAMMA,
-      real(wp) ALPHA,B,CONST,CONV,EM,EMPAL,EMP2AL,EN,ENMTEN,ENSIG,              &
-       ENTEN,EXPARG,FUNC,HALF,HALFX,ONE,P,PLAST,POLD,PSAVE,PSAVEL,      &
+      real(wp) ALPHA,B,CONST,CONV,EM,EMPAL,EMP2AL,EN,ENSIG,              &
+       EXPARG,FUNC,HALF,HALFX,ONE,P,PLAST,POLD,PSAVE,PSAVEL,      &
        RTNSIG,SUM,TEMPA,TEMPB,TEMPC,TEST,TOVER,TWO,X,XLARGE,ZERO
       DIMENSION B(NB)
-
+      real(wp), parameter :: ENMTEN = tiny(0._wp)
 !-------------------------------------------------------------------
 !  Mathematical constants
 !-------------------------------------------------------------------
@@ -5359,8 +4613,8 @@ END FUNCTION CTANHC
 !S    DATA ENTEN,ENSIG,RTNSIG/1.0E38,1.0E8,1.0E-2/
 !S    DATA ENMTEN/4.7E-38/
       DATA NSIG,XLARGE,EXPARG /16,1.0D4,709.0D0/
-      DATA ENTEN,ENSIG,RTNSIG/1.0D308,1.0D16,1.0D-4/
-      DATA ENMTEN/8.9D-308/
+      DATA ENSIG,RTNSIG/1.0D16,1.0D-4/
+      
 !-------------------------------------------------------------------
 !  Statement functions for conversion
 !-------------------------------------------------------------------
@@ -5742,7 +4996,7 @@ END FUNCTION CTANHC
 !  Machine-dependent constants
 !--------------------------------------------------------------------
 !S    DATA XSMALL/5.95E-8/,XINF/3.40E+38/,XMAX/ 85.337E0/
-      DATA XSMALL/1.11D-16/,XINF/1.79D+308/,XMAX/705.342D0/
+      DATA XSMALL/1.11D-16/,XMAX/705.342_wp/
 !--------------------------------------------------------------------
 !
 !     Coefficients for XSMALL .LE.  ARG  .LE. 1.0
@@ -6039,8 +5293,10 @@ END
 !S    REAL
       real(wp)                                                  &
           ARG,F,G,ONE,P,PP,Q,QQ,RESULT,SUMF,SUMG,                       &
-          SUMP,SUMQ,X,XINF,XMAX,XLEAST,XSMALL,XX,ZERO
+          SUMP,SUMQ,X,XINF,XMAX,XSMALL,XX,ZERO
       DIMENSION P(5),Q(3),PP(11),QQ(9),F(5),G(3)
+      
+      real(wp), parameter :: xleast = tiny(0._wp)
 !--------------------------------------------------------------------
 !  Mathematical constants
 !--------------------------------------------------------------------
@@ -6051,8 +5307,8 @@ END
 !--------------------------------------------------------------------
 !S    DATA XLEAST/1.18E-38/,XSMALL/5.95E-8/,XINF/3.40E+38/,
 !S   1     XMAX/85.343E+0/
-      DATA XLEAST/2.23D-308/,XSMALL/1.11D-16/,XINF/1.79D+308/,          &
-           XMAX/705.343D+0/
+      DATA XSMALL/1.11D-16/,          &
+           XMAX/705.343_wp/
 !--------------------------------------------------------------------
 !  Coefficients for  XLEAST .LE.  ARG  .LE. 1.0
 !--------------------------------------------------------------------
@@ -6366,7 +5622,7 @@ END function besek1
       real(wp)                                                  &
           A,ALPHA,BLPHA,BK,BK1,BK2,C,D,DM,D1,D2,D3,ENU,EPS,ESTF,ESTM,   &
           EX,FOUR,F0,F1,F2,HALF,ONE,P,P0,Q,Q0,R,RATIO,S,SQXMIN,T,TINYX, &
-          TWO,TWONU,TWOX,T1,T2,WMINF,X,XINF,XMAX,XMIN,X2BY4,ZERO
+          TWO,TWONU,TWOX,T1,T2,WMINF,X,XINF,XMAX,X2BY4,ZERO
       DIMENSION BK(1),P(8),Q(7),R(5),S(4),T(6),ESTM(6),ESTF(7)
 !---------------------------------------------------------------------
 !  Mathematical constants
@@ -6384,8 +5640,8 @@ END function besek1
 !---------------------------------------------------------------------
 !S    DATA EPS/1.19E-7/,SQXMIN/1.08E-19/,XINF/3.40E+38/
 !S    DATA XMIN/1.18E-38/,XMAX/85.337E0/
-      DATA EPS/2.22D-16/,SQXMIN/1.49D-154/,XINF/1.79D+308/
-      DATA XMIN/2.23D-308/,XMAX/705.342D0/
+      DATA EPS/2.22D-16/,SQXMIN/1.49D-154/
+      DATA XMAX/705.342_wp/
 !---------------------------------------------------------------------
 !  P, Q - Approximation for LOG(GAMMA(1+ALPHA))/ALPHA
 !                                         + Euler's constant

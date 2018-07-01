@@ -3,6 +3,7 @@ fast_finish: true
 
 os:
   - linux
+  - osx
 
 env: FC=gfortran-6
 
@@ -31,7 +32,8 @@ before_install:
 install:
   - cd bin
   - cmake ..
+  - cmake --build .
 
 script: 
-  - cmake --build .
+  - ctest -V
 

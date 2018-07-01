@@ -25,7 +25,7 @@
       real(wp), PARAMETER :: PI = 4._wp * atan(1._wp)
       real(wp), PARAMETER :: TWOPI = 2*pi
       INTEGER :: I, IDX, IERR, DEL, PTR, RN, RD
-      DOUBLE PRECISION :: X
+      real(wp) :: X
       COMPLEX(wp) :: CX
       CHARACTER(LEN=300) :: LINE, SUBSTR
       CHARACTER(LEN=100) :: FMTSTR, NUMSTR
@@ -142,7 +142,7 @@
 
             SELECT CASE (DOMAIN_MODE)
                CASE (1)
-                  NUM_FLAG = ISREAL (SUBSTR, X)                                     ! convert to a real number, if possible
+                  NUM_FLAG = ISREAL(SUBSTR, X)                                     ! convert to a real number, if possible
                CASE (2)
                   NUM_FLAG = ISCOMPLEX (SUBSTR, CX)                                 ! convert to a complex number, if possible
                CASE (3)
