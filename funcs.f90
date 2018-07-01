@@ -3,47 +3,47 @@ use assert, only: wp
 implicit none
 
 interface csc
-  module procedure csc_r, csc_c
+  procedure csc_r, csc_c
 end interface csc
 
 interface acsc
-  module procedure acsc_r, acsc_c
+  procedure acsc_r, acsc_c
 end interface acsc
 
 interface sec
-  module procedure sec_r, sec_c
+  procedure sec_r, sec_c
 end interface sec
 
 interface asec
-  module procedure asec_r, asec_c
+  procedure asec_r, asec_c
 end interface asec
 
 interface cot
-  module procedure cot_r, cot_c
+  procedure cot_r, cot_c
 end interface cot
 
 interface acot
-  module procedure acot_r, acot_c
+  procedure acot_r, acot_c
 end interface acot
 
 interface cuberoot
-  module procedure cuberoot_r, cuberoot_c
+  procedure cuberoot_r, cuberoot_c
 end interface cuberoot
 
 interface hav
-  module procedure hav_r, hav_c
+  procedure hav_r, hav_c
 end interface hav
 
 interface ahav
-  module procedure ahav_r, ahav_c
+  procedure ahav_r, ahav_c
 end interface ahav
 
 interface crd
-  module procedure crd_r, crd_c
+  procedure crd_r, crd_c
 end interface crd
 
 interface frac
-  module procedure frac_r, frac_c
+  procedure frac_r, frac_c
 end interface frac
 
 real(wp), parameter :: xinf = huge(0._wp), xmax = xinf, enten=xinf, xmin = tiny(0._wp)
