@@ -24,7 +24,7 @@ add_library(assert tests/assert.f90 tests/error2008.f90)
 target_compile_options(assert PRIVATE ${FFLAGS})
 
 if(UNIX)
-  add_test(NAME UIrpn COMMAND bash -c "echo -e '2 5 * \n q' | ./rpncalc ")
+  add_test(NAME UIrpn COMMAND bash -c "echo -e '2 5 * \n q' | ./rpncalc")
 endif()
 
 #--- install
