@@ -27,14 +27,14 @@
       INTEGER :: I, IDX, IERR, DEL, PTR, RN, RD
       real(wp) :: X
       COMPLEX(wp) :: CX
-      CHARACTER(LEN=300) :: LINE, SUBSTR
-      CHARACTER(LEN=100) :: FMTSTR, NUMSTR
+      CHARACTER(300) :: LINE, SUBSTR
+      CHARACTER(100) :: FMTSTR, NUMSTR
       LOGICAL :: NUM_FLAG
 
 
 !-----------------------------------------------------------------------------------------------------------------------------------
 
-      print *, '  RPN Version '//VERSION
+      print *, 'Fortran 2008  RPN Calculator, Version '//VERSION
 
 !
 !     Initialize data.
@@ -42,27 +42,27 @@
 
       DEL = IACHAR('a') - IACHAR('A')                                               ! find ASCII position diff between 'A' and 'a'
 
-      STACK = 0.0D0                                                                 ! clear the REAL stack
-      REG = 0.0D0                                                                   ! clear the REAL registers
-      LASTX = 0.0D0                                                                 ! clear the REAL LAST X register
+      STACK = 0._wp                                                                 ! clear the REAL stack
+      REG = 0._wp                                                                   ! clear the REAL registers
+      LASTX = 0._wp                                                                 ! clear the REAL LAST X register
 
-      NN = 0.0D0                                                                    ! clear the REAL summation registers
-      SUMX = 0.0D0
-      SUMX2 = 0.0D0
-      SUMY = 0.0D0
-      SUMY2 = 0.0D0
-      SUMXY = 0.0D0
+      NN = 0._wp                                                                    ! clear the REAL summation registers
+      SUMX = 0._wp
+      SUMX2 = 0._wp
+      SUMY = 0._wp
+      SUMY2 = 0._wp
+      SUMXY = 0._wp
 
-      CSTACK = (0.0D0,0.0D0)                                                        ! clear the COMPLEX stack
-      CREG = (0.0D0,0.0D0)                                                          ! clear the COMPLEX registers
-      CLASTX = (0.0D0,0.0D0)                                                        ! clear the COMPLEX LAST X register
+      CSTACK = (0._wp,0._wp)                                                        ! clear the COMPLEX stack
+      CREG = (0._wp,0._wp)                                                          ! clear the COMPLEX registers
+      CLASTX = (0._wp,0._wp)                                                        ! clear the COMPLEX LAST X register
 
-      CNN = (0.0D0,0.0D0)                                                           ! clear the COMPLEX summation registers
-      CSUMX = (0.0D0,0.0D0)
-      CSUMX2 = (0.0D0,0.0D0)
-      CSUMY = (0.0D0,0.0D0)
-      CSUMY2 = (0.0D0,0.0D0)
-      CSUMXY = (0.0D0,0.0D0)
+      CNN = (0._wp,0._wp)                                                           ! clear the COMPLEX summation registers
+      CSUMX = (0._wp,0._wp)
+      CSUMX2 = (0._wp,0._wp)
+      CSUMY = (0._wp,0._wp)
+      CSUMY2 = (0._wp,0._wp)
+      CSUMXY = (0._wp,0._wp)
 
       RNSTACK = 0; RDSTACK = 1                                                      ! clear the RATIONAL stack
       RNREG = 0; RDREG = 1                                                          ! clear the RATIONAL registers
@@ -79,11 +79,11 @@
 
       SELECT CASE (ANGLE_MODE)
          CASE (1)                                                                   ! deg
-            ANGLE_FACTOR = PI/180.0D0
+            ANGLE_FACTOR = PI/180._wp
          CASE (2)                                                                   ! rad
-            ANGLE_FACTOR = 1.0D0
+            ANGLE_FACTOR = 1._wp
          CASE (3)                                                                   ! grad
-            ANGLE_FACTOR = PI/200.0D0
+            ANGLE_FACTOR = PI/200._wp
          CASE (4)                                                                   ! rev
             ANGLE_FACTOR = TWOPI
       END SELECT
@@ -105,8 +105,8 @@
       DO                                                                            ! loop once for each input line
 
          WRITE(stdout,'(A)', ADVANCE='NO') '  ? '
-         READ (stdin,*, iostat=ierr) LINE
-         if (ierr<0) stop
+         READ (stdin,'(A132)', iostat=ierr) LINE
+         if (ierr<0) stop  ! Ctrl D was pressed
 
 !
 !     Convert the input line to all uppercase.
@@ -118,18 +118,9 @@
                LINE(I:I) = ACHAR(IACHAR(LINE(I:I)) - DEL)                           ! ..then convert to uppercase
             END IF
          END DO
+!     Search for QUIT 'Q'
 
-!
-!     Search for QUIT or its equivalent.
-!
-
-         IF (TRIM(LINE) .EQ. 'QUIT') EXIT
          IF (TRIM(LINE) .EQ. 'Q')    EXIT
-         IF (TRIM(LINE) .EQ. 'EXIT') EXIT
-         IF (TRIM(LINE) .EQ. 'OFF')  EXIT
-         IF (TRIM(LINE) .EQ. 'BYE')  EXIT
-         IF (TRIM(LINE) .EQ. 'STOP') EXIT
-         IF (TRIM(LINE) .EQ. 'END')  EXIT
 
          PTR = 1
 
