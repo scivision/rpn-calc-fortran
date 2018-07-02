@@ -1487,8 +1487,7 @@ case('BESSELK')                                            ! BESSELK
             DEALLOCATE (BES_B)
          END IF
       CASE (2)
-         write(stderr, *) '  Error:  BESSELK not available '// &
-            'in COMPLEX mode.'
+         write(stderr, *) '  Error:  BESSELK not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
