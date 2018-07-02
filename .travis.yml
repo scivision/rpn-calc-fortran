@@ -32,7 +32,7 @@ before_install:
 
 install:
   - cd bin
-  - cmake ..
+  - cmake ../src
   - cmake --build .
 
 script: 
