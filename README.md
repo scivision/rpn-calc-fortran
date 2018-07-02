@@ -21,7 +21,9 @@ However, due to lack of basic Fortran 2008 support, the following compilers do N
 ## Build
 
     cd bin
-    cmake ..
+    
+    cmake ../src
+    
     cmake --build . --target install
     
 ## Usage
