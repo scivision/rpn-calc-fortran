@@ -34,7 +34,7 @@ touch bin/junk
 rm -r bin/*
 cd bin
 
-FC=$comp cmake ..
+FC=$comp cmake ../src
 
 cmake --build .
 
