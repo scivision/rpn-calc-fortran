@@ -1,4 +1,5 @@
 module ui
+use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 use global
 use assert, only: wp
 use funcs
@@ -12,19 +13,12 @@ contains
 !  Push a number onto the real stack.
 !***********************************************************************************************************************************
 
-SUBROUTINE PUSH_STACK (X)
-
+SUBROUTINE PUSH_STACK(X)
 real(wp), INTENT(IN) :: X
 
-INTEGER :: I
-
-
-DO I = STACK_SIZE, 2, -1
-   STACK(I) = STACK(I-1)
-END DO
+stack = cshift(stack, -1)
 
 STACK(1) = X
-
 END SUBROUTINE PUSH_STACK
 
 
@@ -34,18 +28,12 @@ END SUBROUTINE PUSH_STACK
 !  Push a number onto the complex stack.
 !***********************************************************************************************************************************
 
-SUBROUTINE CPUSH_STACK (CX)
+SUBROUTINE CPUSH_STACK(X)
+COMPLEX(wp), INTENT(IN) :: X
 
-COMPLEX(wp), INTENT(IN) :: CX
+ cstack = cshift(cstack, -1)
 
-INTEGER :: I
-
-
-DO I = STACK_SIZE, 2, -1
-   CSTACK(I) = CSTACK(I-1)
-END DO
-
-CSTACK(1) = CX
+ CSTACK(1) = X
 
 END SUBROUTINE CPUSH_STACK
 
@@ -56,17 +44,11 @@ END SUBROUTINE CPUSH_STACK
 !  Push a number onto the rational stack.
 !***********************************************************************************************************************************
 
-SUBROUTINE RPUSH_STACK (RN,RD)
-
+SUBROUTINE RPUSH_STACK(RN,RD)
 INTEGER, INTENT(IN) :: RN,RD
 
-INTEGER :: I
-
-
-DO I = STACK_SIZE, 2, -1
-   RNSTACK(I) = RNSTACK(I-1)
-   RDSTACK(I) = RDSTACK(I-1)
-END DO
+rnstack = cshift(rnstack, -1)
+rdstack = cshift(rdstack, -1)
 
 RNSTACK(1) = RN
 RDSTACK(1) = RD
@@ -80,15 +62,12 @@ END SUBROUTINE RPUSH_STACK
 !  Drop a number from the real stack.
 !***********************************************************************************************************************************
 
-SUBROUTINE DROP_STACK (N)
-
+SUBROUTINE DROP_STACK(N)
 INTEGER, INTENT(IN) :: N
 
-INTEGER :: I
+STACK(N:stack_size-1) = STACK(N+1:stack_size)
 
-DO I = N, STACK_SIZE-1
-   STACK(I) = STACK(I+1)
-END DO
+stack(stack_size) = 0._wp
 
 END SUBROUTINE DROP_STACK
 
@@ -99,16 +78,12 @@ END SUBROUTINE DROP_STACK
 !  Drop a number from the complex stack.
 !***********************************************************************************************************************************
 
-SUBROUTINE CDROP_STACK (N)
-
+SUBROUTINE CDROP_STACK(N)
 INTEGER, INTENT(IN) :: N
 
-INTEGER :: I
+ CSTACK(N:stack_size-1) = CSTACK(N+1:stack_size)
 
-
-DO I = N, STACK_SIZE-1
-   CSTACK(I) = CSTACK(I+1)
-END DO
+ Cstack(stack_size) = 0._wp
 
 END SUBROUTINE CDROP_STACK
 
@@ -121,16 +96,14 @@ END SUBROUTINE CDROP_STACK
 !***********************************************************************************************************************************
 
 SUBROUTINE RDROP_STACK (N)
-
 INTEGER, INTENT(IN) :: N
 
-INTEGER :: I
 
+RNSTACK(N:stack_size-1) = RNSTACK(N+1:stack_size)
+RDSTACK(N:stack_size-1) = RDSTACK(N+1:stack_size)
 
-DO I = N, STACK_SIZE-1
-   RNSTACK(I) = RNSTACK(I+1)
-   RDSTACK(I) = RDSTACK(I+1)
-END DO
+RNstack(stack_size) = 0._wp
+RDstack(stack_size) = 0._wp
 
 END SUBROUTINE RDROP_STACK
 
@@ -149,17 +122,17 @@ CHARACTER(LEN=100), INTENT(OUT) :: NUMSTR
 real(wp) :: TMPX
 CHARACTER(LEN=100) :: FMTSTR
 
-IF (BASE_MODE .EQ. 10) THEN                                                   ! DEC mode
+IF (BASE_MODE == 10) THEN                                                   ! DEC mode
    SELECT CASE (DISP_MODE)
       CASE (1)                                                                ! print X (FIX)
          WRITE (UNIT=FMTSTR, FMT='(1H(,4HF15.,I0,1H))') DISP_DIGITS
          WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
-         IF (INDEX(NUMSTR,'*') .NE. 0) THEN                                   !   disp. overflow
+         IF (INDEX(NUMSTR,'*') /= 0) THEN                                   !   disp. overflow
             WRITE (UNIT=FMTSTR, FMT='(1H(,5HES15.,I0,1H))') DISP_DIGITS
             WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
          END IF
          READ (UNIT=NUMSTR, FMT=*) TMPX
-         IF ((X .NE. 0._wp) .AND. (TMPX .EQ. 0._wp)) THEN                     !   disp. underflow
+         IF ((X /= 0._wp) .AND. (TMPX == 0._wp)) THEN                     !   disp. underflow
             WRITE (UNIT=FMTSTR, FMT='(1H(,5HES15.,I0,1H))') DISP_DIGITS
             WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
          END IF
@@ -205,19 +178,19 @@ END SUBROUTINE PRINTX
       COMPLEX(wp) :: TMPX
       CHARACTER(LEN=100) :: FMTSTR
 
-      IF (BASE_MODE .EQ. 10) THEN                                                   ! DEC mode
+      IF (BASE_MODE == 10) THEN                                                   ! DEC mode
          SELECT CASE (DISP_MODE)
             CASE (1)                                                                ! print X (FIX)
                WRITE (UNIT=FMTSTR, FMT=800) DISP_DIGITS, DISP_DIGITS
   800          FORMAT ("(ES25.",I0,",SP,4X,F25.",I0,",2H i)")
                WRITE (UNIT=NUMSTR, FMT=FMTSTR) REAL(X, WP), AIMAG(X)
-               IF (INDEX(NUMSTR,'*') .NE. 0) THEN                                   !   disp. overflow
+               IF (INDEX(NUMSTR,'*') /= 0) THEN                                   !   disp. overflow
                   WRITE (UNIT=FMTSTR, FMT=810)  DISP_DIGITS, DISP_DIGITS
   810             FORMAT ("(EN25.",I0,",SP,4X,ES25.",I0,",2H i)")
                   WRITE (UNIT=NUMSTR, FMT=FMTSTR) REAL(X, WP), AIMAG(X)
                END IF
                READ (UNIT=NUMSTR, FMT=*) TMPX
-               IF ((X .NE. 0._wp) .AND. (TMPX .EQ. 0._wp)) THEN                     !   disp. underflow
+               IF ((X /= 0._wp) .AND. (TMPX == 0._wp)) THEN                     !   disp. underflow
                   WRITE (UNIT=FMTSTR, FMT=820) DISP_DIGITS, DISP_DIGITS
   820             FORMAT ("(EN25.",I0,",SP,4X,ES25.",I0,",2H i)")
                   WRITE (UNIT=NUMSTR, FMT=FMTSTR) REAL(X, WP), AIMAG(X)
@@ -271,7 +244,7 @@ INTEGER :: A1, A2, A3
 
 SELECT CASE (BASE_MODE)
    CASE (2)                                                                   ! print X (BIN)
-      IF (RD .EQ. 1) THEN
+      IF (RD == 1) THEN
          WRITE (UNIT=NUMSTR, FMT='(B0)') RN
       ELSE
          SELECT CASE (FRACTION_MODE)
@@ -283,7 +256,7 @@ SELECT CASE (BASE_MODE)
          END SELECT
       END IF
    CASE (8)                                                                   ! print X (OCT)
-      IF (RD .EQ. 1) THEN
+      IF (RD == 1) THEN
          WRITE (UNIT=NUMSTR, FMT='(O0)') RN
       ELSE
          SELECT CASE (FRACTION_MODE)
@@ -295,7 +268,7 @@ SELECT CASE (BASE_MODE)
          END SELECT
       END IF
    CASE (10)                                                                  ! print X (DEC)
-      IF (RD .EQ. 1) THEN
+      IF (RD == 1) THEN
          WRITE (UNIT=NUMSTR, FMT='(I0)') RN
       ELSE
          SELECT CASE (FRACTION_MODE)
@@ -307,7 +280,7 @@ SELECT CASE (BASE_MODE)
          END SELECT
       END IF
    CASE (16)                                                                  ! print X (HEX)
-      IF (RD .EQ. 1) THEN
+      IF (RD == 1) THEN
          WRITE (UNIT=NUMSTR, FMT='(Z0)') RN
       ELSE
          SELECT CASE (FRACTION_MODE)
@@ -319,14 +292,12 @@ SELECT CASE (BASE_MODE)
          END SELECT
       END IF
 !         CASE (16)                                                                  ! print X (HEX)
-!            IF (RD .EQ. 1) THEN
+!            IF (RD == 1) THEN
 !               WRITE (UNIT=NUMSTR, FMT='(Z0)') RN
 !            ELSE
 !               WRITE (UNIT=NUMSTR, FMT='(Z0,3H / ,Z0)') RN, RD
 !            END IF
 END SELECT
-
-RETURN
 
 END SUBROUTINE RPRINTX
 
@@ -342,7 +313,7 @@ END SUBROUTINE RPRINTX
 
 SUBROUTINE EVAL (STR)
 
-CHARACTER(LEN=*), INTENT(IN) :: STR
+CHARACTER(*), INTENT(IN) :: STR
 
 real(wp), PARAMETER :: PI = 4._wp * atan(1._wp)
 real(wp), PARAMETER :: TWOPI = 2*pi
@@ -387,10 +358,11 @@ CHARACTER(LEN=10) :: TIME, DATE, ZONE
 
 real(wp), ALLOCATABLE, DIMENSION(:) :: BES_B
 
-IF (LEN_TRIM(STR) .EQ. 0) THEN
-   CONTINUE
+IF (LEN_TRIM(STR) == 0) return
 
-ELSE IF (TRIM(STR) .EQ. '+') THEN                                             ! +
+select case(str)
+
+case('+')                                                  ! +
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -409,7 +381,7 @@ ELSE IF (TRIM(STR) .EQ. '+') THEN                                             ! 
          CALL RDROP_STACK(2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. '-') THEN                                             ! -
+case('-')                                                  ! -
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -428,7 +400,7 @@ ELSE IF (TRIM(STR) .EQ. '-') THEN                                             ! 
          CALL RDROP_STACK(2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. '*') THEN                                             ! *
+case('*')                                                  ! *
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -447,19 +419,19 @@ ELSE IF (TRIM(STR) .EQ. '*') THEN                                             ! 
          CALL RDROP_STACK(2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. '/') THEN                                             ! /
+case('/')                                                  ! /
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .EQ. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  Divide Error'
+         IF (STACK(1) == 0._wp) THEN
+            write(stderr, *) '  Divide by zero Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = STACK(2) / STACK(1)
             CALL DROP_STACK(2)
          END IF
       CASE (2)
-         IF (CSTACK(1) .EQ. (0.0,0.0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  Divide Error'
+         IF (CSTACK(1) == (0.0,0.0)) THEN
+            write(stderr, *) '  Divide by zero Error'
          ELSE
             CLASTX = CSTACK(1)
             CSTACK(1) = CSTACK(2) / CSTACK(1)
@@ -474,7 +446,7 @@ ELSE IF (TRIM(STR) .EQ. '/') THEN                                             ! 
          CALL RDROP_STACK(2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. '^') THEN                                             ! ^
+case('^')                                                  ! ^
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -485,7 +457,7 @@ ELSE IF (TRIM(STR) .EQ. '^') THEN                                             ! 
          CSTACK(1) = CSTACK(2) ** CSTACK(1)
          CALL CDROP_STACK(2)
       CASE (3)
-         IF (RDSTACK(1) .EQ. 1) THEN
+         IF (RDSTACK(1) == 1) THEN
             RNLASTX = RNSTACK(1)
             RDLASTX = RDSTACK(1)
             RNSTACK(1) = RNSTACK(2) ** RNLASTX
@@ -499,18 +471,18 @@ ELSE IF (TRIM(STR) .EQ. '^') THEN                                             ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. '\') THEN                                             ! \
+case('\')                                                  ! \
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .EQ. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  Divide Error'
+         IF (STACK(1) == 0._wp) THEN
+            write(stderr, *) '  Divide Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = 1._wp / STACK(1)
          END IF
       CASE (2)
-         IF (CSTACK(1) .EQ. (0.0,0.0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  Divide Error'
+         IF (CSTACK(1) == (0.0,0.0)) THEN
+            write(stderr, *) '  Divide Error'
          ELSE
             CLASTX = CSTACK(1)
             CSTACK(1) = (1.0,0.0) / CSTACK(1)
@@ -523,7 +495,7 @@ ELSE IF (TRIM(STR) .EQ. '\') THEN                                             ! 
          RDSTACK(1) = DEN
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. '%') THEN                                             ! %
+case('%')                                                  ! %
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -544,18 +516,18 @@ ELSE IF (TRIM(STR) .EQ. '%') THEN                                             ! 
          RDSTACK(1) = DEN
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. '%CHG') THEN                                          ! %CHG
+case('%CHG')                                               ! %CHG
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(2) .EQ. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  Divide Error'
+         IF (STACK(2) == 0._wp) THEN
+            write(stderr, *) '  Divide Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = 100.0D0*(STACK(1)-STACK(2))/STACK(2)
          END IF
       CASE (2)
-         IF (CSTACK(2) .EQ. (0._wp, 0._wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  Divide Error'
+         IF (CSTACK(2) == (0._wp, 0._wp)) THEN
+            write(stderr, *) '  Divide Error'
          ELSE
             CLASTX = CSTACK(1)
             CSTACK(1) = 100.0D0*(CSTACK(1)-CSTACK(2))/CSTACK(2)
@@ -574,30 +546,30 @@ ELSE IF (TRIM(STR) .EQ. '%CHG') THEN                                          ! 
          RDSTACK(1) = DEN2
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. '!') THEN                                             ! !
+case('!')                                                  ! !
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (ISINT(STACK(1)).AND.(STACK(1).LT.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  Factorial Error'
+         IF (ISINT(STACK(1)).AND.(STACK(1)<0.0D0)) THEN
+            write(stderr, *) '  Factorial Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = gamma(STACK(1)+1._wp)
          END IF
       CASE (2)
-         IF (CSTACK(1) .EQ. (-1._wp, 0._wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  Factorial Error'
+         IF (CSTACK(1) == (-1._wp, 0._wp)) THEN
+            write(stderr, *) '  Factorial Error'
          ELSE
             CLASTX = CSTACK(1)
             CSTACK(1) = CGAMMA(CSTACK(1)+(1._wp, 0._wp))
          END IF
       CASE (3)
-         IF ((RDSTACK(1).EQ.1).AND.(RNSTACK(1).LT.0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  Factorial Error'
+         IF ((RDSTACK(1)==1).AND.(RNSTACK(1)<0)) THEN
+            write(stderr, *) '  Factorial Error'
          ELSE
-            IF (RDSTACK(1).EQ.1) THEN
+            IF (RDSTACK(1)==1) THEN
                ITMP = RNSTACK(1)
-               IF (ITMP.LT.0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Factorial Error'
+               IF (ITMP<0) THEN
+                  write(stderr, *) '  Factorial Error'
                ELSE
                   ITMP2 = 1
                   DO I = 2, ITMP
@@ -610,8 +582,8 @@ ELSE IF (TRIM(STR) .EQ. '!') THEN                                             ! 
                END IF
             ELSE
                CALL SWITCH_RAT_TO_REAL
-               IF (ISINT(STACK(1)).AND.(STACK(1).LT.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  Factorial Error'
+               IF (ISINT(STACK(1)).AND.(STACK(1)<0.0D0)) THEN
+                  write(stderr, *) '  Factorial Error'
                ELSE
                   LASTX = STACK(1)
                   STACK(1) = gamma(STACK(1)+1._wp)
@@ -620,14 +592,14 @@ ELSE IF (TRIM(STR) .EQ. '!') THEN                                             ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. '!!') THEN                                            ! !!
+case('!!')                                                 ! !!
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .LT. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  !! Error'
+         IF (STACK(1) < 0._wp) THEN
+            write(stderr, *) '  !! Error'
          ELSE IF (ISFRAC(STACK(1))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  !! Error'
-         ELSE IF (NINT(STACK(1)) .EQ. 0._wp) THEN
+            write(stderr, *) '  !! Error'
+         ELSE IF (NINT(STACK(1)) == 0._wp) THEN
             LASTX = STACK(1)
             STACK(1) = 1._wp
          ELSE
@@ -637,17 +609,17 @@ ELSE IF (TRIM(STR) .EQ. '!!') THEN                                            ! 
             DO
                STACK(1) = STACK(1) * ITMP
                ITMP = ITMP - 2
-               IF (ITMP .LE. 1) EXIT
+               IF (ITMP <= 1) EXIT
             END DO
          END IF
       CASE (2)
-         IF (real(CSTACK(1), wp) .LT. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  !! Error'
-         ELSE IF (AIMAG(CSTACK(1)) .NE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  !! Error'
+         IF (real(CSTACK(1), wp) < 0._wp) THEN
+            write(stderr, *) '  !! Error'
+         ELSE IF (AIMAG(CSTACK(1)) /= 0._wp) THEN
+            write(stderr, *) '  !! Error'
          ELSE IF (ISFRAC(real(CSTACK(1), wp))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  !! Error'
-         ELSE IF (NINT(real(CSTACK(1), wp)) .EQ. 0._wp) THEN
+            write(stderr, *) '  !! Error'
+         ELSE IF (NINT(real(CSTACK(1), wp)) == 0._wp) THEN
             CLASTX = CSTACK(1)
             CSTACK(1) = (1._wp, 0._wp)
          ELSE
@@ -657,16 +629,16 @@ ELSE IF (TRIM(STR) .EQ. '!!') THEN                                            ! 
             DO
                TMP = TMP * ITMP
                ITMP = ITMP - 2
-               IF (ITMP .LE. 1) EXIT
+               IF (ITMP <= 1) EXIT
             END DO
             CSTACK(1) = CMPLX(TMP, 0._wp, wp)
          END IF
       CASE (3)
-         IF (RNSTACK(1) .LT. 0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  !! Error'
-         ELSE IF (RDSTACK(1) .NE. 1) THEN
-            WRITE (UNIT=*, FMT='(A)') '  !! Error'
-         ELSE IF (RNSTACK(1) .EQ. 0) THEN
+         IF (RNSTACK(1) < 0) THEN
+            write(stderr, *) '  !! Error'
+         ELSE IF (RDSTACK(1) /= 1) THEN
+            write(stderr, *) '  !! Error'
+         ELSE IF (RNSTACK(1) == 0) THEN
             RNLASTX = RNSTACK(1)
             RDLASTX = RDSTACK(1)
             RNSTACK(1) = 1
@@ -680,12 +652,12 @@ ELSE IF (TRIM(STR) .EQ. '!!') THEN                                            ! 
             DO
                RNSTACK(1) = RNSTACK(1) * ITMP
                ITMP = ITMP - 2
-               IF (ITMP .LE. 1) EXIT
+               IF (ITMP <= 1) EXIT
             END DO
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. '10X') THEN                                           ! 10X
+case('10X')                                                ! 10X
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -699,7 +671,7 @@ ELSE IF (TRIM(STR) .EQ. '10X') THEN                                           ! 
          STACK(1) = 10.0D0**(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. '2PI') THEN                                           ! 2PI
+case('2PI')                                                ! 2PI
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (TWOPI)
@@ -710,17 +682,17 @@ ELSE IF (TRIM(STR) .EQ. '2PI') THEN                                           ! 
          CALL PUSH_STACK (TWOPI)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. '2PII') THEN                                          ! 2PII
+case('2PII')                                               ! 2PII
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         WRITE (UNIT=*, FMT='(A)') ' 2PIi not available in REAL mode'
+         write(stderr, *) ' 2PIi not available in REAL mode'
       CASE (2)
          CALL CPUSH_STACK (CMPLX(0._wp,TWOPI, wp))
       CASE (3)
-         WRITE (UNIT=*, FMT='(A)') ' 2PIi not available in RATIONAL mode'
+         write(stderr, *) ' 2PIi not available in RATIONAL mode'
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. '2X') THEN                                            ! 2X
+case('2X')                                                 ! 2X
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
       CASE (2)
@@ -732,7 +704,7 @@ ELSE IF (TRIM(STR) .EQ. '2X') THEN                                            ! 
          STACK(1) = 2.0D0**(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'A0') THEN                                            ! A0
+case('A0')                                                 ! A0
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
       CASE (2)
@@ -742,7 +714,7 @@ ELSE IF (TRIM(STR) .EQ. 'A0') THEN                                            ! 
          CALL PUSH_STACK (A0)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ABS') THEN                                           ! ABS
+case('ABS')                                                ! ABS
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -757,11 +729,11 @@ ELSE IF (TRIM(STR) .EQ. 'ABS') THEN                                           ! 
          RDSTACK(1) = ABS(RDSTACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ACOS') THEN                                          ! ACOS
+case('ACOS')                                               ! ACOS
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (ABS(STACK(1)) .GT. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACOS Error'
+         IF (ABS(STACK(1)) > 1._wp) THEN
+            write(stderr, *) '  ACOS Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = ACOS(STACK(1))/ANGLE_FACTOR
@@ -770,8 +742,8 @@ ELSE IF (TRIM(STR) .EQ. 'ACOS') THEN                                          ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = acos(CSTACK(1))/ANGLE_FACTOR
       CASE (3)
-         IF (ABS(RNSTACK(1)) .GT. ABS(RDSTACK(1))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACOS Error'
+         IF (ABS(RNSTACK(1)) > ABS(RDSTACK(1))) THEN
+            write(stderr, *) '  ACOS Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             LASTX = STACK(1)
@@ -779,11 +751,11 @@ ELSE IF (TRIM(STR) .EQ. 'ACOS') THEN                                          ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ACOSH') THEN                                         ! ACOSH
+case('ACOSH')                                             ! ACOSH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .LT. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACOSH Error'
+         IF (STACK(1) < 1._wp) THEN
+            write(stderr, *) '  ACOSH Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = ACOSH(STACK(1))
@@ -792,8 +764,8 @@ ELSE IF (TRIM(STR) .EQ. 'ACOSH') THEN                                         ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = ACOSH(CSTACK(1))
       CASE (3)
-         IF (RNSTACK(1) .LT. RDSTACK(1)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACOSH Error'
+         IF (RNSTACK(1) < RDSTACK(1)) THEN
+            write(stderr, *) '  ACOSH Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             LASTX = STACK(1)
@@ -801,7 +773,7 @@ ELSE IF (TRIM(STR) .EQ. 'ACOSH') THEN                                         ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ACOT') THEN                                          ! ACOT
+case('ACOT')                                               ! ACOT
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -815,7 +787,7 @@ ELSE IF (TRIM(STR) .EQ. 'ACOT') THEN                                          ! 
          STACK(1) = ACOT(STACK(1))/ANGLE_FACTOR
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ACOT2') THEN                                         ! ACOT2
+case('ACOT2')                                             ! ACOT2
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -832,11 +804,11 @@ ELSE IF (TRIM(STR) .EQ. 'ACOT2') THEN                                         ! 
          CALL DROP_STACK(2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ACOTH') THEN                                         ! ACOTH
+case('ACOTH')                                             ! ACOTH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .EQ. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACOTH Error'
+         IF (STACK(1) == 0._wp) THEN
+            write(stderr, *) '  ACOTH Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = ACOTH(STACK(1))
@@ -845,8 +817,8 @@ ELSE IF (TRIM(STR) .EQ. 'ACOTH') THEN                                         ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = CACOTH(CSTACK(1))
       CASE (3)
-         IF (RNSTACK(1) .EQ. 0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACOTH Error'
+         IF (RNSTACK(1) == 0) THEN
+            write(stderr, *) '  ACOTH Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             LASTX = STACK(1)
@@ -854,11 +826,11 @@ ELSE IF (TRIM(STR) .EQ. 'ACOTH') THEN                                         ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ACOVERS') THEN                                       ! ACOVERS
+case('ACOVERS')                                            ! ACOVERS
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (ABS(1._wp-STACK(1)) .GT. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACOVERS Error'
+         IF (ABS(1._wp-STACK(1)) > 1._wp) THEN
+            write(stderr, *) '  ACOVERS Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = ACOVERS(STACK(1))/ANGLE_FACTOR
@@ -867,8 +839,8 @@ ELSE IF (TRIM(STR) .EQ. 'ACOVERS') THEN                                       ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = CACOVERS(CSTACK(1))/ANGLE_FACTOR
       CASE (3)
-         IF (ABS(RNSTACK(1)) .LT. 0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACOVERS Error'
+         IF (ABS(RNSTACK(1)) < 0) THEN
+            write(stderr, *) '  ACOVERS Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             LASTX = STACK(1)
@@ -876,11 +848,11 @@ ELSE IF (TRIM(STR) .EQ. 'ACOVERS') THEN                                       ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ACRD') THEN                                          ! ACRD
+case('ACRD')                                               ! ACRD
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (ABS(STACK(1)) .GT. 2.0D0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACRD Error'
+         IF (ABS(STACK(1)) > 2.0D0) THEN
+            write(stderr, *) '  ACRD Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = ACRD(STACK(1))/ANGLE_FACTOR
@@ -889,8 +861,8 @@ ELSE IF (TRIM(STR) .EQ. 'ACRD') THEN                                          ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = CACRD(CSTACK(1))/ANGLE_FACTOR
       CASE (3)
-         IF (ABS(RNSTACK(1)) .GT. 2*ABS(RDSTACK(1))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACRD Error'
+         IF (ABS(RNSTACK(1)) > 2*ABS(RDSTACK(1))) THEN
+            write(stderr, *) '  ACRD Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             LASTX = STACK(1)
@@ -898,11 +870,11 @@ ELSE IF (TRIM(STR) .EQ. 'ACRD') THEN                                          ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ACSC') THEN                                          ! ACSC
+case('ACSC')                                               ! ACSC
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (ABS(STACK(1)) .LT. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACSC Error'
+         IF (ABS(STACK(1)) < 1._wp) THEN
+            write(stderr, *) '  ACSC Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = ACSC(STACK(1))/ANGLE_FACTOR
@@ -911,8 +883,8 @@ ELSE IF (TRIM(STR) .EQ. 'ACSC') THEN                                          ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = ACSC(CSTACK(1))/ANGLE_FACTOR
       CASE (3)
-         IF (ABS(RNSTACK(1)) .LT. ABS(RDSTACK(1))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACSC Error'
+         IF (ABS(RNSTACK(1)) < ABS(RDSTACK(1))) THEN
+            write(stderr, *) '  ACSC Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             LASTX = STACK(1)
@@ -920,11 +892,11 @@ ELSE IF (TRIM(STR) .EQ. 'ACSC') THEN                                          ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ACSCH') THEN                                         ! ACSCH
+case('ACSCH')                                             ! ACSCH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .EQ. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACSCH Error'
+         IF (STACK(1) == 0._wp) THEN
+            write(stderr, *) '  ACSCH Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = ACSCH(STACK(1))
@@ -933,8 +905,8 @@ ELSE IF (TRIM(STR) .EQ. 'ACSCH') THEN                                         ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = CACSCH(CSTACK(1))
       CASE (3)
-         IF (RNSTACK(1) .EQ. 0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ACSCH Error'
+         IF (RNSTACK(1) == 0) THEN
+            write(stderr, *) '  ACSCH Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             LASTX = STACK(1)
@@ -942,11 +914,11 @@ ELSE IF (TRIM(STR) .EQ. 'ACSCH') THEN                                         ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'AEXSEC') THEN                                        ! AEXSEC
+case('AEXSEC')                                             ! AEXSEC
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (ABS(STACK(1)+1._wp) .LT. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  AEXSEC Error'
+         IF (ABS(STACK(1)+1._wp) < 1._wp) THEN
+            write(stderr, *) '  AEXSEC Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = AEXSEC(STACK(1))/ANGLE_FACTOR
@@ -955,8 +927,8 @@ ELSE IF (TRIM(STR) .EQ. 'AEXSEC') THEN                                        ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = CAEXSEC(CSTACK(1))/ANGLE_FACTOR
       CASE (3)
-         IF (ABS(RNSTACK(1)) .LT. 0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  AEXSEC Error'
+         IF (ABS(RNSTACK(1)) < 0) THEN
+            write(stderr, *) '  AEXSEC Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             LASTX = STACK(1)
@@ -964,11 +936,11 @@ ELSE IF (TRIM(STR) .EQ. 'AEXSEC') THEN                                        ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'AHAV') THEN                                          ! AHAV
+case('AHAV')                                               ! AHAV
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((STACK(1).LT.0.0D0).OR.(STACK(1).GT.1._wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  AHAV Error'
+         IF ((STACK(1)<0.0D0).OR.(STACK(1)>1._wp)) THEN
+            write(stderr, *) '  AHAV Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = AHAV(STACK(1))/ANGLE_FACTOR
@@ -977,8 +949,8 @@ ELSE IF (TRIM(STR) .EQ. 'AHAV') THEN                                          ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = AHAV(CSTACK(1))/ANGLE_FACTOR
       CASE (3)
-         IF ((RNSTACK(1).LT.0).OR.(RNSTACK(1).GT.RDSTACK(1))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  AHAV Error'
+         IF ((RNSTACK(1)<0).OR.(RNSTACK(1)>RDSTACK(1))) THEN
+            write(stderr, *) '  AHAV Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             LASTX = STACK(1)
@@ -986,10 +958,10 @@ ELSE IF (TRIM(STR) .EQ. 'AHAV') THEN                                          ! 
          END IF
    END SELECT
 
-ELSE IF (STR(1:3) .EQ. 'ALL') THEN                                            ! ALL
+case('ALL')                                                 ! ALL
    DISP_MODE = 4
 
-ELSE IF (TRIM(STR) .EQ. 'AMU') THEN                                           ! AMU
+case('AMU')                                                ! AMU
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (AMU)
@@ -1000,7 +972,7 @@ ELSE IF (TRIM(STR) .EQ. 'AMU') THEN                                           ! 
          CALL PUSH_STACK (AMU)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'AND') THEN                                           ! AND
+case('AND')                                                ! AND
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1022,7 +994,7 @@ ELSE IF (TRIM(STR) .EQ. 'AND') THEN                                           ! 
          CALL RDROP_STACK(2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ARG') THEN                                           ! ARG
+case('ARG')                                                ! ARG
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1038,11 +1010,11 @@ ELSE IF (TRIM(STR) .EQ. 'ARG') THEN                                           ! 
          RDSTACK(1) = 1
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ASEC') THEN                                          ! ASEC
+case('ASEC')                                               ! ASEC
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (ABS(STACK(1)) .LT. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ASEC Error'
+         IF (ABS(STACK(1)) < 1._wp) THEN
+            write(stderr, *) '  ASEC Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = ASEC(STACK(1))/ANGLE_FACTOR
@@ -1051,8 +1023,8 @@ ELSE IF (TRIM(STR) .EQ. 'ASEC') THEN                                          ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = ASEC(CSTACK(1))/ANGLE_FACTOR
       CASE (3)
-         IF (ABS(RNSTACK(1)) .LT. ABS(RDSTACK(1))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ASEC Error'
+         IF (ABS(RNSTACK(1)) < ABS(RDSTACK(1))) THEN
+            write(stderr, *) '  ASEC Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             RNLASTX = RNSTACK(1)
@@ -1061,11 +1033,11 @@ ELSE IF (TRIM(STR) .EQ. 'ASEC') THEN                                          ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ASECH') THEN                                         ! ASECH
+case('ASECH')                                             ! ASECH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((STACK(1).LE.0.0D0).OR.(STACK(1).GT.1._wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ASECH Error'
+         IF ((STACK(1)<=0.0D0).OR.(STACK(1)>1._wp)) THEN
+            write(stderr, *) '  ASECH Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = ASECH(STACK(1))
@@ -1074,8 +1046,8 @@ ELSE IF (TRIM(STR) .EQ. 'ASECH') THEN                                         ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = CASECH(CSTACK(1))
       CASE (3)
-         IF ((RNSTACK(1).LE.0).OR.(RNSTACK(1).GT.RDSTACK(1))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ASECH Error'
+         IF ((RNSTACK(1)<=0).OR.(RNSTACK(1)>RDSTACK(1))) THEN
+            write(stderr, *) '  ASECH Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             LASTX = STACK(1)
@@ -1083,11 +1055,11 @@ ELSE IF (TRIM(STR) .EQ. 'ASECH') THEN                                         ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ASIN') THEN                                          ! ASIN
+case('ASIN')                                               ! ASIN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (ABS(STACK(1)) .GT. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ASIN Error'
+         IF (ABS(STACK(1)) > 1._wp) THEN
+            write(stderr, *) '  ASIN Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = ASIN(STACK(1))/ANGLE_FACTOR
@@ -1096,8 +1068,8 @@ ELSE IF (TRIM(STR) .EQ. 'ASIN') THEN                                          ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = ASIN(CSTACK(1))/ANGLE_FACTOR
       CASE (3)
-         IF (ABS(RNSTACK(1)) .GT. ABS(RDSTACK(1))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ASIN Error'
+         IF (ABS(RNSTACK(1)) > ABS(RDSTACK(1))) THEN
+            write(stderr, *) '  ASIN Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             LASTX = STACK(1)
@@ -1105,7 +1077,7 @@ ELSE IF (TRIM(STR) .EQ. 'ASIN') THEN                                          ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ASINH') THEN                                         ! ASINH
+case('ASINH')                                             ! ASINH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1119,7 +1091,7 @@ ELSE IF (TRIM(STR) .EQ. 'ASINH') THEN                                         ! 
          STACK(1) = ASINH(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ATAN') THEN                                          ! ATAN
+case('ATAN')                                               ! ATAN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1133,7 +1105,7 @@ ELSE IF (TRIM(STR) .EQ. 'ATAN') THEN                                          ! 
          STACK(1) = ATAN(STACK(1))/ANGLE_FACTOR
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ATAN2') THEN                                         ! ATAN2
+case('ATAN2')                                             ! ATAN2
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1150,11 +1122,11 @@ ELSE IF (TRIM(STR) .EQ. 'ATAN2') THEN                                         ! 
          CALL DROP_STACK(2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ATANH') THEN                                         ! ATANH
+case('ATANH')                                             ! ATANH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (ABS(STACK(1)) .GE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ATANH Error'
+         IF (ABS(STACK(1)) >= 1._wp) THEN
+            write(stderr, *) '  ATANH Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = ATANH(STACK(1))
@@ -1163,8 +1135,8 @@ ELSE IF (TRIM(STR) .EQ. 'ATANH') THEN                                         ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = ATANH(CSTACK(1))
       CASE (3)
-         IF (ABS(RNSTACK(1)) .GE. ABS(RDSTACK(1))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  ATANH Error'
+         IF (ABS(RNSTACK(1)) >= ABS(RDSTACK(1))) THEN
+            write(stderr, *) '  ATANH Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             LASTX = STACK(1)
@@ -1172,7 +1144,7 @@ ELSE IF (TRIM(STR) .EQ. 'ATANH') THEN                                         ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'AU') THEN                                            ! AU
+case('AU')                                                 ! AU
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (AU)
@@ -1183,11 +1155,11 @@ ELSE IF (TRIM(STR) .EQ. 'AU') THEN                                            ! 
          CALL PUSH_STACK (AU)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'AVERS') THEN                                         ! AVERS
+case('AVERS')                                             ! AVERS
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (ABS(1._wp-STACK(1)) .GT. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  AVERS Error'
+         IF (ABS(1._wp-STACK(1)) > 1._wp) THEN
+            write(stderr, *) '  AVERS Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = AVERS(STACK(1))/ANGLE_FACTOR
@@ -1196,8 +1168,8 @@ ELSE IF (TRIM(STR) .EQ. 'AVERS') THEN                                         ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = CAVERS(CSTACK(1))/ANGLE_FACTOR
       CASE (3)
-         IF (ABS(RNSTACK(1)) .LT. 0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  AVERS Error'
+         IF (ABS(RNSTACK(1)) < 0) THEN
+            write(stderr, *) '  AVERS Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             LASTX = STACK(1)
@@ -1205,49 +1177,47 @@ ELSE IF (TRIM(STR) .EQ. 'AVERS') THEN                                         ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BESSELJ0') THEN                                      ! BESSELJ0
+case('BESSELJ0')                                           ! BESSELJ0
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
          STACK(1) = bessel_J0(STACK(1))
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELJ0 not available '// &
-            'in COMPLEX mode.'
+         write(stderr, *) '  Error:  BESSELJ0 not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
          STACK(1) = bessel_j0(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BESSELJ1') THEN                                      ! BESSELJ1
+case('BESSELJ1')                                           ! BESSELJ1
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
          STACK(1) = bessel_j1(STACK(1))
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELJ1 not available '// &
-            'in COMPLEX mode.'
+         write(stderr, *) '  Error:  BESSELJ1 not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
          STACK(1) = bessel_j1(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BESSELJ') THEN                                       ! BESSELJ
+case('BESSELJ')                                            ! BESSELJ
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELJ Error 1'
+         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+            write(stderr, *) '  BESSELJ Error 1'
          ELSE
             BES_X = STACK(1)
             BES_NB = INT(STACK(2)) + 1
             BES_ALPHA = FRAC(STACK(2))
             ALLOCATE (BES_B(BES_NB))
             CALL RJBESL(BES_X, BES_ALPHA, BES_NB, BES_B, BES_NCALC)
-            IF (BES_NCALC .LT. 0) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELJ Error 2'
-            ELSE IF (BES_NCALC .NE. BES_NB) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELJ Error 3'
+            IF (BES_NCALC < 0) THEN
+               write(stderr, *) '  BESSELJ Error 2'
+            ELSE IF (BES_NCALC /= BES_NB) THEN
+               write(stderr, *) '  BESSELJ Error 3'
             ELSE
                LASTX = STACK(1)
                STACK(1) = BES_B(BES_NB)
@@ -1256,22 +1226,21 @@ ELSE IF (TRIM(STR) .EQ. 'BESSELJ') THEN                                       ! 
             DEALLOCATE (BES_B)
          END IF
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELJ not available '// &
-            'in COMPLEX mode.'
+         write(stderr, *) '  Error:  BESSELJ not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELJ Error 1'
+         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+            write(stderr, *) '  BESSELJ Error 1'
          ELSE
             BES_X = STACK(1)
             BES_NB = INT(STACK(2)) + 1
             BES_ALPHA = FRAC(STACK(2))
             ALLOCATE (BES_B(BES_NB))
             CALL RJBESL(BES_X, BES_ALPHA, BES_NB, BES_B, BES_NCALC)
-            IF (BES_NCALC .LT. 0) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELJ Error 2'
-            ELSE IF (BES_NCALC .NE. BES_NB) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELJ Error 3'
+            IF (BES_NCALC < 0) THEN
+               write(stderr, *) '  BESSELJ Error 2'
+            ELSE IF (BES_NCALC /= BES_NB) THEN
+               write(stderr, *) '  BESSELJ Error 3'
             ELSE
                LASTX = STACK(1)
                STACK(1) = BES_B(BES_NB)
@@ -1281,65 +1250,65 @@ ELSE IF (TRIM(STR) .EQ. 'BESSELJ') THEN                                       ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BESSELY0') THEN                                      ! BESSELY0
+case('BESSELY0')                                           ! BESSELY0
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELY0 Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  BESSELY0 Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = bessel_y0(STACK(1))
          END IF
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELY0 not available '// &
+         write(stderr, *) '  Error:  BESSELY0 not available '// &
             'in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELY0 Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  BESSELY0 Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = bessel_y0(STACK(1))
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BESSELY1') THEN                                      ! BESSELY1
+case('BESSELY1')                                           ! BESSELY1
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELY1 Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  BESSELY1 Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = bessel_y1(STACK(1))
          END IF
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELY1 not available '// &
+         write(stderr, *) '  Error:  BESSELY1 not available '// &
             'in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELY1 Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  BESSELY1 Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = bessel_y1(STACK(1))
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BESSELY') THEN                                       ! BESSELY
+case('BESSELY')                                            ! BESSELY
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELY Error 1'
+         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+            write(stderr, *) '  BESSELY Error 1'
          ELSE
             BES_X = STACK(1)
             BES_NB = INT(STACK(2)) + 1
             BES_ALPHA = FRAC(STACK(2))
             ALLOCATE (BES_B(BES_NB))
             CALL RYBESL(BES_X, BES_ALPHA, BES_NB, BES_B, BES_NCALC)
-            IF (BES_NCALC .LT. 0) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELY Error 2'
-            ELSE IF (BES_NCALC .NE. BES_NB) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELY Error 3'
+            IF (BES_NCALC < 0) THEN
+               write(stderr, *) '  BESSELY Error 2'
+            ELSE IF (BES_NCALC /= BES_NB) THEN
+               write(stderr, *) '  BESSELY Error 3'
             ELSE
                LASTX = STACK(1)
                STACK(1) = BES_B(BES_NB)
@@ -1348,22 +1317,22 @@ ELSE IF (TRIM(STR) .EQ. 'BESSELY') THEN                                       ! 
             DEALLOCATE (BES_B)
          END IF
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELY not available '// &
+         write(stderr, *) '  Error:  BESSELY not available '// &
             'in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELY Error 1'
+         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+            write(stderr, *) '  BESSELY Error 1'
          ELSE
             BES_X = STACK(1)
             BES_NB = INT(STACK(2)) + 1
             BES_ALPHA = FRAC(STACK(2))
             ALLOCATE (BES_B(BES_NB))
             CALL RYBESL(BES_X, BES_ALPHA, BES_NB, BES_B, BES_NCALC)
-            IF (BES_NCALC .LT. 0) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELY Error 2'
-            ELSE IF (BES_NCALC .NE. BES_NB) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELY Error 3'
+            IF (BES_NCALC < 0) THEN
+               write(stderr, *) '  BESSELY Error 2'
+            ELSE IF (BES_NCALC /= BES_NB) THEN
+               write(stderr, *) '  BESSELY Error 3'
             ELSE
                LASTX = STACK(1)
                STACK(1) = BES_B(BES_NB)
@@ -1373,13 +1342,13 @@ ELSE IF (TRIM(STR) .EQ. 'BESSELY') THEN                                       ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BESSELI0') THEN                                      ! BESSELI0
+case('BESSELI0')                                           ! BESSELI0
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
          STACK(1) = BESI0(STACK(1))
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELI0 not available '// &
+         write(stderr, *) '  Error:  BESSELI0 not available '// &
             'in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
@@ -1387,13 +1356,13 @@ ELSE IF (TRIM(STR) .EQ. 'BESSELI0') THEN                                      ! 
          STACK(1) = BESI0(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BESSELI1') THEN                                      ! BESSELI1
+case('BESSELI1')                                           ! BESSELI1
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
          STACK(1) = BESI1(STACK(1))
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELI1 not available '// &
+         write(stderr, *) '  Error:  BESSELI1 not available '// &
             'in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
@@ -1401,21 +1370,21 @@ ELSE IF (TRIM(STR) .EQ. 'BESSELI1') THEN                                      ! 
          STACK(1) = BESI1(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BESSELI') THEN                                       ! BESSELI
+case('BESSELI')                                            ! BESSELI
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELI Error 1'
+         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+            write(stderr, *) '  BESSELI Error 1'
          ELSE
             BES_X = STACK(1)
             BES_NB = INT(STACK(2)) + 1
             BES_ALPHA = FRAC(STACK(2))
             ALLOCATE (BES_B(BES_NB))
             CALL RIBESL(BES_X, BES_ALPHA, BES_NB, 1, BES_B, BES_NCALC)
-            IF (BES_NCALC .LT. 0) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELI Error 2'
-            ELSE IF (BES_NCALC .NE. BES_NB) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELI Error 3'
+            IF (BES_NCALC < 0) THEN
+               write(stderr, *) '  BESSELI Error 2'
+            ELSE IF (BES_NCALC /= BES_NB) THEN
+               write(stderr, *) '  BESSELI Error 3'
             ELSE
                LASTX = STACK(1)
                STACK(1) = BES_B(BES_NB)
@@ -1424,22 +1393,22 @@ ELSE IF (TRIM(STR) .EQ. 'BESSELI') THEN                                       ! 
             DEALLOCATE (BES_B)
          END IF
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELI not available '// &
+         write(stderr, *) '  Error:  BESSELI not available '// &
             'in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELI Error 1'
+         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+            write(stderr, *) '  BESSELI Error 1'
          ELSE
             BES_X = STACK(1)
             BES_NB = INT(STACK(2)) + 1
             BES_ALPHA = FRAC(STACK(2))
             ALLOCATE (BES_B(BES_NB))
             CALL RIBESL(BES_X, BES_ALPHA, BES_NB, 1, BES_B, BES_NCALC)
-            IF (BES_NCALC .LT. 0) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELI Error 2'
-            ELSE IF (BES_NCALC .NE. BES_NB) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELI Error 3'
+            IF (BES_NCALC < 0) THEN
+               write(stderr, *) '  BESSELI Error 2'
+            ELSE IF (BES_NCALC /= BES_NB) THEN
+               write(stderr, *) '  BESSELI Error 3'
             ELSE
                LASTX = STACK(1)
                STACK(1) = BES_B(BES_NB)
@@ -1449,67 +1418,67 @@ ELSE IF (TRIM(STR) .EQ. 'BESSELI') THEN                                       ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BESSELK0') THEN                                      ! BESSELK0
+case('BESSELK0')                                           ! BESSELK0
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELK0 Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  BESSELK0 Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = BESK0(STACK(1))
          END IF
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELK0 not available '// &
+         write(stderr, *) '  Error:  BESSELK0 not available '// &
             'in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELK0 Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  BESSELK0 Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = BESK0(STACK(1))
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BESSELK1') THEN                                      ! BESSELK1
+case('BESSELK1')                                           ! BESSELK1
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELK1 Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  BESSELK1 Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = BESK1(STACK(1))
          END IF
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELK1 not available '// &
+         write(stderr, *) '  Error:  BESSELK1 not available '// &
             'in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELK1 Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  BESSELK1 Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = BESK1(STACK(1))
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BESSELK') THEN                                       ! BESSELK
+case('BESSELK')                                            ! BESSELK
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 1'
+         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+            write(stderr, *) '  BESSELK Error 1'
          ELSE
             BES_X = STACK(1)
             BES_NB = INT(STACK(2)) + 1
             BES_ALPHA = FRAC(STACK(2))
             ALLOCATE (BES_B(BES_NB))
             CALL RKBESL(BES_X, BES_ALPHA, BES_NB, 1, BES_B, BES_NCALC)
-            IF (BES_NCALC .LT. -1) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 2'
-            ELSE IF (BES_NCALC .EQ. -1) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 3'
-            ELSE IF (BES_NCALC .NE. BES_NB) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 4'
+            IF (BES_NCALC < -1) THEN
+               write(stderr, *) '  BESSELK Error 2'
+            ELSE IF (BES_NCALC == -1) THEN
+               write(stderr, *) '  BESSELK Error 3'
+            ELSE IF (BES_NCALC /= BES_NB) THEN
+               write(stderr, *) '  BESSELK Error 4'
             ELSE
                LASTX = STACK(1)
                STACK(1) = BES_B(BES_NB)
@@ -1518,24 +1487,24 @@ ELSE IF (TRIM(STR) .EQ. 'BESSELK') THEN                                       ! 
             DEALLOCATE (BES_B)
          END IF
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Error:  BESSELK not available '// &
+         write(stderr, *) '  Error:  BESSELK not available '// &
             'in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 1'
+         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+            write(stderr, *) '  BESSELK Error 1'
          ELSE
             BES_X = STACK(1)
             BES_NB = INT(STACK(2)) + 1
             BES_ALPHA = FRAC(STACK(2))
             ALLOCATE (BES_B(BES_NB))
             CALL RKBESL(BES_X, BES_ALPHA, BES_NB, 1, BES_B, BES_NCALC)
-            IF (BES_NCALC .LT. -1) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 2'
-            ELSE IF (BES_NCALC .EQ. -1) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 3'
-            ELSE IF (BES_NCALC .NE. BES_NB) THEN
-               WRITE (UNIT=*, FMT='(A)') '  BESSELK Error 4'
+            IF (BES_NCALC < -1) THEN
+               write(stderr, *) '  BESSELK Error 2'
+            ELSE IF (BES_NCALC == -1) THEN
+               write(stderr, *) '  BESSELK Error 3'
+            ELSE IF (BES_NCALC /= BES_NB) THEN
+               write(stderr, *) '  BESSELK Error 4'
             ELSE
                LASTX = STACK(1)
                STACK(1) = BES_B(BES_NB)
@@ -1545,12 +1514,12 @@ ELSE IF (TRIM(STR) .EQ. 'BESSELK') THEN                                       ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BETA') THEN                                          ! BETA
+case('BETA')                                               ! BETA
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((ISINT(STACK(1)).AND.(STACK(1).LE.0.0D0)) .OR.  &
-             (ISINT(STACK(2)).AND.(STACK(2).LE.0.0D0))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BETA Error'
+         IF ((ISINT(STACK(1)).AND.(STACK(1)<=0.0D0)) .OR.  &
+             (ISINT(STACK(2)).AND.(STACK(2)<=0.0D0))) THEN
+            write(stderr, *) '  BETA Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = BETA(STACK(1),STACK(2))
@@ -1561,14 +1530,14 @@ ELSE IF (TRIM(STR) .EQ. 'BETA') THEN                                          ! 
          CSTACK(1) = CBETA(CSTACK(1),CSTACK(2))
          CALL CDROP_STACK(2)
       CASE (3)
-         IF (((RDSTACK(1).EQ.1).AND.(RNSTACK(1).LE.0)) .OR. &
-             ((RDSTACK(2).EQ.1).AND.(RNSTACK(2).LE.0))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  BETA Error'
+         IF (((RDSTACK(1)==1).AND.(RNSTACK(1)<=0)) .OR. &
+             ((RDSTACK(2)==1).AND.(RNSTACK(2)<=0))) THEN
+            write(stderr, *) '  BETA Error'
          ELSE
-            IF ((RDSTACK(1).EQ.1) .AND. (RDSTACK(2).EQ.1)) THEN
+            IF ((RDSTACK(1)==1) .AND. (RDSTACK(2)==1)) THEN
                ITMP = RNSTACK(1)
-               IF (ITMP.LE.0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BETA Error'
+               IF (ITMP<=0) THEN
+                  write(stderr, *) '  BETA Error'
                ELSE
                   CALL RBETA(RNSTACK(1),RNSTACK(2),ITMP,ITMP2)
                   RNLASTX = RNSTACK(1)
@@ -1579,9 +1548,9 @@ ELSE IF (TRIM(STR) .EQ. 'BETA') THEN                                          ! 
                END IF
             ELSE
                CALL SWITCH_RAT_TO_REAL
-               IF ((ISINT(STACK(1)).AND.(STACK(1).LE.0.0D0)) .OR.  &
-                   (ISINT(STACK(2)).AND.(STACK(2).LE.0.0D0))) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  BETA Error'
+               IF ((ISINT(STACK(1)).AND.(STACK(1)<=0.0D0)) .OR.  &
+                   (ISINT(STACK(2)).AND.(STACK(2)<=0.0D0))) THEN
+                  write(stderr, *) '  BETA Error'
                ELSE
                   LASTX = STACK(1)
                   STACK(1) = BETA(STACK(1),STACK(2))
@@ -1591,10 +1560,10 @@ ELSE IF (TRIM(STR) .EQ. 'BETA') THEN                                          ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'BIN') THEN                                           ! BIN
+case('BIN')                                                ! BIN
    BASE_MODE = 2
 
-ELSE IF (TRIM(STR) .EQ. 'C') THEN                                             ! C
+case('C')                                                  ! C
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (C)
@@ -1605,7 +1574,7 @@ ELSE IF (TRIM(STR) .EQ. 'C') THEN                                             ! 
          CALL PUSH_STACK (C)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'C>F') THEN                                           ! C>F
+case('C>F')                                                ! C>F
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1622,7 +1591,7 @@ ELSE IF (TRIM(STR) .EQ. 'C>F') THEN                                           ! 
          RDSTACK(1) = DEN2
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CBRT') THEN                                          ! CBRT
+case('CBRT')                                               ! CBRT
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1645,7 +1614,7 @@ ELSE IF (TRIM(STR) .EQ. 'CBRT') THEN                                          ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CHS') THEN                                           ! CHS
+case('CHS')                                                ! CHS
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          STACK(1) = -STACK(1)
@@ -1655,7 +1624,7 @@ ELSE IF (TRIM(STR) .EQ. 'CHS') THEN                                           ! 
          RNSTACK(1) = -RNSTACK(1)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CLALL') THEN                                         ! CLALL
+case('CLALL')                                             ! CLALL
    SELECT CASE (DOMAIN_MODE)
       CASE(1)
          STACK = 0._wp
@@ -1686,7 +1655,7 @@ ELSE IF (TRIM(STR) .EQ. 'CLALL') THEN                                         ! 
          RNSUMXY = 0; RDSUMXY = 1
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CLREG') THEN                                         ! CLREG
+case('CLREG')                                             ! CLREG
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          REG = 0._wp
@@ -1696,7 +1665,7 @@ ELSE IF (TRIM(STR) .EQ. 'CLREG') THEN                                         ! 
          RNREG = 0; RDREG = 1
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CLS') THEN                                           ! CLS
+case('CLS')                                                ! CLS
    SELECT CASE (DOMAIN_MODE)
       CASE(1)
          NN = 0._wp
@@ -1721,7 +1690,7 @@ ELSE IF (TRIM(STR) .EQ. 'CLS') THEN                                           ! 
          RNSUMXY = 0; RDSUMXY = 1
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CLSTK') THEN                                         ! CLSTK
+case('CLSTK')                                             ! CLSTK
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          STACK = 0._wp
@@ -1731,7 +1700,7 @@ ELSE IF (TRIM(STR) .EQ. 'CLSTK') THEN                                         ! 
          RNSTACK = 0; RDSTACK = 1
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CLX') THEN                                           ! CLX
+case('CLX')                                                ! CLX
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          STACK(1) = 0._wp
@@ -1741,7 +1710,7 @@ ELSE IF (TRIM(STR) .EQ. 'CLX') THEN                                           ! 
          RNSTACK(1) = 0; RDSTACK(1) = 1
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CM>IN') THEN                                         ! CM>IN
+case('CM>IN')                                             ! CM>IN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          STACK(1) = STACK(1) / CM_PER_IN
@@ -1752,15 +1721,15 @@ ELSE IF (TRIM(STR) .EQ. 'CM>IN') THEN                                         ! 
          STACK(1) = STACK(1) / CM_PER_IN
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CNR') THEN                                           ! CNR
+case('CNR')                                                ! CNR
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          IF (ISFRAC(STACK(1)) .OR. ISFRAC(STACK(2))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-         ELSE IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-         ELSE IF (STACK(2) .LT. STACK(1)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  CNR Error'
+            write(stderr, *) '  CNR Error'
+         ELSE IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+            write(stderr, *) '  CNR Error'
+         ELSE IF (STACK(2) < STACK(1)) THEN
+            write(stderr, *) '  CNR Error'
          ELSE
             ITMP  = NINT(STACK(1))
             ITMP2 = NINT(STACK(2))
@@ -1770,17 +1739,17 @@ ELSE IF (TRIM(STR) .EQ. 'CNR') THEN                                           ! 
          END IF
       CASE (2)
          IF (ISFRAC(real(CSTACK(1), wp)) .OR. ISFRAC(real(CSTACK(2), wp))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-         ELSE IF (real(CSTACK(1), wp).LT.0.0D0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-         ELSE IF (real(CSTACK(2), wp).LT.0.0D0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-         ELSE IF (AIMAG(CSTACK(1)).NE.0.0D0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-         ELSE IF (AIMAG(CSTACK(2)).NE.0.0D0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-         ELSE IF (real(CSTACK(2), wp) .LT. real(CSTACK(1), wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  CNR Error'
+            write(stderr, *) '  CNR Error'
+         ELSE IF (real(CSTACK(1), wp)<0.0D0) THEN
+            write(stderr, *) '  CNR Error'
+         ELSE IF (real(CSTACK(2), wp)<0.0D0) THEN
+            write(stderr, *) '  CNR Error'
+         ELSE IF (AIMAG(CSTACK(1))/=0.0D0) THEN
+            write(stderr, *) '  CNR Error'
+         ELSE IF (AIMAG(CSTACK(2))/=0.0D0) THEN
+            write(stderr, *) '  CNR Error'
+         ELSE IF (real(CSTACK(2), wp) < real(CSTACK(1), wp)) THEN
+            write(stderr, *) '  CNR Error'
          ELSE
             ITMP  = NINT(real(CSTACK(1), wp))
             ITMP2 = NINT(real(CSTACK(2), wp))
@@ -1790,12 +1759,12 @@ ELSE IF (TRIM(STR) .EQ. 'CNR') THEN                                           ! 
             CALL CDROP_STACK(2)
          END IF
       CASE (3)
-         IF ((RDSTACK(1).NE.1).OR.(RDSTACK(2).NE.1)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-         ELSE IF ((RNSTACK(1).LT.0) .OR. (RNSTACK(2).LT.0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  CNR Error'
-         ELSE IF (RNSTACK(2) .LT. RNSTACK(1)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  CNR Error'
+         IF ((RDSTACK(1)/=1).OR.(RDSTACK(2)/=1)) THEN
+            write(stderr, *) '  CNR Error'
+         ELSE IF ((RNSTACK(1)<0) .OR. (RNSTACK(2)<0)) THEN
+            write(stderr, *) '  CNR Error'
+         ELSE IF (RNSTACK(2) < RNSTACK(1)) THEN
+            write(stderr, *) '  CNR Error'
          ELSE
             RNLASTX = RNSTACK(1)
             RDLASTX = RDSTACK(1)
@@ -1804,7 +1773,7 @@ ELSE IF (TRIM(STR) .EQ. 'CNR') THEN                                           ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'COMPLEX') THEN                                       ! COMPLEX
+case('COMPLEX')                                            ! COMPLEX
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          DOMAIN_MODE = 2
@@ -1840,13 +1809,13 @@ ELSE IF (TRIM(STR) .EQ. 'COMPLEX') THEN                                       ! 
          CSUMXY = CMPLX(real(RNSUMXY, wp)/real(RDSUMXY, wp), 0._wp, wp)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CONJ') THEN                                          ! CONJ
+case('CONJ')                                               ! CONJ
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
          CSTACK(1) = CONJG(CSTACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'COS') THEN                                           ! COS
+case('COS')                                                ! COS
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1860,7 +1829,7 @@ ELSE IF (TRIM(STR) .EQ. 'COS') THEN                                           ! 
          STACK(1) = COS(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'COSH') THEN                                          ! COSH
+case('COSH')                                               ! COSH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1874,7 +1843,7 @@ ELSE IF (TRIM(STR) .EQ. 'COSH') THEN                                          ! 
          STACK(1) = COSH(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'COT') THEN                                           ! COT
+case('COT')                                                ! COT
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1888,7 +1857,7 @@ ELSE IF (TRIM(STR) .EQ. 'COT') THEN                                           ! 
          STACK(1) = COT(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'COTH') THEN                                          ! COTH
+case('COTH')                                               ! COTH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1902,7 +1871,7 @@ ELSE IF (TRIM(STR) .EQ. 'COTH') THEN                                          ! 
          STACK(1) = COTH(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'COVERS') THEN                                        ! COVERS
+case('COVERS')                                             ! COVERS
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1916,7 +1885,7 @@ ELSE IF (TRIM(STR) .EQ. 'COVERS') THEN                                        ! 
          STACK(1) = COVERS(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CRD') THEN                                           ! CRD
+case('CRD')                                                ! CRD
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1930,7 +1899,7 @@ ELSE IF (TRIM(STR) .EQ. 'CRD') THEN                                           ! 
          STACK(1) = CRD(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CSC') THEN                                           ! CSC
+case('CSC')                                                ! CSC
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1944,7 +1913,7 @@ ELSE IF (TRIM(STR) .EQ. 'CSC') THEN                                           ! 
          STACK(1) = CSC(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CSCH') THEN                                          ! CSCH
+case('CSCH')                                               ! CSCH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1958,7 +1927,7 @@ ELSE IF (TRIM(STR) .EQ. 'CSCH') THEN                                          ! 
          STACK(1) = CSCH(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'CUBE') THEN                                          ! CUBE
+case('CUBE')                                               ! CUBE
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1977,7 +1946,7 @@ ELSE IF (TRIM(STR) .EQ. 'CUBE') THEN                                          ! 
          RDSTACK(1) = DEN
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'D>F') THEN                                           ! D>F
+case('D>F')                                                ! D>F
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -1994,7 +1963,7 @@ ELSE IF (TRIM(STR) .EQ. 'D>F') THEN                                           ! 
          CALL CPUSH_STACK(CMPLX(real(DEN, wp),real(DEN2, wp), wp))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'D>R') THEN                                           ! D>R
+case('D>R')                                                ! D>R
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2008,10 +1977,10 @@ ELSE IF (TRIM(STR) .EQ. 'D>R') THEN                                           ! 
          STACK(1) = STACK(1)*PI/180.0D0
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'DEC') THEN                                           ! DEC
+case('DEC')                                                ! DEC
    BASE_MODE = 10
 
-ELSE IF (TRIM(STR) .EQ. 'DEFAULT') THEN                                       ! DEFAULT
+case('DEFAULT')                                            ! DEFAULT
    ANGLE_MODE = INITIAL_ANGLE_MODE
 
    SELECT CASE (ANGLE_MODE)
@@ -2031,24 +2000,24 @@ ELSE IF (TRIM(STR) .EQ. 'DEFAULT') THEN                                       ! 
    BASE_MODE = INITIAL_BASE_MODE
    FRACTION_MODE = INITIAL_FRACTION_MODE
 
-ELSE IF (TRIM(STR) .EQ. 'DEG') THEN                                           ! DEG
+case('DEG')                                                ! DEG
    ANGLE_MODE = 1
    ANGLE_FACTOR = PI/180.0D0
 
-ELSE IF (TRIM(STR) .EQ. 'DIGAMMA') THEN                                       ! DIGAMMA
+case('DIGAMMA')                                            ! DIGAMMA
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
          STACK(1) = PSI(STACK(1))
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') ' DIGAMMA function not available in COMPLEX mode.'
+         write(stderr, *) ' DIGAMMA function not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
          STACK(1) = PSI(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'DUP') THEN                                           ! DUP
+case('DUP')                                                ! DUP
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK(STACK(1))
@@ -2058,7 +2027,7 @@ ELSE IF (TRIM(STR) .EQ. 'DUP') THEN                                           ! 
          CALL RPUSH_STACK(RNSTACK(1),RDSTACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ECHG') THEN                                          ! ECHG
+case('ECHG')                                               ! ECHG
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (ECHG)
@@ -2069,20 +2038,20 @@ ELSE IF (TRIM(STR) .EQ. 'ECHG') THEN                                          ! 
          CALL PUSH_STACK (ECHG)
    END SELECT
 
-ELSE IF (STR(1:3) .EQ. 'ENG') THEN                                            ! ENG
-   IF (LEN_TRIM(STR) .EQ. 3) THEN
-      WRITE (UNIT=*, FMT='(A)') '  ENG Error'
+case('ENG')                                                 ! ENG
+   IF (LEN_TRIM(STR) == 3) THEN
+      write(stderr, *) '  ENG Error'
    ELSE
       READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-      IF (IERR .NE. 0) THEN
-         WRITE (UNIT=*, FMT='(A)') '  ENG Error'
+      IF (IERR /= 0) THEN
+         write(stderr, *) '  ENG Error'
       ELSE
          DISP_MODE = 3
          DISP_DIGITS = ITMP
       END IF
    END IF
 
-ELSE IF (TRIM(STR) .EQ. 'EPS0') THEN                                          ! EPS0
+case('EPS0')                                               ! EPS0
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (EPS0)
@@ -2093,33 +2062,33 @@ ELSE IF (TRIM(STR) .EQ. 'EPS0') THEN                                          ! 
          CALL PUSH_STACK (EPS0)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ERF') THEN                                           ! ERF
+case('ERF')                                                ! ERF
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
          STACK(1) = erf(STACK(1))
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') ' ERF function not available in COMPLEX mode.'
+         write(stderr, *) ' ERF function not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
          STACK(1) = erf(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ERFC') THEN                                          ! ERFC
+case('ERFC')                                               ! ERFC
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
          STACK(1) = erfc(STACK(1))
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') ' ERFC function not available in COMPLEX mode.'
+         write(stderr, *) ' ERFC function not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
          STACK(1) = erfc(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'EULER') THEN                                         ! EULER
+case('EULER')                                             ! EULER
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (EULER)
@@ -2130,7 +2099,7 @@ ELSE IF (TRIM(STR) .EQ. 'EULER') THEN                                         ! 
          CALL PUSH_STACK (EULER)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'EXP') THEN                                           ! EXP
+case('EXP')                                                ! EXP
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2144,7 +2113,7 @@ ELSE IF (TRIM(STR) .EQ. 'EXP') THEN                                           ! 
          STACK(1) = EXP(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'EXSEC') THEN                                         ! EXSEC
+case('EXSEC')                                             ! EXSEC
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2158,7 +2127,7 @@ ELSE IF (TRIM(STR) .EQ. 'EXSEC') THEN                                         ! 
          STACK(1) = EXSEC(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'F>C') THEN                                           ! F>C
+case('F>C')                                                ! F>C
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2175,20 +2144,20 @@ ELSE IF (TRIM(STR) .EQ. 'F>C') THEN                                           ! 
          RDSTACK(1) = DEN2
    END SELECT
 
-ELSE IF (STR(1:3) .EQ. 'FIX') THEN                                            ! FIX
-   IF (LEN_TRIM(STR) .EQ. 3) THEN
-      WRITE (UNIT=*, FMT='(A)') '  FIX Error'
+case('FIX')                                                 ! FIX
+   IF (LEN_TRIM(STR) == 3) THEN
+      write(stderr, *) '  FIX Error'
    ELSE
       READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-      IF (IERR .NE. 0) THEN
-         WRITE (UNIT=*, FMT='(A)') '  FIX Error'
+      IF (IERR /= 0) THEN
+         write(stderr, *) '  FIX Error'
       ELSE
          DISP_MODE = 1
          DISP_DIGITS = ITMP
       END IF
    END IF
 
-ELSE IF (TRIM(STR) .EQ. 'FRAC') THEN                                          ! FRAC
+case('FRAC')                                               ! FRAC
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2204,7 +2173,7 @@ ELSE IF (TRIM(STR) .EQ. 'FRAC') THEN                                          ! 
          RDSTACK(1) = DEN
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'FRACTOL') THEN                                       ! FRACTOL
+case('FRACTOL')                                            ! FRACTOL
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          FRACTOL = STACK(1)
@@ -2217,7 +2186,7 @@ ELSE IF (TRIM(STR) .EQ. 'FRACTOL') THEN                                       ! 
          CALL RDROP_STACK(1)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'G') THEN                                             ! G
+case('G')                                                  ! G
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (G)
@@ -2228,7 +2197,7 @@ ELSE IF (TRIM(STR) .EQ. 'G') THEN                                             ! 
          CALL PUSH_STACK (G)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'GAL>L') THEN                                         ! GAL>L
+case('GAL>L')                                             ! GAL>L
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2242,30 +2211,30 @@ ELSE IF (TRIM(STR) .EQ. 'GAL>L') THEN                                         ! 
          STACK(1) = STACK(1) * L_PER_GAL
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'GAMMA') THEN                                         ! GAMMA
+case('GAMMA')                                             ! GAMMA
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (ISINT(STACK(1)).AND.(STACK(1).LE.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  GAMMA Error'
+         IF (ISINT(STACK(1)).AND.(STACK(1)<=0.0D0)) THEN
+            write(stderr, *) '  GAMMA Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = gamma(STACK(1))
          END IF
       CASE (2)
-         IF (CSTACK(1) .EQ. (0._wp, 0._wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  GAMMA Error'
+         IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+            write(stderr, *) '  GAMMA Error'
          ELSE
             CLASTX = CSTACK(1)
             CSTACK(1) = CGAMMA(CSTACK(1))
          END IF
       CASE (3)
-         IF ((RDSTACK(1).EQ.1).AND.(RNSTACK(1).LE.0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  GAMMA Error'
+         IF ((RDSTACK(1)==1).AND.(RNSTACK(1)<=0)) THEN
+            write(stderr, *) '  GAMMA Error'
          ELSE
-            IF (RDSTACK(1).EQ.1) THEN
+            IF (RDSTACK(1)==1) THEN
                ITMP = RNSTACK(1)
-               IF (ITMP.LE.0) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  GAMMA Error'
+               IF (ITMP<=0) THEN
+                  write(stderr, *) '  GAMMA Error'
                ELSE
                   ITMP2 = 1
                   DO I = 2, ITMP-1
@@ -2278,8 +2247,8 @@ ELSE IF (TRIM(STR) .EQ. 'GAMMA') THEN                                         ! 
                END IF
             ELSE
                CALL SWITCH_RAT_TO_REAL
-               IF (ISINT(STACK(1)).AND.(STACK(1).LE.0.0D0)) THEN
-                  WRITE (UNIT=*, FMT='(A)') '  GAMMA Error'
+               IF (ISINT(STACK(1)).AND.(STACK(1)<=0.0D0)) THEN
+                  write(stderr, *) '  GAMMA Error'
                ELSE
                   LASTX = STACK(1)
                   STACK(1) = gamma(STACK(1))
@@ -2288,11 +2257,11 @@ ELSE IF (TRIM(STR) .EQ. 'GAMMA') THEN                                         ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'GCD') THEN                                           ! GCD
+case('GCD')                                                ! GCD
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          IF (ISFRAC(STACK(1)).OR.ISFRAC(STACK(2))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  GCD Error'
+            write(stderr, *) '  GCD Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = GCD(NINT(STACK(2)),NINT(STACK(1)))
@@ -2300,16 +2269,16 @@ ELSE IF (TRIM(STR) .EQ. 'GCD') THEN                                           ! 
          END IF
       CASE (2)
          IF (ISFRAC(real(CSTACK(1), wp)).OR.ISFRAC(real(CSTACK(2), wp)).OR. &
-            (AIMAG(CSTACK(2)).NE.0.0D0).OR.(AIMAG(CSTACK(2)).NE.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  GCD Error'
+            (AIMAG(CSTACK(2))/=0.0D0).OR.(AIMAG(CSTACK(2))/=0.0D0)) THEN
+            write(stderr, *) '  GCD Error'
          ELSE
             CLASTX = CSTACK(1)
             CSTACK(1) = GCD(NINT(real(CSTACK(2), wp)),NINT(real(CSTACK(1), wp)))
             CALL CDROP_STACK(2)
          END IF
       CASE (3)
-         IF ((RDSTACK(1).NE.1).OR.(RDSTACK(2).NE.1)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  GCD Error'
+         IF ((RDSTACK(1)/=1).OR.(RDSTACK(2)/=1)) THEN
+            write(stderr, *) '  GCD Error'
          ELSE
             RNLASTX = RNSTACK(1)
             RDLASTX = RDSTACK(2)
@@ -2319,7 +2288,7 @@ ELSE IF (TRIM(STR) .EQ. 'GCD') THEN                                           ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'GOLDEN') THEN                                        ! GOLDEN
+case('GOLDEN')                                             ! GOLDEN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (GOLDEN)
@@ -2330,11 +2299,11 @@ ELSE IF (TRIM(STR) .EQ. 'GOLDEN') THEN                                        ! 
          CALL PUSH_STACK (GOLDEN)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'GRAD') THEN                                          ! GRAD
+case('GRAD')                                               ! GRAD
    ANGLE_MODE = 3
    ANGLE_FACTOR = PI/200.0D0
 
-ELSE IF (TRIM(STR) .EQ. 'GRAV') THEN                                          ! GRAV
+case('GRAV')                                               ! GRAV
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (GRAV)
@@ -2345,7 +2314,7 @@ ELSE IF (TRIM(STR) .EQ. 'GRAV') THEN                                          ! 
          CALL PUSH_STACK (GRAV)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'H') THEN                                             ! H
+case('H')                                                  ! H
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (H)
@@ -2356,15 +2325,15 @@ ELSE IF (TRIM(STR) .EQ. 'H') THEN                                             ! 
          CALL PUSH_STACK (H)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'H>HMS') THEN                                         ! H>HMS
+case('H>HMS')                                             ! H>HMS
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL H2HMSD (STACK(1), ITMP, ITMP2, TMP)
          LASTX = STACK(1)
          STACK(1) = real(itmp, wp) + 1.0D-2*ITMP2 + 1.0D-4*TMP
       CASE (2)
-         IF (AIMAG(CSTACK(1)) .NE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  H>HMS Error'
+         IF (AIMAG(CSTACK(1)) /= 0._wp) THEN
+            write(stderr, *) '  H>HMS Error'
          ELSE
             CALL H2HMSD (real(CSTACK(1), wp), ITMP, ITMP2, TMP)
             CLASTX = CSTACK(1)
@@ -2377,7 +2346,7 @@ ELSE IF (TRIM(STR) .EQ. 'H>HMS') THEN                                         ! 
          STACK(1) = real(itmp, wp) + 1.0D-2*ITMP2 + 1.0D-4*TMP
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'HBAR') THEN                                          ! HBAR
+case('HBAR')                                               ! HBAR
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (HBAR)
@@ -2388,10 +2357,10 @@ ELSE IF (TRIM(STR) .EQ. 'HBAR') THEN                                          ! 
          CALL PUSH_STACK (HBAR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'HEX') THEN                                           ! HEX
+case('HEX')                                                ! HEX
    BASE_MODE = 16
 
-ELSE IF (TRIM(STR) .EQ. 'HMS>H') THEN                                         ! HMS>H
+case('HMS>H')                                             ! HMS>H
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          ITMP = INT(STACK(1))
@@ -2401,8 +2370,8 @@ ELSE IF (TRIM(STR) .EQ. 'HMS>H') THEN                                         ! 
          LASTX = STACK(1)
          STACK(1) = TMP2
       CASE (2)
-         IF (AIMAG(CSTACK(1)) .NE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  HMS>H Error'
+         IF (AIMAG(CSTACK(1)) /= 0._wp) THEN
+            write(stderr, *) '  HMS>H Error'
          ELSE
             ITMP = INT(real(CSTACK(1), wp))
             ITMP2 = INT(FRAC(real(CSTACK(1), wp))*1.0D2)
@@ -2421,7 +2390,7 @@ ELSE IF (TRIM(STR) .EQ. 'HMS>H') THEN                                         ! 
          STACK(1) = TMP2
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'HMS+') THEN                                          ! HMS+
+case('HMS+')                                               ! HMS+
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          ITMP = INT(STACK(1))
@@ -2437,8 +2406,8 @@ ELSE IF (TRIM(STR) .EQ. 'HMS+') THEN                                          ! 
          STACK(1) = real(itmp, wp) + 1.0D-2*ITMP2 + 1.0D-4*TMP
          CALL DROP_STACK(2)
       CASE (2)
-         IF (AIMAG(CSTACK(1)) .NE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  HMS+ Error'
+         IF (AIMAG(CSTACK(1)) /= 0._wp) THEN
+            write(stderr, *) '  HMS+ Error'
          ELSE
             ITMP = INT(CSTACK(1))
             ITMP2 = INT(FRAC(CSTACK(1))*1.0e2_wp)
@@ -2469,7 +2438,7 @@ ELSE IF (TRIM(STR) .EQ. 'HMS+') THEN                                          ! 
          CALL DROP_STACK(2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'HMS-') THEN                                          ! HMS-
+case('HMS-')                                               ! HMS-
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          ITMP = INT(STACK(1))
@@ -2485,8 +2454,8 @@ ELSE IF (TRIM(STR) .EQ. 'HMS-') THEN                                          ! 
          STACK(1) = real(itmp, wp) + 1.0D-2*ITMP2 + 1.0D-4*TMP
          CALL DROP_STACK(2)
       CASE (2)
-         IF (AIMAG(CSTACK(1)) .NE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  HMS- Error'
+         IF (AIMAG(CSTACK(1)) /= 0._wp) THEN
+            write(stderr, *) '  HMS- Error'
          ELSE
             ITMP = INT(CSTACK(1))
             ITMP2 = INT(FRAC(CSTACK(1))*1.0D2)
@@ -2517,7 +2486,7 @@ ELSE IF (TRIM(STR) .EQ. 'HMS-') THEN                                          ! 
          CALL DROP_STACK(2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'HAV') THEN                                           ! HAV
+case('HAV')                                                ! HAV
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2531,7 +2500,7 @@ ELSE IF (TRIM(STR) .EQ. 'HAV') THEN                                           ! 
          STACK(1) = HAV(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'HYPOT') THEN                                         ! HYPOT
+case('HYPOT')                                             ! HYPOT
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2565,7 +2534,7 @@ ELSE IF (TRIM(STR) .EQ. 'HYPOT') THEN                                         ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'HYPOT3') THEN                                        ! HYPOT3
+case('HYPOT3')                                             ! HYPOT3
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2585,17 +2554,17 @@ ELSE IF (TRIM(STR) .EQ. 'HYPOT3') THEN                                        ! 
          CALL DROP_STACK(2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'I') THEN                                             ! I
+case('I')                                                  ! I
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         WRITE (UNIT=*, FMT='(A)') ' i not available in REAL mode'
+         write(stderr, *) ' i not available in REAL mode'
       CASE (2)
          CALL CPUSH_STACK (II)
       CASE (3)
-         WRITE (UNIT=*, FMT='(A)') ' i not available in RATIONAL mode'
+         write(stderr, *) ' i not available in RATIONAL mode'
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'IM') THEN                                            ! IM
+case('IM')                                                 ! IM
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2610,10 +2579,10 @@ ELSE IF (TRIM(STR) .EQ. 'IM') THEN                                            ! 
          RDSTACK(1) = 1
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'IMPROPER') THEN                                      ! IMPROPER
+case('IMPROPER')                                           ! IMPROPER
    FRACTION_MODE = 1
 
-ELSE IF (TRIM(STR) .EQ. 'IN>CM') THEN                                         ! IN>CM
+case('IN>CM')                                             ! IN>CM
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2627,7 +2596,7 @@ ELSE IF (TRIM(STR) .EQ. 'IN>CM') THEN                                         ! 
          STACK(1) = STACK(1) * CM_PER_IN
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'INT') THEN                                           ! INT
+case('INT')                                                ! INT
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2643,27 +2612,27 @@ ELSE IF (TRIM(STR) .EQ. 'INT') THEN                                           ! 
          RDSTACK(1) = 1
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'INT/') THEN                                          ! INT/
+case('INT/')                                               ! INT/
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .EQ. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  INT/ Error'
+         IF (STACK(1) == 0._wp) THEN
+            write(stderr, *) '  INT/ Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = AINT(STACK(2) / STACK(1))
             CALL DROP_STACK(2)
          END IF
       CASE (2)
-         IF (CSTACK(1) .EQ. (0._wp, 0._wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  INT/ Error'
+         IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+            write(stderr, *) '  INT/ Error'
          ELSE
             CLASTX = CSTACK(1)
             CSTACK(1) = CINT(CSTACK(2) / CSTACK(1))
             CALL CDROP_STACK(2)
          END IF
       CASE (3)
-         IF (RNSTACK(1) .EQ. 0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  INT/ Error'
+         IF (RNSTACK(1) == 0) THEN
+            write(stderr, *) '  INT/ Error'
          ELSE
             RNLASTX = RNSTACK(1)
             RDLASTX = RDSTACK(1)
@@ -2673,7 +2642,7 @@ ELSE IF (TRIM(STR) .EQ. 'INT/') THEN                                          ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'KB') THEN                                            ! KB
+case('KB')                                                 ! KB
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (KB)
@@ -2684,7 +2653,7 @@ ELSE IF (TRIM(STR) .EQ. 'KB') THEN                                            ! 
          CALL PUSH_STACK (KB)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'KEPLER') THEN                                        ! KEPLER
+case('KEPLER')                                             ! KEPLER
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2700,7 +2669,7 @@ ELSE IF (TRIM(STR) .EQ. 'KEPLER') THEN                                        ! 
          STACK(1) = KEPLER(STACK(2)*ANGLE_FACTOR,STACK(1))/ANGLE_FACTOR
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'KG>LB') THEN                                         ! KG>LB
+case('KG>LB')                                             ! KG>LB
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2714,7 +2683,7 @@ ELSE IF (TRIM(STR) .EQ. 'KG>LB') THEN                                         ! 
          STACK(1) = STACK(1) / KG_PER_LB
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'L>GAL') THEN                                         ! L>GAL
+case('L>GAL')                                             ! L>GAL
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2728,7 +2697,7 @@ ELSE IF (TRIM(STR) .EQ. 'L>GAL') THEN                                         ! 
          STACK(1) = STACK(1) / L_PER_GAL
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'LASTX') THEN                                         ! LASTX
+case('LASTX')                                             ! LASTX
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (LASTX)
@@ -2738,7 +2707,7 @@ ELSE IF (TRIM(STR) .EQ. 'LASTX') THEN                                         ! 
          CALL RPUSH_STACK (RNLASTX, RDLASTX)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'LB>KG') THEN                                         ! LB>KG
+case('LB>KG')                                             ! LB>KG
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2752,13 +2721,13 @@ ELSE IF (TRIM(STR) .EQ. 'LB>KG') THEN                                         ! 
          STACK(1) = STACK(1) * KG_PER_LB
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'LCM') THEN                                           ! LCM
+case('LCM')                                                ! LCM
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          IF (ISFRAC(STACK(1)).OR.ISFRAC(STACK(2))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LCM Error'
-         ELSE IF ((STACK(1).EQ.0.0D0).AND.(STACK(2).EQ.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LCM Error'
+            write(stderr, *) '  LCM Error'
+         ELSE IF ((STACK(1)==0.0D0).AND.(STACK(2)==0.0D0)) THEN
+            write(stderr, *) '  LCM Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = LCM(NINT(STACK(2)),NINT(STACK(1)))
@@ -2766,21 +2735,21 @@ ELSE IF (TRIM(STR) .EQ. 'LCM') THEN                                           ! 
          END IF
       CASE (2)
          IF (ISFRAC(real(CSTACK(1), wp)).OR.ISFRAC(real(CSTACK(2), wp)).OR. &
-            (AIMAG(CSTACK(2)).NE.0.0D0).OR.(AIMAG(CSTACK(2)).NE.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LCM Error'
-         ELSE IF ((CSTACK(1).EQ.(0._wp, 0._wp)).AND. &
-            (CSTACK(2).EQ.(0._wp, 0._wp))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LCM Error'
+            (AIMAG(CSTACK(2))/=0.0D0).OR.(AIMAG(CSTACK(2))/=0.0D0)) THEN
+            write(stderr, *) '  LCM Error'
+         ELSE IF ((CSTACK(1)==(0._wp, 0._wp)).AND. &
+            (CSTACK(2)==(0._wp, 0._wp))) THEN
+            write(stderr, *) '  LCM Error'
          ELSE
             CLASTX = CSTACK(1)
             CSTACK(1) = LCM(NINT(real(CSTACK(2), wp)),NINT(real(CSTACK(1), wp)))
             CALL CDROP_STACK(2)
          END IF
       CASE (3)
-         IF ((RDSTACK(1).NE.1).OR.(RDSTACK(2).NE.1)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LCM Error'
-         ELSE IF ((RNSTACK(1).EQ.0).AND.(RNSTACK(2).EQ.0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LCM Error'
+         IF ((RDSTACK(1)/=1).OR.(RDSTACK(2)/=1)) THEN
+            write(stderr, *) '  LCM Error'
+         ELSE IF ((RNSTACK(1)==0).AND.(RNSTACK(2)==0)) THEN
+            write(stderr, *) '  LCM Error'
          ELSE
             RNLASTX = RNSTACK(1)
             RDLASTX = RDSTACK(2)
@@ -2790,105 +2759,105 @@ ELSE IF (TRIM(STR) .EQ. 'LCM') THEN                                           ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'LN') THEN                                            ! LN
+case('LN')                                                 ! LN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LN Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  LN Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = LOG(STACK(1))
          END IF
       CASE (2)
-         IF (CSTACK(1) .EQ. (0._wp, 0._wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LN Error'
+         IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+            write(stderr, *) '  LN Error'
          ELSE
             CLASTX = CSTACK(1)
             CSTACK(1) = LOG(CSTACK(1))
          END IF
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LN Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  LN Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = LOG(STACK(1))
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'LOG') THEN                                           ! LOG
+case('LOG')                                                ! LOG
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LOG Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  LOG Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = LOG10(STACK(1))
          END IF
       CASE (2)
-         IF (CSTACK(1) .EQ. (0._wp, 0._wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LOG Error'
+         IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+            write(stderr, *) '  LOG Error'
          ELSE
             CLASTX = CSTACK(1)
             CSTACK(1) = CLOG10(CSTACK(1))
          END IF
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LOG Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  LOG Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = LOG10(STACK(1))
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'LOG2') THEN                                          ! LOG2
+case('LOG2')                                               ! LOG2
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LOG2 Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  LOG2 Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = LOG(STACK(1))/LN2
          END IF
       CASE (2)
-         IF (CSTACK(1) .EQ. (0._wp, 0._wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LOG2 Error'
+         IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+            write(stderr, *) '  LOG2 Error'
          ELSE
             CLASTX = CSTACK(1)
             CSTACK(1) = LOG(CSTACK(1))/LN2
          END IF
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF (STACK(1) .LE. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LOG2 Error'
+         IF (STACK(1) <= 0._wp) THEN
+            write(stderr, *) '  LOG2 Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = LOG(STACK(1))/LN2
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'LR') THEN                                            ! LR
+case('LR')                                                 ! LR
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (NN .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LR Error'
+         IF (NN <= 1._wp) THEN
+            write(stderr, *) '  LR Error'
          ELSE
             CALL LINREG (TMPM,TMPB,TMPR)
             CALL PUSH_STACK (TMPM)
             CALL PUSH_STACK (TMPB)
          END IF
       CASE (2)
-         IF (real(CNN, wp) .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LR Error'
+         IF (real(CNN, wp) <= 1._wp) THEN
+            write(stderr, *) '  LR Error'
          ELSE
             CALL CLINREG (CTMPM,CTMPB,CTMPR)
             CALL CPUSH_STACK (CTMPM)
             CALL CPUSH_STACK (CTMPB)
          END IF
       CASE (3)
-         IF (RNNN .LE. 1) THEN
-            WRITE (UNIT=*, FMT='(A)') '  LR Error'
+         IF (RNNN <= 1) THEN
+            write(stderr, *) '  LR Error'
          ELSE
             CALL RLINREG (NUMM,DENM,NUMB,DENB,TMPR)
             CALL RPUSH_STACK (NUMM,DENM)
@@ -2896,7 +2865,7 @@ ELSE IF (TRIM(STR) .EQ. 'LR') THEN                                            ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ME') THEN                                            ! ME
+case('ME')                                                 ! ME
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (ME)
@@ -2907,10 +2876,10 @@ ELSE IF (TRIM(STR) .EQ. 'ME') THEN                                            ! 
          CALL PUSH_STACK (ME)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'MIXED') THEN                                         ! MIXED
+case('MIXED')                                             ! MIXED
    FRACTION_MODE = 2
 
-ELSE IF (TRIM(STR) .EQ. 'MN') THEN                                            ! MN
+case('MN')                                                 ! MN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (MN)
@@ -2921,27 +2890,27 @@ ELSE IF (TRIM(STR) .EQ. 'MN') THEN                                            ! 
          CALL PUSH_STACK (MN)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'MOD') THEN                                           ! MOD
+case('MOD')                                                ! MOD
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .EQ. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  MOD Error'
+         IF (STACK(1) == 0._wp) THEN
+            write(stderr, *) '  MOD Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = MOD (STACK(2),STACK(1))
             CALL DROP_STACK(2)
          END IF
       CASE (2)
-         IF (CSTACK(1) .EQ. (0._wp, 0._wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  MOD Error'
+         IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+            write(stderr, *) '  MOD Error'
          ELSE
             CLASTX = CSTACK(1)
             CSTACK(1) = CMOD (CSTACK(2),CSTACK(1))
             CALL CDROP_STACK(2)
          END IF
       CASE (3)
-         IF (RNSTACK(1) .EQ. 0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  MOD Error'
+         IF (RNSTACK(1) == 0) THEN
+            write(stderr, *) '  MOD Error'
          ELSE
             NUM = RNSTACK(1)
             DEN = RDSTACK(1)
@@ -2956,17 +2925,17 @@ ELSE IF (TRIM(STR) .EQ. 'MOD') THEN                                           ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'MODES') THEN                                         ! MODES
+case('MODES')                                             ! MODES
    WRITE (UNIT=*, FMT='()')
    SELECT CASE (ANGLE_MODE)
       CASE (1)
-         WRITE (UNIT=*, FMT='(A)') '  Angles:     DEG'
+         print *, '  Angles:     DEG'
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Angles:     RAD'
+         print *, '  Angles:     RAD'
       CASE (3)
-         WRITE (UNIT=*, FMT='(A)') '  Angles:     GRAD'
+         print *, '  Angles:     GRAD'
       CASE (4)
-         WRITE (UNIT=*, FMT='(A)') '  Angles:     REV'
+         print *, '  Angles:     REV'
    END SELECT
    SELECT CASE (DISP_MODE)
       CASE (1)
@@ -2976,35 +2945,35 @@ ELSE IF (TRIM(STR) .EQ. 'MODES') THEN                                         ! 
       CASE (3)
          WRITE (UNIT=*, FMT='(A,I0)') '  Display:    ENG ', DISP_DIGITS
       CASE (4)
-         WRITE (UNIT=*, FMT='(A)') '  Display:    ALL '
+         print *, '  Display:    ALL '
    END SELECT
    SELECT CASE (BASE_MODE)
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Base:       BIN'
+         print *, '  Base:       BIN'
       CASE (8)
-         WRITE (UNIT=*, FMT='(A)') '  Base:       OCT'
+         print *, '  Base:       OCT'
       CASE (10)
-         WRITE (UNIT=*, FMT='(A)') '  Base:       DEC'
+         print *, '  Base:       DEC'
       CASE (16)
-         WRITE (UNIT=*, FMT='(A)') '  Base:       HEX'
+         print *, '  Base:       HEX'
    END SELECT
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         WRITE (UNIT=*, FMT='(A)') '  Domain:     REAL'
+         print *, '  Domain:     REAL'
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Domain:     COMPLEX'
+         print *, '  Domain:     COMPLEX'
       CASE (3)
-         WRITE (UNIT=*, FMT='(A)') '  Domain:     RATIONAL'
+         print *, '  Domain:     RATIONAL'
    END SELECT
    SELECT CASE (FRACTION_MODE)
       CASE (1)
-         WRITE (UNIT=*, FMT='(A)') '  Fractions:  IMPROPER'
+         print *, '  Fractions:  IMPROPER'
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') '  Fractions:  MIXED'
+         print *, '  Fractions:  MIXED'
    END SELECT
-   WRITE (UNIT=*, FMT='(A)') ' '
+   print *, ' '
 
-ELSE IF (TRIM(STR) .EQ. 'MP') THEN                                            ! MP
+case('MP')                                                 ! MP
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (MP)
@@ -3015,7 +2984,7 @@ ELSE IF (TRIM(STR) .EQ. 'MP') THEN                                            ! 
          CALL PUSH_STACK (MP)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'MU0') THEN                                           ! MU0
+case('MU0')                                                ! MU0
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (MU0)
@@ -3026,7 +2995,7 @@ ELSE IF (TRIM(STR) .EQ. 'MU0') THEN                                           ! 
          CALL PUSH_STACK (MU0)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'MUB') THEN                                           ! MUB
+case('MUB')                                                ! MUB
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (MUB)
@@ -3037,7 +3006,7 @@ ELSE IF (TRIM(STR) .EQ. 'MUB') THEN                                           ! 
          CALL PUSH_STACK (MUB)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'MUN') THEN                                           ! MUN
+case('MUN')                                                ! MUN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (MUN)
@@ -3048,7 +3017,7 @@ ELSE IF (TRIM(STR) .EQ. 'MUN') THEN                                           ! 
          CALL PUSH_STACK (MUN)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'N') THEN                                             ! N
+case('N')                                                  ! N
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (NN)
@@ -3058,7 +3027,7 @@ ELSE IF (TRIM(STR) .EQ. 'N') THEN                                             ! 
          CALL RPUSH_STACK (RNNN, RDNN)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'NA') THEN                                            ! NA
+case('NA')                                                 ! NA
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (NA)
@@ -3069,7 +3038,7 @@ ELSE IF (TRIM(STR) .EQ. 'NA') THEN                                            ! 
          CALL PUSH_STACK (NA)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'NOT') THEN                                           ! NOT
+case('NOT')                                                ! NOT
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -3087,10 +3056,10 @@ ELSE IF (TRIM(STR) .EQ. 'NOT') THEN                                           ! 
          RDSTACK(1) = 1
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'OCT') THEN                                           ! OCT
+case('OCT')                                                ! OCT
    BASE_MODE = 8
 
-ELSE IF (TRIM(STR) .EQ. 'OR') THEN                                            ! OR
+case('OR')                                                 ! OR
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -3112,7 +3081,7 @@ ELSE IF (TRIM(STR) .EQ. 'OR') THEN                                            ! 
          CALL RDROP_STACK(2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'P>R') THEN                                           ! P>R
+case('P>R')                                                ! P>R
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          TMP  = STACK(1)*COS(STACK(2)*ANGLE_FACTOR)
@@ -3134,7 +3103,7 @@ ELSE IF (TRIM(STR) .EQ. 'P>R') THEN                                           ! 
          STACK(2) = TMP2
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'PI') THEN                                            ! PI
+case('PI')                                                 ! PI
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (PI)
@@ -3145,15 +3114,15 @@ ELSE IF (TRIM(STR) .EQ. 'PI') THEN                                            ! 
          CALL PUSH_STACK (PI)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'PNR') THEN                                           ! PNR
+case('PNR')                                                ! PNR
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((RDSTACK(1).NE.1).OR.(RDSTACK(2).NE.1)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-         ELSE IF ((RNSTACK(1).LT.0) .OR. (RNSTACK(2).LT.0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-         ELSE IF (RNSTACK(2) .LT. RNSTACK(1)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  PNR Error'
+         IF ((RDSTACK(1)/=1).OR.(RDSTACK(2)/=1)) THEN
+            write(stderr, *) '  PNR Error'
+         ELSE IF ((RNSTACK(1)<0) .OR. (RNSTACK(2)<0)) THEN
+            write(stderr, *) '  PNR Error'
+         ELSE IF (RNSTACK(2) < RNSTACK(1)) THEN
+            write(stderr, *) '  PNR Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = PNR (ITMP2, ITMP)
@@ -3161,17 +3130,17 @@ ELSE IF (TRIM(STR) .EQ. 'PNR') THEN                                           ! 
          END IF
       CASE (2)
          IF (ISFRAC(real(CSTACK(1), wp)) .OR. ISFRAC(real(CSTACK(2), wp))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-         ELSE IF (real(CSTACK(1), wp).LT.0.0D0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-         ELSE IF (real(CSTACK(2), wp).LT.0.0D0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-         ELSE IF (AIMAG(CSTACK(1)).NE.0.0D0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-         ELSE IF (AIMAG(CSTACK(2)).NE.0.0D0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-         ELSE IF (real(CSTACK(2), wp) .LT. real(CSTACK(1), wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  PNR Error'
+            write(stderr, *) '  PNR Error'
+         ELSE IF (real(CSTACK(1), wp)<0.0D0) THEN
+            write(stderr, *) '  PNR Error'
+         ELSE IF (real(CSTACK(2), wp)<0.0D0) THEN
+            write(stderr, *) '  PNR Error'
+         ELSE IF (AIMAG(CSTACK(1))/=0.0D0) THEN
+            write(stderr, *) '  PNR Error'
+         ELSE IF (AIMAG(CSTACK(2))/=0.0D0) THEN
+            write(stderr, *) '  PNR Error'
+         ELSE IF (real(CSTACK(2), wp) < real(CSTACK(1), wp)) THEN
+            write(stderr, *) '  PNR Error'
          ELSE
             ITMP  = NINT(real(CSTACK(1), wp))
             ITMP2 = NINT(real(CSTACK(2), wp))
@@ -3182,11 +3151,11 @@ ELSE IF (TRIM(STR) .EQ. 'PNR') THEN                                           ! 
          END IF
       CASE (3)
          IF (ISFRAC(STACK(1)) .OR. ISFRAC(STACK(2))) THEN
-            WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-         ELSE IF ((STACK(1).LT.0.0D0) .OR. (STACK(2).LT.0.0D0)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  PNR Error'
-         ELSE IF (STACK(2) .LT. STACK(1)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  PNR Error'
+            write(stderr, *) '  PNR Error'
+         ELSE IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+            write(stderr, *) '  PNR Error'
+         ELSE IF (STACK(2) < STACK(1)) THEN
+            write(stderr, *) '  PNR Error'
          ELSE
             RNLASTX = RNSTACK(1)
             RDLASTX = RDSTACK(1)
@@ -3195,7 +3164,7 @@ ELSE IF (TRIM(STR) .EQ. 'PNR') THEN                                           ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'PR') THEN                                            ! PR
+case('PR')                                                 ! PR
    WRITE (UNIT=*, FMT='()')
    DO I = 0, REG_SIZE-1
       SELECT CASE (DOMAIN_MODE)
@@ -3208,9 +3177,9 @@ ELSE IF (TRIM(STR) .EQ. 'PR') THEN                                            ! 
       END SELECT
       WRITE (UNIT=*, FMT='(1X,I3,A)') I, ':  '//TRIM(NUMSTR)
    END DO
-   WRITE (UNIT=*, FMT='(A)') ' '
+   print *, ' '
 
-ELSE IF (TRIM(STR) .EQ. 'PS') THEN                                            ! PS
+case('PS')                                                 ! PS
    WRITE (UNIT=*, FMT='()')
    DO I = STACK_SIZE, 1, -1
       SELECT CASE (I)
@@ -3235,83 +3204,79 @@ ELSE IF (TRIM(STR) .EQ. 'PS') THEN                                            ! 
       END SELECT
       WRITE (UNIT=*, FMT='(2X,A)') REGNAME//':  '//TRIM(NUMSTR)
    END DO
-   WRITE (UNIT=*, FMT='(A)') ' '
+   print *, ' '
 
-ELSE IF (TRIM(STR) .EQ. 'PSUMS') THEN                                         ! PSUMS
+case('PSUMS')                                             ! PSUMS
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          WRITE (UNIT=*, FMT='()')
          CALL PRINTX(NN, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  N:   '//TRIM(NUMSTR)
+         print *, '  N:   '//TRIM(NUMSTR)
          CALL PRINTX(SUMX, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  X:   '//TRIM(NUMSTR)
+         print *, '  X:   '//TRIM(NUMSTR)
          CALL PRINTX(SUMX2, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  X2:  '//TRIM(NUMSTR)
+         print *, '  X2:  '//TRIM(NUMSTR)
          CALL PRINTX(SUMY, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  Y:   '//TRIM(NUMSTR)
+         print *, '  Y:   '//TRIM(NUMSTR)
          CALL PRINTX(SUMY2, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  Y2:  '//TRIM(NUMSTR)
+         print *, '  Y2:  '//TRIM(NUMSTR)
          CALL PRINTX(SUMXY, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  XY:  '//TRIM(NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') ' '
+         print *, '  XY:  '//TRIM(NUMSTR)
+         print *, ' '
       CASE (2)
          WRITE (UNIT=*, FMT='()')
          CALL CPRINTX(CNN, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  N:   '//TRIM(NUMSTR)
+         print *, '  N:   '//TRIM(NUMSTR)
          CALL CPRINTX(CSUMX, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  X:   '//TRIM(NUMSTR)
+         print *, '  X:   '//TRIM(NUMSTR)
          CALL CPRINTX(CSUMX2, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  X2:  '//TRIM(NUMSTR)
+         print *, '  X2:  '//TRIM(NUMSTR)
          CALL CPRINTX(CSUMY, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  Y:   '//TRIM(NUMSTR)
+         print *, '  Y:   '//TRIM(NUMSTR)
          CALL CPRINTX(CSUMY2, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  Y2:  '//TRIM(NUMSTR)
+         print *, '  Y2:  '//TRIM(NUMSTR)
          CALL CPRINTX(CSUMXY, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  XY:  '//TRIM(NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') ' '
+         print *, '  XY:  '//TRIM(NUMSTR)
+         print *, ' '
       CASE (3)
          WRITE (UNIT=*, FMT='()')
          CALL RPRINTX(RNNN, RDNN, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  N:   '//TRIM(NUMSTR)
+         print *, '  N:   '//TRIM(NUMSTR)
          CALL RPRINTX(RNSUMX, RDSUMX, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  X:   '//TRIM(NUMSTR)
+         print *, '  X:   '//TRIM(NUMSTR)
          CALL RPRINTX(RNSUMX2, RDSUMX2, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  X2:  '//TRIM(NUMSTR)
+         print *, '  X2:  '//TRIM(NUMSTR)
          CALL RPRINTX(RNSUMY, RDSUMY, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  Y:   '//TRIM(NUMSTR)
+         print *, '  Y:   '//TRIM(NUMSTR)
          CALL RPRINTX(RNSUMY2, RDSUMY2, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  Y2:  '//TRIM(NUMSTR)
+         print *, '  Y2:  '//TRIM(NUMSTR)
          CALL RPRINTX(RNSUMXY, RDSUMXY, NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') '  XY:  '//TRIM(NUMSTR)
-         WRITE (UNIT=*, FMT='(A)') ' '
+         print *, '  XY:  '//TRIM(NUMSTR)
+         print *, ' '
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'R') THEN                                             ! R
+case('R')                                                  ! R
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         TMP = STACK(1)
-         DO I = 1, STACK_SIZE-1
-            STACK(I) = STACK(I+1)
-         END DO
-         STACK(STACK_SIZE) = TMP
+         stack = cshift(stack, 1)
       CASE (2)
-         CTMP = CSTACK(1)
-         DO I = 1, STACK_SIZE-1
-            CSTACK(I) = CSTACK(I+1)
-         END DO
-         CSTACK(STACK_SIZE) = CTMP
+         cstack = cshift(cstack, 1)
       CASE (3)
-         ITMP = RNSTACK(1)
-         ITMP2 = RDSTACK(1)
-         DO I = 1, STACK_SIZE-1
-            RNSTACK(I) = RNSTACK(I+1)
-            RDSTACK(I) = RDSTACK(I+1)
-         END DO
-         RNSTACK(STACK_SIZE) = ITMP
-         RDSTACK(STACK_SIZE) = ITMP2
+         rnstack = cshift(rnstack, 1)
+         rdstack = cshift(rdstack, 1)
+   END SELECT
+   
+case('D')                                                  ! D
+   SELECT CASE (DOMAIN_MODE)
+      CASE (1)
+         call drop_stack(1)
+      CASE (2)
+         call cdrop_stack(1)
+      CASE (3)
+         call rdrop_stack(1)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'R>D') THEN                                           ! R>D
+case('R>D')                                                ! R>D
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -3325,7 +3290,7 @@ ELSE IF (TRIM(STR) .EQ. 'R>D') THEN                                           ! 
          STACK(1) = STACK(1)*180.0D0/PI
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'R>P') THEN                                           ! R>P
+case('R>P')                                                ! R>P
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          TMP  = SQRT((STACK(1))**2+(STACK(2))**2)
@@ -3347,11 +3312,11 @@ ELSE IF (TRIM(STR) .EQ. 'R>P') THEN                                           ! 
          STACK(2) = TMP2
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'RAD') THEN                                           ! RAD
+case('RAD')                                                ! RAD
    ANGLE_MODE = 2
    ANGLE_FACTOR = 1._wp
 
-ELSE IF (TRIM(STR) .EQ. 'RAND') THEN                                          ! RAND
+case('RAND')                                               ! RAND
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL RANDOM_NUMBER (TMP)
@@ -3366,7 +3331,7 @@ ELSE IF (TRIM(STR) .EQ. 'RAND') THEN                                          ! 
          CALL RPUSH_STACK(NUM, DEN)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'RATIONAL') THEN                                      ! RATIONAL
+case('RATIONAL')                                           ! RATIONAL
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          DOMAIN_MODE = 3
@@ -3436,16 +3401,16 @@ ELSE IF (TRIM(STR) .EQ. 'RATIONAL') THEN                                      ! 
          RDSUMXY = ITMP2
    END SELECT
 
-ELSE IF (STR(1:3) .EQ. 'RCL') THEN                                            ! RCL
-   IF (LEN_TRIM(STR) .EQ. 3) THEN
-      WRITE (UNIT=*, FMT='(A)') '  RCL Error'
+case('RCL')                                                 ! RCL
+   IF (LEN_TRIM(STR) == 3) THEN
+      write(stderr, *) '  RCL Error'
    ELSE
       READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-      IF (IERR .NE. 0) THEN
-         WRITE (UNIT=*, FMT='(A)') '  RCL Error'
+      IF (IERR /= 0) THEN
+         write(stderr, *) '  RCL Error'
       ELSE
-         IF ((ITMP.LT.0).OR.(ITMP.GE.REG_SIZE)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  RCL Error'
+         IF ((ITMP<0).OR.(ITMP>=REG_SIZE)) THEN
+            write(stderr, *) '  RCL Error'
          ELSE
             SELECT CASE (DOMAIN_MODE)
                CASE (1)
@@ -3460,25 +3425,25 @@ ELSE IF (STR(1:3) .EQ. 'RCL') THEN                                            ! 
    END IF
    PRINT *, REG(ITMP)
 
-ELSE IF (TRIM(STR) .EQ. 'RCORR') THEN                                         ! RCORR
+case('RCORR')                                             ! RCORR
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (NN .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  RCORR Error'
+         IF (NN <= 1._wp) THEN
+            write(stderr, *) '  RCORR Error'
          ELSE
             CALL LINREG (TMPM,TMPB,TMPR)
             CALL PUSH_STACK (TMPR)
          END IF
       CASE (2)
-         IF (real(CNN, wp) .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  RCORR Error'
+         IF (real(CNN, wp) <= 1._wp) THEN
+            write(stderr, *) '  RCORR Error'
          ELSE
             CALL CLINREG (CTMPM,CTMPB,CTMPR)
             CALL CPUSH_STACK (CTMPR)
          END IF
       CASE (3)
-         IF (RNNN .LE. 1) THEN
-            WRITE (UNIT=*, FMT='(A)') '  RCORR Error'
+         IF (RNNN <= 1) THEN
+            write(stderr, *) '  RCORR Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             CALL LINREG (TMPM,TMPB,TMPR)
@@ -3486,14 +3451,14 @@ ELSE IF (TRIM(STR) .EQ. 'RCORR') THEN                                         ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'RE') THEN                                            ! RE
+case('RE')                                                 ! RE
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
          CLASTX = CSTACK(1)
          CSTACK(1) = CMPLX(real(CSTACK(1), wp), 0._wp, wp)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'REAL') THEN                                          ! REAL
+case('REAL')                                               ! REAL
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
          DOMAIN_MODE = 1
@@ -3514,7 +3479,7 @@ ELSE IF (TRIM(STR) .EQ. 'REAL') THEN                                          ! 
          CALL SWITCH_RAT_TO_REAL
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'REARTH') THEN                                        ! REARTH
+case('REARTH')                                             ! REARTH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (REARTH)
@@ -3525,7 +3490,7 @@ ELSE IF (TRIM(STR) .EQ. 'REARTH') THEN                                        ! 
          CALL PUSH_STACK (REARTH)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'REDUCE') THEN                                        ! REDUCE
+case('REDUCE')                                             ! REDUCE
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          TMP = STACK(1)
@@ -3549,7 +3514,7 @@ ELSE IF (TRIM(STR) .EQ. 'REDUCE') THEN                                        ! 
             / ANGLE_FACTOR
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'RESET') THEN                                         ! RESET
+case('RESET')                                             ! RESET
    STACK = 0._wp
    REG = 0._wp
    LASTX = 0._wp
@@ -3604,11 +3569,11 @@ ELSE IF (TRIM(STR) .EQ. 'RESET') THEN                                         ! 
 
    FRACTOL = INITIAL_FRACTOL
 
-ELSE IF (TRIM(STR) .EQ. 'REV') THEN                                           ! REV
+case('REV')                                                ! REV
    ANGLE_MODE = 4
    ANGLE_FACTOR = TWOPI
 
-ELSE IF (TRIM(STR) .EQ. 'RGAS') THEN                                          ! RGAS
+case('RGAS')                                               ! RGAS
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (RGAS)
@@ -3619,7 +3584,7 @@ ELSE IF (TRIM(STR) .EQ. 'RGAS') THEN                                          ! 
          CALL PUSH_STACK (RGAS)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'RI') THEN                                            ! RI
+case('RI')                                                 ! RI
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          STACK(1) = 0._wp
@@ -3632,7 +3597,7 @@ ELSE IF (TRIM(STR) .EQ. 'RI') THEN                                            ! 
          RDSTACK(1) = 1
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'ROUND') THEN                                         ! ROUND
+case('ROUND')                                             ! ROUND
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -3652,45 +3617,31 @@ ELSE IF (TRIM(STR) .EQ. 'ROUND') THEN                                         ! 
          RDSTACK(1) = DEN
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'RUP') THEN                                           ! RUP
+case('U')                                                ! roll stack up
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         TMP = STACK(STACK_SIZE)
-         DO I = STACK_SIZE, 2, -1
-            STACK(I) = STACK(I-1)
-         END DO
-         STACK(1) = TMP
+         stack = cshift(stack, -1)
       CASE (2)
-         CTMP = CSTACK(STACK_SIZE)
-         DO I = STACK_SIZE, 2, -1
-            CSTACK(I) = CSTACK(I-1)
-         END DO
-         CSTACK(1) = CTMP
+         cstack = cshift(cstack, -1)
       CASE (3)
-         ITMP = RNSTACK(STACK_SIZE)
-         ITMP2 = RDSTACK(STACK_SIZE)
-         DO I = STACK_SIZE, 2, -1
-            RNSTACK(I) = RNSTACK(I-1)
-            RDSTACK(I) = RDSTACK(I-1)
-         END DO
-         RNSTACK(1) = ITMP
-         RDSTACK(1) = ITMP2
+         rnstack = cshift(rnstack, -1)
+         rdstack = cshift(rdstack, -1)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'RZETA') THEN                                         ! RZETA
+case('RZETA')                                             ! RZETA
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
          STACK(1) = RIEMANNZETA(STACK(1), 1.e-10_wp) + 1._wp
       CASE (2)
-         WRITE (UNIT=*, FMT='(A)') ' RZETA function not available in COMPLEX mode.'
+         write(stderr, *) ' RZETA function not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
          STACK(1) = RIEMANNZETA(STACK(1), 1.e-10_wp) + 1._wp
    END SELECT
 
-ELSE IF (STR(1:3) .EQ. 'S') THEN                                              ! S
+case('S')                                                  ! S
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          NN = NN + 1._wp
@@ -3726,7 +3677,7 @@ ELSE IF (STR(1:3) .EQ. 'S') THEN                                              ! 
          RDSTACK(1) = RDNN
    END SELECT
 
-ELSE IF (STR(1:3) .EQ. 'S-') THEN                                             ! S-
+case('S-')                                                  ! S-
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          NN = NN - 1._wp
@@ -3762,20 +3713,20 @@ ELSE IF (STR(1:3) .EQ. 'S-') THEN                                             ! 
          RDSTACK(1) = RDNN
    END SELECT
 
-ELSE IF (STR(1:3) .EQ. 'SCI') THEN                                            ! SCI
-   IF (LEN_TRIM(STR) .EQ. 3) THEN
-      WRITE (UNIT=*, FMT='(A)') '  SCI Error'
+case('SCI')                                                 ! SCI
+   IF (LEN_TRIM(STR) == 3) THEN
+      write(stderr, *) '  SCI Error'
    ELSE
       READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-      IF (IERR .NE. 0) THEN
-         WRITE (UNIT=*, FMT='(A)') '  SCI Error'
+      IF (IERR /= 0) THEN
+         write(stderr, *) '  SCI Error'
       ELSE
          DISP_MODE = 2
          DISP_DIGITS = ITMP
       END IF
    END IF
 
-ELSE IF (TRIM(STR) .EQ. 'SEC') THEN                                           ! SEC
+case('SEC')                                                ! SEC
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -3789,7 +3740,7 @@ ELSE IF (TRIM(STR) .EQ. 'SEC') THEN                                           ! 
          STACK(1) = SEC(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'SECH') THEN                                          ! SECH
+case('SECH')                                               ! SECH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -3803,12 +3754,12 @@ ELSE IF (TRIM(STR) .EQ. 'SECH') THEN                                          ! 
          STACK(1) = SECH(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'SGN') THEN                                           ! SGN
+case('SGN')                                                ! SGN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .LT. 0._wp) THEN
+         IF (STACK(1) < 0._wp) THEN
             TMP = -1._wp
-         ELSE IF (STACK(1) .EQ. 0._wp) THEN
+         ELSE IF (STACK(1) == 0._wp) THEN
             TMP = 0._wp
          ELSE
             TMP = +1._wp
@@ -3816,16 +3767,16 @@ ELSE IF (TRIM(STR) .EQ. 'SGN') THEN                                           ! 
          LASTX = STACK(1)
          STACK(1) = TMP
       CASE (2)
-         IF (real(CSTACK(1), wp) .LT. 0._wp) THEN
+         IF (real(CSTACK(1), wp) < 0._wp) THEN
             TMP = -1._wp
-         ELSE IF (real(CSTACK(1), wp) .EQ. 0._wp) THEN
+         ELSE IF (real(CSTACK(1), wp) == 0._wp) THEN
             TMP = 0._wp
          ELSE
             TMP = +1._wp
          END IF
-         IF (AIMAG(CSTACK(1)) .LT. 0._wp) THEN
+         IF (AIMAG(CSTACK(1)) < 0._wp) THEN
             TMP2 = -1._wp
-         ELSE IF (AIMAG(CSTACK(1)) .EQ. 0._wp) THEN
+         ELSE IF (AIMAG(CSTACK(1)) == 0._wp) THEN
             TMP2 = 0._wp
          ELSE
             TMP2 = +1._wp
@@ -3833,9 +3784,9 @@ ELSE IF (TRIM(STR) .EQ. 'SGN') THEN                                           ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = CMPLX(TMP,TMP2, wp)
       CASE (3)
-         IF (RNSTACK(1) .LT. 0) THEN
+         IF (RNSTACK(1) < 0) THEN
             ITMP = 1
-         ELSE IF (RNSTACK(1) .EQ. 0) THEN
+         ELSE IF (RNSTACK(1) == 0) THEN
             ITMP = 0
          ELSE
             ITMP = +1
@@ -3846,7 +3797,7 @@ ELSE IF (TRIM(STR) .EQ. 'SGN') THEN                                           ! 
          RDSTACK(1) = 1
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'SIN') THEN                                           ! SIN
+case('SIN')                                                ! SIN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -3860,7 +3811,7 @@ ELSE IF (TRIM(STR) .EQ. 'SIN') THEN                                           ! 
          STACK(1) = SIN(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'SINC') THEN                                          ! SINC
+case('SINC')                                               ! SINC
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -3874,7 +3825,7 @@ ELSE IF (TRIM(STR) .EQ. 'SINC') THEN                                          ! 
          STACK(1) = SINC(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'SINH') THEN                                          ! SINH
+case('SINH')                                               ! SINH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -3888,7 +3839,7 @@ ELSE IF (TRIM(STR) .EQ. 'SINH') THEN                                          ! 
          STACK(1) = SINH(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'SINHC') THEN                                         ! SINHC
+case('SINHC')                                             ! SINHC
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -3902,7 +3853,7 @@ ELSE IF (TRIM(STR) .EQ. 'SINHC') THEN                                         ! 
          STACK(1) = SINHC(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'SQR') THEN                                           ! SQR
+case('SQR')                                                ! SQR
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -3920,11 +3871,11 @@ ELSE IF (TRIM(STR) .EQ. 'SQR') THEN                                           ! 
          RDSTACK(1) = DEN2
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'SQRT') THEN                                          ! SQRT
+case('SQRT')                                               ! SQRT
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) .LT. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  SQRT Error'
+         IF (STACK(1) < 0._wp) THEN
+            write(stderr, *) '  SQRT Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = SQRT(STACK(1))
@@ -3933,8 +3884,8 @@ ELSE IF (TRIM(STR) .EQ. 'SQRT') THEN                                          ! 
          CLASTX = CSTACK(1)
          CSTACK(1) = SQRT(CSTACK(1))
       CASE (3)
-         IF (RNSTACK(1) .LT. 0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  SQRT Error'
+         IF (RNSTACK(1) < 0) THEN
+            write(stderr, *) '  SQRT Error'
          ELSE
             TMP = SQRT(real(RNSTACK(1), wp))
             TMP2 = SQRT(real(RDSTACK(1), wp))
@@ -3951,7 +3902,7 @@ ELSE IF (TRIM(STR) .EQ. 'SQRT') THEN                                          ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'STEFAN') THEN                                        ! STEFAN
+case('STEFAN')                                             ! STEFAN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (STEFAN)
@@ -3962,16 +3913,16 @@ ELSE IF (TRIM(STR) .EQ. 'STEFAN') THEN                                        ! 
          CALL PUSH_STACK (STEFAN)
    END SELECT
 
-ELSE IF (STR(1:3) .EQ. 'STO') THEN                                            ! STO
-   IF (LEN_TRIM(STR) .EQ. 3) THEN
-      WRITE (UNIT=*, FMT='(A)') '  STO Error'
+case('STO')                                                 ! STO
+   IF (LEN_TRIM(STR) == 3) THEN
+      write(stderr, *) '  STO Error'
    ELSE
       READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-      IF (IERR .NE. 0) THEN
-         WRITE (UNIT=*, FMT='(A)') '  STO Error'
+      IF (IERR /= 0) THEN
+         write(stderr, *) '  STO Error'
       ELSE
-         IF ((ITMP.LT.0).OR.(ITMP.GE.REG_SIZE)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  STO Error'
+         IF ((ITMP<0).OR.(ITMP>=REG_SIZE)) THEN
+            write(stderr, *) '  STO Error'
          ELSE
             SELECT CASE (DOMAIN_MODE)
                CASE (1)
@@ -3987,7 +3938,7 @@ ELSE IF (STR(1:3) .EQ. 'STO') THEN                                            ! 
    END IF
    PRINT *, REG(ITMP)
 
-ELSE IF (TRIM(STR) .EQ. 'SUMX') THEN                                          ! SUMX
+case('SUMX')                                               ! SUMX
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (SUMX)
@@ -3997,7 +3948,7 @@ ELSE IF (TRIM(STR) .EQ. 'SUMX') THEN                                          ! 
          CALL RPUSH_STACK (RNSUMX,RDSUMX)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'SUMX2') THEN                                         ! SUMX2
+case('SUMX2')                                             ! SUMX2
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (SUMX2)
@@ -4007,7 +3958,7 @@ ELSE IF (TRIM(STR) .EQ. 'SUMX2') THEN                                         ! 
          CALL RPUSH_STACK (RNSUMX2,RDSUMX2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'SUMXY') THEN                                         ! SUMXY
+case('SUMXY')                                             ! SUMXY
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (SUMXY)
@@ -4017,7 +3968,7 @@ ELSE IF (TRIM(STR) .EQ. 'SUMXY') THEN                                         ! 
          CALL RPUSH_STACK (RNSUMXY,RDSUMXY)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'SUMY') THEN                                          ! SUMY
+case('SUMY')                                               ! SUMY
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (SUMY)
@@ -4027,7 +3978,7 @@ ELSE IF (TRIM(STR) .EQ. 'SUMY') THEN                                          ! 
          CALL RPUSH_STACK (RNSUMY,RDSUMY)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'SUMY2') THEN                                         ! SUMY2
+case('SUMY2')                                             ! SUMY2
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          CALL PUSH_STACK (SUMY2)
@@ -4037,7 +3988,7 @@ ELSE IF (TRIM(STR) .EQ. 'SUMY2') THEN                                         ! 
          CALL RPUSH_STACK (RNSUMY2,RDSUMY2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'TAN') THEN                                           ! TAN
+case('TAN')                                                ! TAN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -4051,7 +4002,7 @@ ELSE IF (TRIM(STR) .EQ. 'TAN') THEN                                           ! 
          STACK(1) = TAN(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'TANC') THEN                                          ! TANC
+case('TANC')                                               ! TANC
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -4065,7 +4016,7 @@ ELSE IF (TRIM(STR) .EQ. 'TANC') THEN                                          ! 
          STACK(1) = TANC(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'TANH') THEN                                          ! TANH
+case('TANH')                                               ! TANH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -4079,7 +4030,7 @@ ELSE IF (TRIM(STR) .EQ. 'TANH') THEN                                          ! 
          STACK(1) = TANH(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'TANHC') THEN                                         ! TANHC
+case('TANHC')                                             ! TANHC
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -4093,7 +4044,7 @@ ELSE IF (TRIM(STR) .EQ. 'TANHC') THEN                                         ! 
          STACK(1) = TANHC(STACK(1))
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'TIME') THEN                                          ! TIME
+case('TIME')                                               ! TIME
    CALL DATE_AND_TIME (DATE, TIME, ZONE, DT)
    YEAR = DT(1)
    MONTH = DT(2)
@@ -4105,10 +4056,10 @@ ELSE IF (TRIM(STR) .EQ. 'TIME') THEN                                          ! 
    WRITE (UNIT=*, FMT='(A,I2.2,1H:,I2.2,1H:,I2.2/)') &
       '  Time:  ', HOUR, MINUTE, SECOND
 
-ELSE IF (TRIM(STR) .EQ. 'VER') THEN                                           ! VER
+case('VER')                                                ! VER
    WRITE (UNIT=*, FMT='(/A/)') '  RPN Version '//VERSION
 
-ELSE IF (TRIM(STR) .EQ. 'VERS') THEN                                          ! VERS
+case('VERS')                                               ! VERS
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -4122,27 +4073,27 @@ ELSE IF (TRIM(STR) .EQ. 'VERS') THEN                                          ! 
          STACK(1) = VERS(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'X^') THEN                                            ! X^
+case('X^')                                                 ! X^
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (NN .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  X^ Error'
+         IF (NN <= 1._wp) THEN
+            write(stderr, *) '  X^ Error'
          ELSE
             CALL LINREG (TMPM,TMPB,TMPR)
             LASTX = STACK(1)
             STACK(1) = (STACK(1)-TMPB)/TMPM
          END IF
       CASE (2)
-         IF (real(CNN, wp) .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  X^ Error'
+         IF (real(CNN, wp) <= 1._wp) THEN
+            write(stderr, *) '  X^ Error'
          ELSE
             CALL CLINREG (CTMPM,CTMPB,CTMPR)
             CLASTX = CSTACK(1)
             CSTACK(1) = (CSTACK(1)-CTMPB)/CTMPM
          END IF
       CASE (3)
-         IF (RNNN .LE. 1) THEN
-            WRITE (UNIT=*, FMT='(A)') '  X^ Error'
+         IF (RNNN <= 1) THEN
+            write(stderr, *) '  X^ Error'
          ELSE
             CALL RLINREG (NUMM,DENM,NUMB,DENB,TMPR)
             RNLASTX = RNSTACK(1)
@@ -4154,32 +4105,32 @@ ELSE IF (TRIM(STR) .EQ. 'X^') THEN                                            ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'XMEAN') THEN                                         ! XMEAN
+case('XMEAN')                                             ! XMEAN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (NN .EQ. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  XMEAN Error'
+         IF (NN == 0._wp) THEN
+            write(stderr, *) '  XMEAN Error'
          ELSE
             TMP = SUMX/NN
             CALL PUSH_STACK(TMP)
          END IF
       CASE (2)
-         IF (CNN .EQ. (0._wp, 0._wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  XMEAN Error'
+         IF (CNN == (0._wp, 0._wp)) THEN
+            write(stderr, *) '  XMEAN Error'
          ELSE
             CTMP = CSUMX/CNN
             CALL CPUSH_STACK(CTMP)
          END IF
       CASE (3)
-         IF (RNNN .EQ. 0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  XMEAN Error'
+         IF (RNNN == 0) THEN
+            write(stderr, *) '  XMEAN Error'
          ELSE
             CALL RDIV (RNSUMX,RDSUMX,RNNN,RDNN,NUM,DEN)
             CALL RPUSH_STACK(NUM,DEN)
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'XOR') THEN                                           ! XOR
+case('XOR')                                                ! XOR
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -4201,7 +4152,7 @@ ELSE IF (TRIM(STR) .EQ. 'XOR') THEN                                           ! 
          CALL RDROP_STACK(2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'XRT') THEN                                           ! XRT
+case('XRT')                                                ! XRT
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -4218,25 +4169,25 @@ ELSE IF (TRIM(STR) .EQ. 'XRT') THEN                                           ! 
          CALL DROP_STACK(2)
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'XS') THEN                                            ! XS
+case('XS')                                                 ! XS
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (NN .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  XS Error'
+         IF (NN <= 1._wp) THEN
+            write(stderr, *) '  XS Error'
          ELSE
             TMP = SQRT((SUMX2-SUMX**2/NN)/(NN-1._wp))
             CALL PUSH_STACK(TMP)
          END IF
       CASE (2)
-         IF (real(CNN, wp) .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  XS Error'
+         IF (real(CNN, wp) <= 1._wp) THEN
+            write(stderr, *) '  XS Error'
          ELSE
             CTMP = SQRT((CSUMX2-CSUMX**2/CNN)/(CNN-1._wp))
             CALL CPUSH_STACK(CTMP)
          END IF
       CASE (3)
-         IF (RNNN .LE. RDNN) THEN
-            WRITE (UNIT=*, FMT='(A)') '  XS Error'
+         IF (RNNN <= RDNN) THEN
+            write(stderr, *) '  XS Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             TMP = SQRT((SUMX2-SUMX**2/NN)/(NN-1._wp))
@@ -4244,25 +4195,25 @@ ELSE IF (TRIM(STR) .EQ. 'XS') THEN                                            ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'XSIG') THEN                                          ! XSIG
+case('XSIG')                                               ! XSIG
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (NN .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  XSIG Error'
+         IF (NN <= 1._wp) THEN
+            write(stderr, *) '  XSIG Error'
          ELSE
             TMP = SQRT((SUMX2-SUMX**2/NN)/NN)
             CALL PUSH_STACK(TMP)
          END IF
       CASE (2)
-         IF (real(CNN, wp) .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  XSIG Error'
+         IF (real(CNN, wp) <= 1._wp) THEN
+            write(stderr, *) '  XSIG Error'
          ELSE
             CTMP = SQRT((CSUMX2-CSUMX**2/CNN)/CNN)
             CALL CPUSH_STACK(CTMP)
          END IF
       CASE (3)
-         IF (RNNN .LE. RDNN) THEN
-            WRITE (UNIT=*, FMT='(A)') '  XSIG Error'
+         IF (RNNN <= RDNN) THEN
+            write(stderr, *) '  XSIG Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             TMP = SQRT((SUMX2-SUMX**2/NN)/NN)
@@ -4270,7 +4221,7 @@ ELSE IF (TRIM(STR) .EQ. 'XSIG') THEN                                          ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'XY') THEN                                            ! XY
+case('XY')                                                 ! XY
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          TMP = STACK(1)
@@ -4289,27 +4240,27 @@ ELSE IF (TRIM(STR) .EQ. 'XY') THEN                                            ! 
          RDSTACK(2) = ITMP2
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'Y^') THEN                                            ! Y^
+case('Y^')                                                 ! Y^
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (NN .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  Y^ Error'
+         IF (NN <= 1._wp) THEN
+            write(stderr, *) '  Y^ Error'
          ELSE
             CALL LINREG (TMPM,TMPB,TMPR)
             LASTX = STACK(1)
             STACK(1) = TMPM*STACK(1)+TMPB
          END IF
       CASE (2)
-         IF (real(CNN, wp) .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  Y^ Error'
+         IF (real(CNN, wp) <= 1._wp) THEN
+            write(stderr, *) '  Y^ Error'
          ELSE
             CALL CLINREG (CTMPM,CTMPB,CTMPR)
             CLASTX = CSTACK(1)
             CSTACK(1) = CTMPM*CSTACK(1)+CTMPB
          END IF
       CASE (3)
-         IF (RNNN .LE. 1) THEN
-            WRITE (UNIT=*, FMT='(A)') '  Y^ Error'
+         IF (RNNN <= 1) THEN
+            write(stderr, *) '  Y^ Error'
          ELSE
             CALL RLINREG (NUMM,DENM,NUMB,DENB,TMPR)
             RNLASTX = RNSTACK(1)
@@ -4321,50 +4272,50 @@ ELSE IF (TRIM(STR) .EQ. 'Y^') THEN                                            ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'YMEAN') THEN                                         ! YMEAN
+case('YMEAN')                                             ! YMEAN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (NN .EQ. 0._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  YMEAN Error'
+         IF (NN == 0._wp) THEN
+            write(stderr, *) '  YMEAN Error'
          ELSE
             TMP = SUMY/NN
             CALL PUSH_STACK(TMP)
          END IF
       CASE (2)
-         IF (CNN .EQ. (0._wp, 0._wp)) THEN
-            WRITE (UNIT=*, FMT='(A)') '  YMEAN Error'
+         IF (CNN == (0._wp, 0._wp)) THEN
+            write(stderr, *) '  YMEAN Error'
          ELSE
             CTMP = CSUMY/CNN
             CALL CPUSH_STACK(CTMP)
          END IF
       CASE (3)
-         IF (RNNN .EQ. 0) THEN
-            WRITE (UNIT=*, FMT='(A)') '  YMEAN Error'
+         IF (RNNN == 0) THEN
+            write(stderr, *) '  YMEAN Error'
          ELSE
             CALL RDIV (RNSUMY,RDSUMY,RNNN,RDNN,NUM,DEN)
             CALL RPUSH_STACK(NUM,DEN)
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'YS') THEN                                            ! YS
+case('YS')                                                 ! YS
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (NN .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  YS Error'
+         IF (NN <= 1._wp) THEN
+            write(stderr, *) '  YS Error'
          ELSE
             TMP = SQRT((SUMY2-SUMY**2/NN)/(NN-1._wp))
             CALL PUSH_STACK(TMP)
          END IF
       CASE (2)
-         IF (real(CNN, wp) .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  YS Error'
+         IF (real(CNN, wp) <= 1._wp) THEN
+            write(stderr, *) '  YS Error'
          ELSE
             CTMP = SQRT((CSUMY2-CSUMY**2/CNN)/(CNN-1._wp))
             CALL CPUSH_STACK(CTMP)
          END IF
       CASE (3)
-         IF (RNNN .LE. RDNN) THEN
-            WRITE (UNIT=*, FMT='(A)') '  YS Error'
+         IF (RNNN <= RDNN) THEN
+            write(stderr, *) '  YS Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             TMP = SQRT((SUMY2-SUMY**2/NN)/(NN-1._wp))
@@ -4372,25 +4323,25 @@ ELSE IF (TRIM(STR) .EQ. 'YS') THEN                                            ! 
          END IF
    END SELECT
 
-ELSE IF (TRIM(STR) .EQ. 'YSIG') THEN                                          ! YSIG
+case('YSIG')                                               ! YSIG
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (NN .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  YSIG Error'
+         IF (NN <= 1._wp) THEN
+            write(stderr, *) '  YSIG Error'
          ELSE
             TMP = SQRT((SUMY2-SUMY**2/NN)/NN)
             CALL PUSH_STACK(TMP)
          END IF
       CASE (2)
-         IF (real(CNN, wp) .LE. 1._wp) THEN
-            WRITE (UNIT=*, FMT='(A)') '  YSIG Error'
+         IF (real(CNN, wp) <= 1._wp) THEN
+            write(stderr, *) '  YSIG Error'
          ELSE
             CTMP = SQRT((CSUMY2-CSUMY**2/CNN)/CNN)
             CALL CPUSH_STACK(CTMP)
          END IF
       CASE (3)
-         IF (RNNN .LE. RDNN) THEN
-            WRITE (UNIT=*, FMT='(A)') '  YSIG Error'
+         IF (RNNN <= RDNN) THEN
+            write(stderr, *) '  YSIG Error'
          ELSE
             CALL SWITCH_RAT_TO_REAL
             TMP = SQRT((SUMY2-SUMY**2/NN)/NN)
@@ -4398,9 +4349,9 @@ ELSE IF (TRIM(STR) .EQ. 'YSIG') THEN                                          ! 
          END IF
    END SELECT
 
-ELSE
-   WRITE (UNIT=*, FMT='(A)') '  Input error:  "'//TRIM(STR)//'"'
-END IF
+case default
+   WRITE (stderr, *) '  Input error:  "'//TRIM(STR)//'"'
+END select
 
 END SUBROUTINE EVAL
 

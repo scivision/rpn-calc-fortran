@@ -1,4 +1,5 @@
 module funcs
+use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 use assert, only: wp
 implicit none
 
@@ -777,7 +778,7 @@ INTEGER :: G
 LOGICAL :: NEGFLAG
 
 IF (DEN .EQ. 0) THEN                                                        ! check for zero denominator
-   error stop  'Error in RATNORM: denominator is zero.'
+   ! write(stderr, *)  'Error in RATNORM: denominator is zero.'
    NUM = 0
    DEN = 1
    RETURN
@@ -2219,9 +2220,6 @@ END FUNCTION CTANHC
       END function psi
 
 
-
-
-
 !***********************************************************************************************************************************
 !  CGAMMA
 !
@@ -2235,7 +2233,7 @@ END FUNCTION CTANHC
 
       real(wp), PARAMETER :: EPS = 1.0D-14
       real(wp), PARAMETER :: PI = 4._wp * atan(1._wp)
-      real(wp), PARAMETER :: EULER = 0.57721566490153286060651209008240243104215933593992359880576723488486772677766467094D0
+      real(wp), PARAMETER :: EULER = 0.57721566490153286060651209008240243104215933593992359880576723488486772677766467094_wp
 
       INTEGER :: J
       real(wp) :: X, Y, THETA, SUM, PROD, PSUM, PPROD
@@ -2245,7 +2243,7 @@ END FUNCTION CTANHC
       Y = AIMAG(Z)
 
       IF (Z .EQ. (0.0D0,0.0D0)) THEN
-         error stop '  CGAMMA Error.'
+         ! write(stderr, *) '  CGAMMA Error.'
          R = (0.0D0,0.0D0)
          RETURN
       END IF
