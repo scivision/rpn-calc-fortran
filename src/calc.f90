@@ -38,7 +38,8 @@
 
 !
 !     Initialize data.
-!
+
+      call init_stack()
 
       DEL = IACHAR('a') - IACHAR('A')                                               ! find ASCII position diff between 'A' and 'a'
 

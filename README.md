@@ -10,9 +10,9 @@ Specifically, RPNcalc has been tested on Linux, Mac and Windows, including:
 * Gfortran 6, 7, 8 
 * ifort 2019
 
-However, due to lack of basic Fortran 2008 support, the following compilers do NOT yet work:
-* Flang 5.0
-* PGI 2018
+The stack size is set by the user with command line option. 
+Default size is 4.
+
 
 #### Authors
 * Fortran 77 code: David G. Simpson
@@ -43,7 +43,13 @@ For example:
 To exit the program, type: 
   
     q
-    
+
+### set stack size
+The default stack size is 4.
+Set the stack size at runtime, say 25 by:
+
+    rpncalc 25
+
     
 Show what modes the calculator is in with:
 
@@ -391,3 +397,9 @@ Many functions not commonly found in RPN calculators are included:
     ?           Exponential integrals
     ?           Hypergeometric functions
     ?           Hermite polynomials
+    
+## Notes
+
+Due to lack of basic Fortran 2008 support, the following compilers do NOT yet work:
+* Flang 5.0
+* PGI 2018

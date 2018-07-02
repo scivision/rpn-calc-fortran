@@ -3,15 +3,15 @@ use assert, only: wp
 
 IMPLICIT NONE
 
-CHARACTER(*), PARAMETER :: VERSION = '1.1.3'
+CHARACTER(*), PARAMETER :: VERSION = '1.1.4'
 
-INTEGER, PARAMETER :: STACK_SIZE = 4                                          ! stack size
+INTEGER :: STACK_SIZE                                         ! stack size
 INTEGER, PARAMETER :: REG_SIZE = 10                                           ! number of storage registers
-real(wp), DIMENSION (STACK_SIZE) :: STACK                             ! real stack
+real(wp), allocatable :: STACK(:)                           ! real stack
 real(wp), DIMENSION (0:REG_SIZE-1) :: REG                             ! real storage registers
-COMPLEX(wp), DIMENSION (STACK_SIZE) :: CSTACK                             ! complex stack
+COMPLEX(wp), allocatable :: CSTACK(:)                           ! complex stack
 COMPLEX(wp), DIMENSION (0:REG_SIZE-1) :: CREG                             ! complex storage registers
-INTEGER, DIMENSION (STACK_SIZE) :: RNSTACK, RDSTACK                           ! rational stack
+INTEGER, allocatable :: RNSTACK(:), RDSTACK(:)                      ! rational stack
 INTEGER, DIMENSION (0:REG_SIZE-1) :: RNREG, RDREG                             ! rational storage registers
 real(wp) :: LASTX                                                     ! real LAST X register
 COMPLEX(wp) :: CLASTX                                                     ! complex LAST X register
@@ -31,5 +31,22 @@ INTEGER, PARAMETER :: INITIAL_DOMAIN_MODE = 1                                 ! 
 INTEGER, PARAMETER :: INITIAL_BASE_MODE = 10                                  ! 2=bin, 8=oct, 10=dec, 16=hex
 INTEGER, PARAMETER :: INITIAL_FRACTION_MODE = 1                               ! 1=improper, 2=mixed
 real(wp), PARAMETER :: INITIAL_FRACTOL = 1.0D-4                       ! tolerance for decimal to fraction conversion
+
+
+contains
+
+
+subroutine init_stack()
+
+integer :: i
+character(16) :: argv
+
+stack_size=4  ! default
+call get_command_argument(1, argv, status=i)
+if (i==0) read(argv,'(I2)') stack_size
+
+allocate(stack(stack_size), cstack(stack_size), rdstack(stack_size), rnstack(stack_size))
+
+end subroutine init_stack
 
 END MODULE GLOBAL
