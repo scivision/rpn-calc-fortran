@@ -21,8 +21,6 @@ SUBROUTINE EVAL (STR)
 CHARACTER(*), INTENT(IN) :: STR
 
 real(wp), PARAMETER :: PI = 4._wp * atan(1._wp)
-real(wp), PARAMETER :: TWOPI = 2*pi
-real(wp), PARAMETER :: LN2 = log(2._wp)
 real(wp), PARAMETER :: EULER = 0.5772156649_wp
 real(wp), PARAMETER :: GOLDEN = 1.618033988745_wp
 COMPLEX(wp),  PARAMETER :: II = (0._wp,1._wp)
@@ -68,113 +66,19 @@ IF (LEN_TRIM(STR) == 0) return
 select case(str)
 
 case('+')                                                  ! +
-   SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         LASTX = STACK(1)
-         STACK(1) = STACK(2) + STACK(1)
-         CALL DROP_STACK(2)
-      CASE (2)
-         CLASTX = CSTACK(1)
-         CSTACK(1) = CSTACK(2) + CSTACK(1)
-         CALL CDROP_STACK(2)
-      CASE (3)
-         CALL RADD (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
-         RNLASTX = RNSTACK(1)
-         RDLASTX = RDSTACK(1)
-         RNSTACK(1) = NUM
-         RDSTACK(1) = DEN
-         CALL RDROP_STACK(2)
-   END SELECT
-
+  call add(domain_mode)
+  
 case('-')                                                  ! -
-   SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         LASTX = STACK(1)
-         STACK(1) = STACK(2) - STACK(1)
-         CALL DROP_STACK(2)
-      CASE (2)
-         CLASTX = CSTACK(1)
-         CSTACK(1) = CSTACK(2) - CSTACK(1)
-         CALL CDROP_STACK(2)
-      CASE (3)
-         CALL RSUB (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
-         RNLASTX = RNSTACK(1)
-         RDLASTX = RDSTACK(1)
-         RNSTACK(1) = NUM
-         RDSTACK(1) = DEN
-         CALL RDROP_STACK(2)
-   END SELECT
-
+  call subtract(domain_mode)
+  
 case('*')                                                  ! *
-   SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         LASTX = STACK(1)
-         STACK(1) = STACK(2) * STACK(1)
-         CALL DROP_STACK(2)
-      CASE (2)
-         CLASTX = CSTACK(1)
-         CSTACK(1) = CSTACK(2) * CSTACK(1)
-         CALL CDROP_STACK(2)
-      CASE (3)
-         CALL RMUL (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
-         RNLASTX = RNSTACK(1)
-         RDLASTX = RDSTACK(1)
-         RNSTACK(1) = NUM
-         RDSTACK(1) = DEN
-         CALL RDROP_STACK(2)
-   END SELECT
+  call multiply(domain_mode)
 
 case('/')                                                  ! /
-   SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         IF (STACK(1) == 0._wp) THEN
-            write(stderr, *) '  Divide by zero Error'
-         ELSE
-            LASTX = STACK(1)
-            STACK(1) = STACK(2) / STACK(1)
-            CALL DROP_STACK(2)
-         END IF
-      CASE (2)
-         IF (CSTACK(1) == (0.0,0.0)) THEN
-            write(stderr, *) '  Divide by zero Error'
-         ELSE
-            CLASTX = CSTACK(1)
-            CSTACK(1) = CSTACK(2) / CSTACK(1)
-            CALL CDROP_STACK(2)
-         END IF
-      CASE (3)
-         CALL RDIV (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
-         RNLASTX = RNSTACK(1)
-         RDLASTX = RDSTACK(1)
-         RNSTACK(1) = NUM
-         RDSTACK(1) = DEN
-         CALL RDROP_STACK(2)
-   END SELECT
+  call divide(domain_mode)
 
 case('^')                                                  ! ^
-   SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         LASTX = STACK(1)
-         STACK(1) = STACK(2) ** STACK(1)
-         CALL DROP_STACK(2)
-      CASE (2)
-         CLASTX = CSTACK(1)
-         CSTACK(1) = CSTACK(2) ** CSTACK(1)
-         CALL CDROP_STACK(2)
-      CASE (3)
-         IF (RDSTACK(1) == 1) THEN
-            RNLASTX = RNSTACK(1)
-            RDLASTX = RDSTACK(1)
-            RNSTACK(1) = RNSTACK(2) ** RNLASTX
-            RDSTACK(1) = RDSTACK(2) ** RNLASTX
-            CALL RDROP_STACK(2)
-         ELSE
-            CALL SWITCH_RAT_TO_REAL
-            LASTX = STACK(1)
-            STACK(1) = STACK(2) ** STACK(1)
-            CALL DROP_STACK(2)
-         END IF
-   END SELECT
+  call power(domain_mode)
 
 case('\')                                                  ! \
    SELECT CASE (DOMAIN_MODE)
@@ -372,25 +276,25 @@ case('10X')                                                ! 10X
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
-         STACK(1) = 10.0D0**(STACK(1))
+         STACK(1) = 10._wp**(STACK(1))
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = 10.0D0**(CSTACK(1))
+         CSTACK(1) = 10._wp**(CSTACK(1))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
-         STACK(1) = 10.0D0**(STACK(1))
+         STACK(1) = 10._wp**(STACK(1))
    END SELECT
 
 case('2PI')                                                ! 2PI
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         CALL PUSH_STACK(TWOPI)
+         CALL PUSH_STACK(2*pi)
       CASE (2)
-         CALL PUSH_STACK(CMPLX(TWOPI, 0._wp, wp))
+         CALL PUSH_STACK(CMPLX(2*pi, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         CALL PUSH_STACK(TWOPI)
+         CALL PUSH_STACK(2*pi)
    END SELECT
 
 case('2PII')                                               ! 2PII
@@ -398,7 +302,7 @@ case('2PII')                                               ! 2PII
       CASE (1)
          write(stderr, *) ' 2PIi not available in REAL mode'
       CASE (2)
-         CALL PUSH_STACK(CMPLX(0._wp,TWOPI, wp))
+         CALL PUSH_STACK(CMPLX(0._wp,2*pi, wp))
       CASE (3)
          write(stderr, *) ' 2PIi not available in RATIONAL mode'
    END SELECT
@@ -1695,7 +1599,7 @@ case('DEFAULT')                                            ! DEFAULT
       CASE (3)
          ANGLE_FACTOR = PI/200.0D0
       CASE (4)
-         ANGLE_FACTOR = TWOPI
+         ANGLE_FACTOR = 2*pi
    END SELECT
 
    DISP_MODE = INITIAL_DISP_MODE
@@ -2496,14 +2400,14 @@ case('LOG2')                                               ! LOG2
             write(stderr, *) '  LOG2 Error'
          ELSE
             LASTX = STACK(1)
-            STACK(1) = LOG(STACK(1))/LN2
+            STACK(1) = LOG(STACK(1)) / log(2._wp)
          END IF
       CASE (2)
          IF (CSTACK(1) == (0._wp, 0._wp)) THEN
             write(stderr, *) '  LOG2 Error'
          ELSE
             CLASTX = CSTACK(1)
-            CSTACK(1) = LOG(CSTACK(1))/LN2
+            CSTACK(1) = LOG(CSTACK(1)) / log(2._wp)
          END IF
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
@@ -2511,7 +2415,7 @@ case('LOG2')                                               ! LOG2
             write(stderr, *) '  LOG2 Error'
          ELSE
             LASTX = STACK(1)
-            STACK(1) = LOG(STACK(1))/LN2
+            STACK(1) = LOG(STACK(1)) / log(2._wp)
          END IF
    END SELECT
 
@@ -3211,7 +3115,7 @@ case('RESET')                                             ! RESET
       CASE (3)
          ANGLE_FACTOR = PI/200.0D0
       CASE (4)
-         ANGLE_FACTOR = TWOPI
+         ANGLE_FACTOR = 2*pi
    END SELECT
 
    DISP_MODE = INITIAL_DISP_MODE
@@ -3224,7 +3128,7 @@ case('RESET')                                             ! RESET
 
 case('REV')                                                ! REV
    ANGLE_MODE = 4
-   ANGLE_FACTOR = TWOPI
+   ANGLE_FACTOR = 2*pi
 
 case('RGAS')                                               ! RGAS
    SELECT CASE (DOMAIN_MODE)
@@ -4084,5 +3988,144 @@ end select
 
 
 end subroutine regops
+
+
+subroutine add(mode)
+integer, intent(in) :: mode
+integer :: NUM, DEN
+
+SELECT CASE (MODE)
+  CASE (1)
+     LASTX = STACK(1)
+     STACK(1) = STACK(2) + STACK(1)
+     CALL DROP_STACK(2)
+  CASE (2)
+     CLASTX = CSTACK(1)
+     CSTACK(1) = CSTACK(2) + CSTACK(1)
+     CALL CDROP_STACK(2)
+  CASE (3)
+     CALL RADD (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
+     RNLASTX = RNSTACK(1)
+     RDLASTX = RDSTACK(1)
+     RNSTACK(1) = NUM
+     RDSTACK(1) = DEN
+     CALL RDROP_STACK(2)
+END SELECT
+
+end subroutine add
+
+
+subroutine subtract(mode)
+integer, intent(in) :: mode
+integer :: NUM, DEN
+
+SELECT CASE (MODE)
+  CASE (1)
+     LASTX = STACK(1)
+     STACK(1) = STACK(2) - STACK(1)
+     CALL DROP_STACK(2)
+  CASE (2)
+     CLASTX = CSTACK(1)
+     CSTACK(1) = CSTACK(2) - CSTACK(1)
+     CALL CDROP_STACK(2)
+  CASE (3)
+     CALL RSUB (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
+     RNLASTX = RNSTACK(1)
+     RDLASTX = RDSTACK(1)
+     RNSTACK(1) = NUM
+     RDSTACK(1) = DEN
+     CALL RDROP_STACK(2)
+END SELECT
+
+end subroutine subtract
+
+
+subroutine multiply(mode)
+integer, intent(in) :: mode
+integer :: NUM, DEN
+
+SELECT CASE (DOMAIN_MODE)
+  CASE (1)
+     LASTX = STACK(1)
+     STACK(1) = STACK(2) * STACK(1)
+     CALL DROP_STACK(2)
+  CASE (2)
+     CLASTX = CSTACK(1)
+     CSTACK(1) = CSTACK(2) * CSTACK(1)
+     CALL CDROP_STACK(2)
+  CASE (3)
+     CALL RMUL (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
+     RNLASTX = RNSTACK(1)
+     RDLASTX = RDSTACK(1)
+     RNSTACK(1) = NUM
+     RDSTACK(1) = DEN
+     CALL RDROP_STACK(2)
+END SELECT
+
+end subroutine multiply
+
+
+subroutine divide(mode)
+integer, intent(in) :: mode
+integer :: NUM, DEN
+
+SELECT CASE (MODE)
+  CASE (1)
+     IF (STACK(1) == 0._wp) THEN
+        write(stderr, *) '  Divide by zero Error'
+     ELSE
+        LASTX = STACK(1)
+        STACK(1) = STACK(2) / STACK(1)
+        CALL DROP_STACK(2)
+     END IF
+  CASE (2)
+     IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+        write(stderr, *) '  Divide by zero Error'
+     ELSE
+        CLASTX = CSTACK(1)
+        CSTACK(1) = CSTACK(2) / CSTACK(1)
+        CALL CDROP_STACK(2)
+     END IF
+  CASE (3)
+     CALL RDIV (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
+     RNLASTX = RNSTACK(1)
+     RDLASTX = RDSTACK(1)
+     RNSTACK(1) = NUM
+     RDSTACK(1) = DEN
+     CALL RDROP_STACK(2)
+END SELECT
+
+end subroutine divide
+
+
+subroutine power(mode)
+integer, intent(in) :: mode
+integer :: NUM, DEN
+
+SELECT CASE (DOMAIN_MODE)
+  CASE (1)
+     LASTX = STACK(1)
+     STACK(1) = STACK(2) ** STACK(1)
+     CALL DROP_STACK(2)
+  CASE (2)
+     CLASTX = CSTACK(1)
+     CSTACK(1) = CSTACK(2) ** CSTACK(1)
+     CALL CDROP_STACK(2)
+  CASE (3)
+     IF (RDSTACK(1) == 1) THEN
+        RNLASTX = RNSTACK(1)
+        RDLASTX = RDSTACK(1)
+        RNSTACK(1) = RNSTACK(2) ** RNLASTX
+        RDSTACK(1) = RDSTACK(2) ** RNLASTX
+        CALL RDROP_STACK(2)
+     ELSE
+        CALL SWITCH_RAT_TO_REAL
+        LASTX = STACK(1)
+        STACK(1) = STACK(2) ** STACK(1)
+        CALL DROP_STACK(2)
+     END IF
+END SELECT
+
+end subroutine power
 
 end module evals
