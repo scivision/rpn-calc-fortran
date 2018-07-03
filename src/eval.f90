@@ -3,9 +3,15 @@ module evals
 use global
 use funcs
 use stackops
-use assert, only: wp
+use assert, only: wp, isclose
 
 implicit none
+private
+
+complex(wp), parameter, private :: C0 = (0._wp, 0._wp)
+
+
+public :: eval
 
 contains
 
@@ -49,14 +55,14 @@ real(wp), PARAMETER :: REARTH = 6378140.0D0                           ! m
 real(wp), PARAMETER :: RGAS = 8.314472D0                              ! J/mol K
 real(wp), PARAMETER :: STEFAN = 5.670400D-8                           ! W/m^2 K^4
 
-INTEGER :: I, J, ITMP, ITMP2, IERR, NUM, DEN, NUM2, DEN2, NUM3, DEN3, NUM4, DEN4, &
+INTEGER :: I, ITMP, ITMP2, NUM, DEN, NUM2, DEN2, NUM3, DEN3, NUM4, DEN4, &
    NUMM, DENM, NUMB, DENB
 real(wp) :: TMP, TMP2, TMP3, TMPM, TMPB, TMPR, BES_X, BES_ALPHA
-COMPLEX(wp) :: CTMP, CTMP2, CTMP3, CTMPM, CTMPB, CTMPR
+COMPLEX(wp) :: CTMP, CTMPM, CTMPB, CTMPR
 CHARACTER(LEN=2) :: REGNAME
 INTEGER :: DT(8)
 INTEGER :: YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, BES_NB, BES_NCALC
-CHARACTER(LEN=100) :: FMTSTR, NUMSTR
+CHARACTER(LEN=100) :: NUMSTR
 CHARACTER(LEN=10) :: TIME, DATE, ZONE
 
 real(wp), ALLOCATABLE, DIMENSION(:) :: BES_B
@@ -83,14 +89,14 @@ case('^')                                                  ! ^
 case('\')                                                  ! \
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) == 0._wp) THEN
+         IF (isclose(stack(1), 0._wp)) THEN
             write(stderr, *) '  Divide Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = 1._wp / STACK(1)
          END IF
       CASE (2)
-         IF (CSTACK(1) == (0.0,0.0)) THEN
+         IF (isclose(CSTACK(1), C0)) THEN
             write(stderr, *) '  Divide Error'
          ELSE
             CLASTX = CSTACK(1)
@@ -128,14 +134,14 @@ case('%')                                                  ! %
 case('%CHG')                                               ! %CHG
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(2) == 0._wp) THEN
+         IF (isclose(STACK(2), 0._wp)) THEN
             write(stderr, *) '  Divide Error'
          ELSE
             LASTX = STACK(1)
             STACK(1) = 100._wp*(STACK(1)-STACK(2))/STACK(2)
          END IF
       CASE (2)
-         IF (CSTACK(2) == (0._wp, 0._wp)) THEN
+         IF (isclose(CSTACK(2), c0)) THEN
             write(stderr, *) '  Divide Error'
          ELSE
             CLASTX = CSTACK(1)
@@ -167,7 +173,7 @@ case('!')                                                  ! !
       STACK(1) = gamma(STACK(1)+1._wp)
 
     CASE (2)
-      IF (CSTACK(1) == (-1._wp, 0._wp)) THEN
+      IF (isclose(CSTACK(1), (-1._wp, 0._wp))) THEN
         write(stderr, *) '  Factorial Error'
         return
       endif
@@ -214,7 +220,7 @@ case('!!')                                                 ! !!
             write(stderr, *) '  !! Error'
          ELSE IF (ISFRAC(STACK(1))) THEN
             write(stderr, *) '  !! Error'
-         ELSE IF (NINT(STACK(1)) == 0._wp) THEN
+         ELSE IF (NINT(STACK(1)) == 0) THEN
             LASTX = STACK(1)
             STACK(1) = 1._wp
          ELSE
@@ -230,11 +236,11 @@ case('!!')                                                 ! !!
       CASE (2)
          IF (real(CSTACK(1), wp) < 0._wp) THEN
             write(stderr, *) '  !! Error'
-         ELSE IF (AIMAG(CSTACK(1)) /= 0._wp) THEN
+         ELSE IF (.not.isclose(AIMAG(CSTACK(1)), 0._wp)) THEN
             write(stderr, *) '  !! Error'
          ELSE IF (ISFRAC(real(CSTACK(1), wp))) THEN
             write(stderr, *) '  !! Error'
-         ELSE IF (NINT(real(CSTACK(1), wp)) == 0._wp) THEN
+         ELSE IF (NINT(real(CSTACK(1), wp)) == 0) THEN
             CLASTX = CSTACK(1)
             CSTACK(1) = (1._wp, 0._wp)
          ELSE
@@ -422,7 +428,7 @@ case('ACOT2')                                             ! ACOT2
 case('ACOTH')                                             ! ACOTH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) == 0._wp) THEN
+         IF (isclose(stack(1), 0._wp)) THEN
             write(stderr, *) '  ACOTH Error'
          ELSE
             LASTX = STACK(1)
@@ -510,7 +516,7 @@ case('ACSC')                                               ! ACSC
 case('ACSCH')                                             ! ACSCH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) == 0._wp) THEN
+         IF (isclose(stack(1), 0._wp)) THEN
             write(stderr, *) '  ACSCH Error'
          ELSE
             LASTX = STACK(1)
@@ -1353,9 +1359,9 @@ case('CNR')                                                ! CNR
             write(stderr, *) '  CNR Error'
          ELSE IF (real(CSTACK(2), wp)<0.0D0) THEN
             write(stderr, *) '  CNR Error'
-         ELSE IF (AIMAG(CSTACK(1))/=0.0D0) THEN
+         ELSE IF (.not.isclose(AIMAG(CSTACK(1)), 0._wp)) THEN
             write(stderr, *) '  CNR Error'
-         ELSE IF (AIMAG(CSTACK(2))/=0.0D0) THEN
+         ELSE IF (.not.isclose(AIMAG(CSTACK(2)), 0._wp)) THEN
             write(stderr, *) '  CNR Error'
          ELSE IF (real(CSTACK(2), wp) < real(CSTACK(1), wp)) THEN
             write(stderr, *) '  CNR Error'
@@ -1377,7 +1383,7 @@ case('CNR')                                                ! CNR
          ELSE
             RNLASTX = RNSTACK(1)
             RDLASTX = RDSTACK(1)
-            RNSTACK(1) = CNR (RNSTACK(2), RNSTACK(1))
+            RNSTACK(1) = int(CNR(RNSTACK(2), RNSTACK(1)))
             CALL RDROP_STACK(2)
          END IF
    END SELECT
@@ -1803,7 +1809,7 @@ case('GAMMA')                                             ! GAMMA
             STACK(1) = gamma(STACK(1))
          END IF
       CASE (2)
-         IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+         IF (isclose(cstack(1), C0)) THEN
             write(stderr, *) '  GAMMA Error'
          ELSE
             CLASTX = CSTACK(1)
@@ -1851,7 +1857,7 @@ case('GCD')                                                ! GCD
          END IF
       CASE (2)
          IF (ISFRAC(real(CSTACK(1), wp)).OR.ISFRAC(real(CSTACK(2), wp)).OR. &
-            (AIMAG(CSTACK(2))/=0.0D0).OR.(AIMAG(CSTACK(2))/=0.0D0)) THEN
+            .not.isclose(AIMAG(CSTACK(1)), 0._wp).OR..not.isclose(AIMAG(CSTACK(2)), 0._wp)) THEN
             write(stderr, *) '  GCD Error'
          ELSE
             CLASTX = CSTACK(1)
@@ -1914,7 +1920,7 @@ case('H>HMS')                                             ! H>HMS
          LASTX = STACK(1)
          STACK(1) = real(itmp, wp) + 1.0D-2*ITMP2 + 1.0D-4*TMP
       CASE (2)
-         IF (AIMAG(CSTACK(1)) /= 0._wp) THEN
+         IF (.not.isclose(AIMAG(CSTACK(1)), 0._wp)) THEN
             write(stderr, *) '  H>HMS Error'
          ELSE
             CALL H2HMSD (real(CSTACK(1), wp), ITMP, ITMP2, TMP)
@@ -1952,7 +1958,7 @@ case('HMS>H')                                             ! HMS>H
          LASTX = STACK(1)
          STACK(1) = TMP2
       CASE (2)
-         IF (AIMAG(CSTACK(1)) /= 0._wp) THEN
+         IF (.not.isclose(AIMAG(CSTACK(1)), 0._wp)) THEN
             write(stderr, *) '  HMS>H Error'
          ELSE
             ITMP = INT(real(CSTACK(1), wp))
@@ -1988,16 +1994,16 @@ case('HMS+')                                               ! HMS+
          STACK(1) = real(itmp, wp) + 1.0D-2*ITMP2 + 1.0D-4*TMP
          CALL DROP_STACK(2)
       CASE (2)
-         IF (AIMAG(CSTACK(1)) /= 0._wp) THEN
+         IF (.not.isclose(AIMAG(CSTACK(1)), 0._wp)) THEN
             write(stderr, *) '  HMS+ Error'
          ELSE
             ITMP = INT(CSTACK(1))
             ITMP2 = INT(FRAC(CSTACK(1))*1.0e2_wp)
-            TMP = (CSTACK(1) - ITMP - ITMP2*1.0D-2)*1.0D4
+            TMP = (real(CSTACK(1), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
             CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
             ITMP = INT(CSTACK(2))
             ITMP2 = INT(FRAC(CSTACK(2))*1.0e2_wp)
-            TMP = (CSTACK(2) - ITMP - ITMP2*1.0D-2)*1.0D4
+            TMP = (real(CSTACK(2), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
             CALL HMS2H (ITMP, ITMP2, TMP, TMP3)
             CALL H2HMSD (TMP2+TMP3, ITMP, ITMP2, TMP)
             CLASTX = CSTACK(1)
@@ -2036,16 +2042,16 @@ case('HMS-')                                               ! HMS-
          STACK(1) = real(itmp, wp) + 1.0D-2*ITMP2 + 1.0D-4*TMP
          CALL DROP_STACK(2)
       CASE (2)
-         IF (AIMAG(CSTACK(1)) /= 0._wp) THEN
+         IF (.not.isclose(AIMAG(CSTACK(1)), 0._wp)) THEN
             write(stderr, *) '  HMS- Error'
          ELSE
             ITMP = INT(CSTACK(1))
             ITMP2 = INT(FRAC(CSTACK(1))*1.0D2)
-            TMP = (CSTACK(1) - ITMP - ITMP2*1.0D-2)*1.0D4
+            TMP = (real(CSTACK(1), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
             CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
             ITMP = INT(CSTACK(2))
             ITMP2 = INT(FRAC(CSTACK(2))*1.0D2)
-            TMP = (CSTACK(2) - ITMP - ITMP2*1.0D-2)*1.0D4
+            TMP = (real(CSTACK(2), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
             CALL HMS2H (ITMP, ITMP2, TMP, TMP3)
             CALL H2HMSD (TMP3-TMP2, ITMP, ITMP2, TMP)
             CLASTX = CSTACK(1)
@@ -2197,7 +2203,7 @@ case('INT')                                                ! INT
 case('INT/')                                               ! INT/
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) == 0._wp) THEN
+         IF (isclose(stack(1), 0._wp)) THEN
             write(stderr, *) '  INT/ Error'
          ELSE
             LASTX = STACK(1)
@@ -2205,7 +2211,7 @@ case('INT/')                                               ! INT/
             CALL DROP_STACK(2)
          END IF
       CASE (2)
-         IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+         IF (isclose(cstack(1), C0)) THEN
             write(stderr, *) '  INT/ Error'
          ELSE
             CLASTX = CSTACK(1)
@@ -2308,7 +2314,7 @@ case('LCM')                                                ! LCM
       CASE (1)
          IF (ISFRAC(STACK(1)).OR.ISFRAC(STACK(2))) THEN
             write(stderr, *) '  LCM Error'
-         ELSE IF ((STACK(1)==0.0D0).AND.(STACK(2)==0.0D0)) THEN
+         ELSE IF (isclose(STACK(1), 0._wp).AND.isclose(STACK(2), 0._wp)) THEN
             write(stderr, *) '  LCM Error'
          ELSE
             LASTX = STACK(1)
@@ -2317,10 +2323,9 @@ case('LCM')                                                ! LCM
          END IF
       CASE (2)
          IF (ISFRAC(real(CSTACK(1), wp)).OR.ISFRAC(real(CSTACK(2), wp)).OR. &
-            (AIMAG(CSTACK(2))/=0.0D0).OR.(AIMAG(CSTACK(2))/=0.0D0)) THEN
+            .not.isclose(AIMAG(CSTACK(1)), 0._wp).OR..not.isclose(AIMAG(CSTACK(2)), 0._wp)) THEN
             write(stderr, *) '  LCM Error'
-         ELSE IF ((CSTACK(1)==(0._wp, 0._wp)).AND. &
-            (CSTACK(2)==(0._wp, 0._wp))) THEN
+         ELSEIF (isclose(cstack(1), C0) .AND. isclose(cstack(2), C0)) THEN
             write(stderr, *) '  LCM Error'
          ELSE
             CLASTX = CSTACK(1)
@@ -2351,7 +2356,7 @@ case('LN')                                                 ! LN
             STACK(1) = LOG(STACK(1))
          END IF
       CASE (2)
-         IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+         IF (isclose(cstack(1), C0)) THEN
             write(stderr, *) '  LN Error'
          ELSE
             CLASTX = CSTACK(1)
@@ -2377,7 +2382,7 @@ case('LOG')                                                ! LOG
             STACK(1) = LOG10(STACK(1))
          END IF
       CASE (2)
-         IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+         IF (isclose(cstack(1), C0)) THEN
             write(stderr, *) '  LOG Error'
          ELSE
             CLASTX = CSTACK(1)
@@ -2403,7 +2408,7 @@ case('LOG2')                                               ! LOG2
             STACK(1) = LOG(STACK(1)) / log(2._wp)
          END IF
       CASE (2)
-         IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+         IF (isclose(cstack(1), C0)) THEN
             write(stderr, *) '  LOG2 Error'
          ELSE
             CLASTX = CSTACK(1)
@@ -2475,7 +2480,7 @@ case('MN')                                                 ! MN
 case('MOD')                                                ! MOD
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) == 0._wp) THEN
+         IF (isclose(stack(1), 0._wp)) THEN
             write(stderr, *) '  MOD Error'
          ELSE
             LASTX = STACK(1)
@@ -2483,7 +2488,7 @@ case('MOD')                                                ! MOD
             CALL DROP_STACK(2)
          END IF
       CASE (2)
-         IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+         IF (isclose(cstack(1), C0)) THEN
             write(stderr, *) '  MOD Error'
          ELSE
             CLASTX = CSTACK(1)
@@ -2521,11 +2526,11 @@ case('MODES')                                             ! MODES
    END SELECT
    SELECT CASE (DISP_MODE)
       CASE (1)
-         WRITE (UNIT=*, FMT='(A,I0)') '  Display:    FIX ', DISP_DIGITS
+        print '(A,I0)', '  Display:    FIX ', DISP_DIGITS
       CASE (2)
-         WRITE (UNIT=*, FMT='(A,I0)') '  Display:    SCI ', DISP_DIGITS
+        print '(A,I0)', '  Display:    SCI ', DISP_DIGITS
       CASE (3)
-         WRITE (UNIT=*, FMT='(A,I0)') '  Display:    ENG ', DISP_DIGITS
+        print '(A,I0)', '  Display:    ENG ', DISP_DIGITS
       CASE (4)
          print *, '  Display:    ALL '
    END SELECT
@@ -2717,9 +2722,9 @@ case('PNR')                                                ! PNR
             write(stderr, *) '  PNR Error'
          ELSE IF (real(CSTACK(2), wp)<0.0D0) THEN
             write(stderr, *) '  PNR Error'
-         ELSE IF (AIMAG(CSTACK(1))/=0.0D0) THEN
+         ELSE IF (.not.isclose(AIMAG(CSTACK(1)), 0._wp)) THEN
             write(stderr, *) '  PNR Error'
-         ELSE IF (AIMAG(CSTACK(2))/=0.0D0) THEN
+         ELSE IF (.not.isclose(AIMAG(CSTACK(2)), 0._wp)) THEN
             write(stderr, *) '  PNR Error'
          ELSE IF (real(CSTACK(2), wp) < real(CSTACK(1), wp)) THEN
             write(stderr, *) '  PNR Error'
@@ -2741,7 +2746,7 @@ case('PNR')                                                ! PNR
          ELSE
             RNLASTX = RNSTACK(1)
             RDLASTX = RDSTACK(1)
-            RNSTACK(1) = PNR (RNSTACK(2), RNSTACK(1))
+            RNSTACK(1) = int(PNR(RNSTACK(2), RNSTACK(1)))
             CALL RDROP_STACK(2)
          END IF
    END SELECT
@@ -3303,7 +3308,7 @@ case('SGN')                                                ! SGN
       CASE (1)
          IF (STACK(1) < 0._wp) THEN
             TMP = -1._wp
-         ELSE IF (STACK(1) == 0._wp) THEN
+         ELSE IF (isclose(STACK(1), 0._wp)) THEN
             TMP = 0._wp
          ELSE
             TMP = +1._wp
@@ -3313,14 +3318,14 @@ case('SGN')                                                ! SGN
       CASE (2)
          IF (real(CSTACK(1), wp) < 0._wp) THEN
             TMP = -1._wp
-         ELSE IF (real(CSTACK(1), wp) == 0._wp) THEN
+         ELSE IF (isclose(real(CSTACK(1), wp), 0._wp)) THEN
             TMP = 0._wp
          ELSE
             TMP = +1._wp
          END IF
          IF (AIMAG(CSTACK(1)) < 0._wp) THEN
             TMP2 = -1._wp
-         ELSE IF (AIMAG(CSTACK(1)) == 0._wp) THEN
+         ELSE IF (isclose(AIMAG(CSTACK(1)), 0._wp)) THEN
             TMP2 = 0._wp
          ELSE
             TMP2 = +1._wp
@@ -3571,12 +3576,11 @@ case('TIME')                                               ! TIME
    HOUR = DT(5)
    MINUTE = DT(6)
    SECOND = DT(7)
-   WRITE (UNIT=*, FMT='(/A,I2,1H/,I2,1H/,I4)') '  Date:  ', MONTH, DAY, YEAR
-   WRITE (UNIT=*, FMT='(A,I2.2,1H:,I2.2,1H:,I2.2/)') &
-      '  Time:  ', HOUR, MINUTE, SECOND
+   print '(A,I2.2,A1,I2.2,A1,I4)', '  Date:  ', MONTH,'-', DAY, '-', YEAR
+   print '(A,I2.2,A1,I2.2,A1,I2.2)', '  Time:  ', HOUR, ':', MINUTE, ':', SECOND
 
 case('VER')                                                ! VER
-   WRITE (UNIT=*, FMT='(/A/)') '  RPN Version '//VERSION
+   print *, 'Fortran 2008  RPN Calculator.  Version '//VERSION
 
 case('VERS')                                               ! VERS
    SELECT CASE (DOMAIN_MODE)
@@ -3591,7 +3595,7 @@ case('VERS')                                               ! VERS
          LASTX = STACK(1)
          STACK(1) = VERS(STACK(1)*ANGLE_FACTOR)
    END SELECT
-
+   
 case('X^')                                                 ! X^
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -3627,14 +3631,14 @@ case('X^')                                                 ! X^
 case('XMEAN')                                             ! XMEAN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (NN == 0._wp) THEN
+         IF (isclose(NN, 0._wp)) THEN
             write(stderr, *) '  XMEAN Error'
          ELSE
             TMP = SUMX/NN
             CALL PUSH_STACK(TMP)
          END IF
       CASE (2)
-         IF (CNN == (0._wp, 0._wp)) THEN
+         IF (isclose(CNN, C0)) THEN
             write(stderr, *) '  XMEAN Error'
          ELSE
             CTMP = CSUMX/CNN
@@ -3794,14 +3798,14 @@ case('Y^')                                                 ! Y^
 case('YMEAN')                                             ! YMEAN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (NN == 0._wp) THEN
+         IF (isclose(NN, 0._wp)) THEN
             write(stderr, *) '  YMEAN Error'
          ELSE
             TMP = SUMY/NN
             CALL PUSH_STACK(TMP)
          END IF
       CASE (2)
-         IF (CNN == (0._wp, 0._wp)) THEN
+         IF (isclose(CNN, C0)) THEN
             write(stderr, *) '  YMEAN Error'
          ELSE
             CTMP = CSUMY/CNN
@@ -4044,7 +4048,7 @@ subroutine multiply(mode)
 integer, intent(in) :: mode
 integer :: NUM, DEN
 
-SELECT CASE (DOMAIN_MODE)
+SELECT CASE (MODE)
   CASE (1)
      LASTX = STACK(1)
      STACK(1) = STACK(2) * STACK(1)
@@ -4071,7 +4075,7 @@ integer :: NUM, DEN
 
 SELECT CASE (MODE)
   CASE (1)
-     IF (STACK(1) == 0._wp) THEN
+     IF (isclose(stack(1), 0._wp)) THEN
         write(stderr, *) '  Divide by zero Error'
      ELSE
         LASTX = STACK(1)
@@ -4079,7 +4083,7 @@ SELECT CASE (MODE)
         CALL DROP_STACK(2)
      END IF
   CASE (2)
-     IF (CSTACK(1) == (0._wp, 0._wp)) THEN
+     IF (isclose(cstack(1), C0)) THEN
         write(stderr, *) '  Divide by zero Error'
      ELSE
         CLASTX = CSTACK(1)
@@ -4100,9 +4104,8 @@ end subroutine divide
 
 subroutine power(mode)
 integer, intent(in) :: mode
-integer :: NUM, DEN
 
-SELECT CASE (DOMAIN_MODE)
+SELECT CASE (MODE)
   CASE (1)
      LASTX = STACK(1)
      STACK(1) = STACK(2) ** STACK(1)

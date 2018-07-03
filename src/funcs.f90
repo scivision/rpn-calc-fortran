@@ -1,6 +1,6 @@
 module funcs
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
-use assert, only: wp
+use assert, only: wp, isclose
 use bessel
 use trig
 use rat
@@ -18,7 +18,8 @@ interface frac
   procedure frac_r, frac_c
 end interface frac
 
-real(wp), parameter :: xinf = huge(0._wp), xmax = xinf, xmin = tiny(0._wp)
+real(wp), parameter, private :: xinf = huge(0._wp), xmax = xinf, xmin = tiny(0._wp)
+complex(wp), parameter, private :: c0 = (0._wp, 0._wp)
 
 contains
 
@@ -258,7 +259,7 @@ elemental real(wp) FUNCTION SINC (X) RESULT (Y)
 
 real(wp), INTENT(IN) :: X
 
-IF (X .EQ. 0.0D0) THEN
+IF (isclose(x, 0._wp)) THEN
    Y = 1._wp
 ELSE
    Y = SIN(X)/X
@@ -278,7 +279,7 @@ END FUNCTION SINC
 elemental complex(wp) FUNCTION CSINC (Z) RESULT (Y)
 COMPLEX(wp), INTENT(IN) :: Z
 
-IF (Z .EQ. (0.0D0,0.0D0)) THEN
+IF (isclose(z, c0)) THEN
    Y = (1._wp,0.0D0)
 ELSE
    Y = SIN(Z)/Z
@@ -303,7 +304,7 @@ IMPLICIT NONE
 real(wp), INTENT(IN) :: X
 real(wp) :: Y
 
-IF (X .EQ. 0.0D0) THEN
+IF (isclose(x, 0._wp)) THEN
    Y = 1._wp
 ELSE
    Y = TAN(X)/X
@@ -325,7 +326,7 @@ elemental complex(wp) FUNCTION CTANC (Z) RESULT (Y)
 
 COMPLEX(wp), INTENT(IN) :: Z
 
-IF (Z .EQ. (0.0D0,0.0D0)) THEN
+IF (isclose(z, c0)) THEN
    Y = (1._wp,0.0D0)
 ELSE
    Y = TAN(Z)/Z
@@ -345,7 +346,7 @@ elemental real(wp) FUNCTION SINHC (X) RESULT (Y)
 
 real(wp), INTENT(IN) :: X
 
-IF (X .EQ. 0.0D0) THEN
+IF (isclose(x, 0._wp)) THEN
    Y = 1._wp
 ELSE
    Y = SINH(X)/X
@@ -365,7 +366,7 @@ elemental complex(wp) FUNCTION CSINHC (Z) RESULT (Y)
 COMPLEX(wp), INTENT(IN) :: Z
 
 
-IF (Z .EQ. (0.0D0,0.0D0)) THEN
+IF (isclose(z, c0)) THEN
    Y = (1._wp,0.0D0)
 ELSE
    Y = SINH(Z)/Z
@@ -495,8 +496,7 @@ INTEGER :: N,K
 
 NSTERM = S*(S+1.0D00)*(S+2.0D00)* &
   (S+3.0D00)*(S+4.0D00)/30240.0D00
-N = (NSTERM*(2.0D00**S)/EPS) &
-    **(1._wp/(S+5.0D00))
+N = int((NSTERM*(2.0D00**S)/EPS)**(1._wp/(S+5.0D00)))
 IF ( N < 10 )  THEN
    N = 10
 END IF

@@ -157,7 +157,7 @@ contains
 !---------------------------------------------------------------------
       INTEGER I,J,K,L,M,MAGX,N,NB,NBMX,NCALC,NEND,NSTART
 
-      real(wp) :: ALPHA,ALPEM,ALP2EM,B,CAPP,CAPQ,CONV,EIGHTH,EM,EN,ENMTEN,ENSIG,   &
+      real(wp) :: ALPHA,ALPEM,ALP2EM,B,CAPP,CAPQ,EIGHTH,EM,EN,ENMTEN,ENSIG,   &
        FACT,FOUR,FUNC,GNU,HALF,HALFX,ONE,ONE30,P,PI2,PLAST,       &
        POLD,PSAVE,PSAVEL,RTNSIG,S,SUM,T,T1,TEMPA,TEMPB,TEMPC,TEST,      &
        THREE,THREE5,TOVER,TWO,TWOFIV,TWOPI1,TWOPI2,X,XC,XIN,XK,XLARGE,  &
@@ -208,8 +208,6 @@ contains
 !---------------------------------------------------------------------
 !S    CONV(I) = REAL(I)
 !S    FUNC(X) = GAMMA(X)
-      CONV(I) = real(i,wp)
-      FUNC(X) = gamma(X)
 !---------------------------------------------------------------------
 ! Check for out of range arguments.
 !---------------------------------------------------------------------
@@ -237,7 +235,7 @@ contains
                HALFX = ZERO
                IF (X.GT.ENMTEN) HALFX = HALF*X
                IF (ALPHA.NE.ZERO)                                       &
-                  TEMPA = HALFX**ALPHA/(ALPHA*FUNC(ALPHA))
+                  TEMPA = HALFX**ALPHA/(ALPHA*gamma(ALPHA))
                TEMPB = ZERO
                IF ((X+ONE).GT.ONE) TEMPB = -HALFX*HALFX
                B(1) = TEMPA + TEMPA*TEMPB/ALPEM
@@ -274,7 +272,7 @@ contains
                M = 11
                IF (X.GE.THREE5) M = 8
                IF (X.GE.ONE30) M = 4
-               XM = FOUR*CONV(M)
+               XM = FOUR*real(M,wp)
 !---------------------------------------------------------------------
 ! Argument reduction for SIN and COS routines.
 !---------------------------------------------------------------------
@@ -327,7 +325,7 @@ contains
             ELSE
                NBMX = NB - MAGX
                N = MAGX + 1
-               EN = CONV(N+N) + (ALPHA+ALPHA)
+               EN = real(N+N, wp) + (ALPHA+ALPHA)
                PLAST = ONE
                P = EN/X
 !---------------------------------------------------------------------
@@ -341,7 +339,7 @@ contains
                   TOVER = ENTEN/ENSIG
                   NSTART = MAGX + 2
                   NEND = NB - 1
-                  EN = CONV(NSTART+NSTART) - TWO + (ALPHA+ALPHA)
+                  EN = real(NSTART+NSTART, wp) - TWO + (ALPHA+ALPHA)
                   DO 130 K=NSTART,NEND
                      N = K
                      EN = EN + TWO
@@ -390,7 +388,7 @@ contains
                      END IF
   130             CONTINUE
                   N = NEND
-                  EN = CONV(N+N) + (ALPHA+ALPHA)
+                  EN = real(N+N, wp) + (ALPHA+ALPHA)
 !---------------------------------------------------------------------
 ! Calculate special significance test for NBMX .GT. 2.
 !---------------------------------------------------------------------
@@ -414,7 +412,7 @@ contains
                TEMPA = ONE/P
                M = 2*N - 4*(N/2)
                SUM = ZERO
-               EM = CONV(N/2)
+               EM = real(N/2, wp)
                ALPEM = (EM-ONE) + ALPHA
                ALP2EM = (EM+EM) + ALPHA
                IF (M .NE. 0) SUM = TEMPA*ALPEM*ALP2EM/EM
@@ -500,7 +498,7 @@ contains
 ! Normalize.  Divide all B(N) by sum.
 !---------------------------------------------------------------------
   250          IF ((ALPHA+ONE).NE.ONE)                                  &
-                    SUM = SUM*FUNC(ALPHA)*(X*HALF)**(-ALPHA)
+                    SUM = SUM*gamma(ALPHA)*(X*HALF)**(-ALPHA)
                TEMPA = ENMTEN
                IF (SUM.GT.ONE) TEMPA = TEMPA*SUM
                DO 260 N=1,NB
@@ -1738,7 +1736,7 @@ contains
 !-------------------------------------------------------------------
       INTEGER IZE,K,L,MAGX,N,NB,NBMX,NCALC,NEND,NSIG,NSTART
 !S    REAL              GAMMA,
-      real(wp) ALPHA,B,CONST,CONV,EM,EMPAL,EMP2AL,EN,ENSIG,              &
+      real(wp) ALPHA,B,CONST,EM,EMPAL,EMP2AL,EN,ENSIG,              &
        EXPARG,FUNC,HALF,HALFX,ONE,P,PLAST,POLD,PSAVE,PSAVEL,      &
        RTNSIG,SUM,TEMPA,TEMPB,TEMPC,TEST,TOVER,TWO,X,XLARGE,ZERO
       DIMENSION B(NB)
@@ -1762,8 +1760,7 @@ contains
 !-------------------------------------------------------------------
 !S    CONV(N) = REAL(N)
 !S    FUNC(X) = GAMMA(X)
-      CONV(N) = DBLE(N)
-      FUNC(X) = gamma(X)
+
 !-------------------------------------------------------------------
 ! Check for X, NB, OR IZE out of range.
 !-------------------------------------------------------------------
@@ -1782,7 +1779,7 @@ contains
 !-------------------------------------------------------------------
                   NBMX = NB-MAGX
                   N = MAGX+1
-                  EN = CONV(N+N) + (ALPHA+ALPHA)
+                  EN = real(N+N, wp) + (ALPHA+ALPHA)
                   PLAST = ONE
                   P = EN / X
 !-------------------------------------------------------------------
@@ -1848,7 +1845,7 @@ contains
                         END IF
   100                CONTINUE
                      N = NEND
-                     EN = CONV(N+N) + (ALPHA+ALPHA)
+                     EN = real(N+N, wp) + (ALPHA+ALPHA)
 !-------------------------------------------------------------------
 ! Calculate special significance test for NBMX .GT. 2.
 !-------------------------------------------------------------------
@@ -1870,7 +1867,7 @@ contains
                   EN = EN + TWO
                   TEMPB = ZERO
                   TEMPA = ONE / P
-                  EM = CONV(N) - ONE
+                  EM = real(N, wp) - ONE
                   EMPAL = EM + ALPHA
                   EMP2AL = (EM - ONE) + (ALPHA + ALPHA)
                   SUM = TEMPA * EMPAL * EMP2AL / EM
@@ -1881,8 +1878,9 @@ contains
 !-------------------------------------------------------------------
                         B(N) = TEMPA
                         NEND = -NEND
-                        DO 130 L = 1, NEND
-  130                      B(N+L) = ZERO
+                        DO L = 1, NEND
+                          B(N+L) = ZERO
+                        end do
                      ELSE
                         IF (NEND .GT. 0) THEN
 !-------------------------------------------------------------------
@@ -1949,7 +1947,7 @@ contains
 ! Normalize.  Divide all B(N) by sum.
 !-------------------------------------------------------------------
   230             IF (ALPHA .NE. ZERO)                                  &
-                     SUM = SUM * FUNC(ONE+ALPHA) * (X*HALF)**(-ALPHA)
+                     SUM = SUM * gamma(ONE+ALPHA) * (X*HALF)**(-ALPHA)
                   IF (IZE .EQ. 1) SUM = SUM * EXP(-X)
                   TEMPA = ENMTEN
                   IF (SUM .GT. ONE) TEMPA = TEMPA * SUM
@@ -1966,7 +1964,7 @@ contains
                   EMPAL = ONE + ALPHA
                   HALFX = ZERO
                   IF (X .GT. ENMTEN) HALFX = HALF * X
-                  IF (ALPHA .NE. ZERO) TEMPA = HALFX**ALPHA /FUNC(EMPAL)
+                  IF (ALPHA .NE. ZERO) TEMPA = HALFX**ALPHA /gamma(EMPAL)
                   IF (IZE .EQ. 2) TEMPA = TEMPA * EXP(-X)
                   TEMPB = ZERO
                   IF ((X+ONE) .GT. ONE) TEMPB = HALFX * HALFX

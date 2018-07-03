@@ -18,12 +18,12 @@ IMPLICIT NONE
 
 real(wp), PARAMETER :: PI = 4._wp * atan(1._wp)
 real(wp), PARAMETER :: TWOPI = 2*pi
-INTEGER :: I, IDX, IERR, DEL, PTR, RN, RD
+INTEGER :: IDX, IERR, DEL, PTR, RN, RD
 real(wp) :: X
 COMPLEX(wp) :: CX
 CHARACTER(300) :: LINE, SUBSTR
-CHARACTER(100) :: FMTSTR, NUMSTR
-LOGICAL :: NUM_FLAG
+CHARACTER(100) :: NUMSTR
+LOGICAL :: NUM_FLAG = .false.
 
 
 print *, 'Fortran 2008  RPN Calculator, Version '//VERSION

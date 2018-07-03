@@ -187,7 +187,7 @@ contains
                1.7463965060678569906D+01, 8.8427520398873480342D-01/
 !----------------------------------------------------------------------
 !S    CONV(I) = REAL(I)
-      CONV(I) = real(i,wp)
+
       X = XX
       W = ABS(X)
       AUG = ZERO
@@ -216,7 +216,7 @@ contains
       END IF
       W = W - AINT(W)
       NQ = INT(W * FOUR)
-      W = FOUR * (W - CONV(NQ) * FOURTH)
+      W = FOUR * (W - real(NQ, wp) * FOURTH)
 !----------------------------------------------------------------------
 !  W is now related to the fractional part of  4.0 * X.
 !     Adjust argument to correspond to values in the first

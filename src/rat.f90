@@ -928,10 +928,10 @@ END SUBROUTINE RDIV
       IF (R .GT. 1._wp) GO TO 400
       T = N2
       N2 = N1
-      N1 = T
+      N1 = int(T)
       T = D2
       D2 = D1
-      D1 = T
+      D1 = int(T)
   400 EPS = ABS(1._wp - (N1/(NU*D1)))
       IF (EPS .LE. TOL1) GO TO 600
       M = 1._wp

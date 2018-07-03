@@ -145,15 +145,9 @@ END FUNCTION COTH
 !***********************************************************************************************************************************
 
 elemental complex(wp) FUNCTION CCOTH (Z)
-
-IMPLICIT NONE
-
 COMPLEX(wp), INTENT (IN) :: Z
-COMPLEX(wp) :: Y
 
  CCOTH = 1._wp / tanh(Z)
-
-
 END FUNCTION CCOTH
 
 
@@ -168,7 +162,6 @@ elemental real(wp) FUNCTION ACOTH (Y)
 real(wp), INTENT (IN) :: Y
 
 ACOTH = ATANH(1._wp/Y)
-
 END FUNCTION ACOTH
 
 

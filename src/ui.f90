@@ -1,7 +1,7 @@
 module stackops
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 use global
-use assert, only: wp
+use assert, only: wp, isclose
 use funcs
 implicit none
 
@@ -12,6 +12,8 @@ end interface push_stack
 interface printx
   procedure printx_r, cprintx, rprintx
 end interface 
+
+complex(wp), parameter, private :: c0 = (0._wp, 0._wp)
 
 contains
 
@@ -139,7 +141,7 @@ IF (BASE_MODE == 10) THEN                                                   ! DE
             WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
          END IF
          READ (UNIT=NUMSTR, FMT=*) TMPX
-         IF ((X /= 0._wp) .AND. (TMPX == 0._wp)) THEN                     !   disp. underflow
+         IF (.not.isclose(x, 0._wp) .AND. isclose(TMPX,0._wp)) THEN                     !   disp. underflow
             WRITE (UNIT=FMTSTR, FMT='(1H(,5HES15.,I0,1H))') DISP_DIGITS
             WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
          END IF
@@ -195,7 +197,7 @@ END SUBROUTINE PRINTX_r
                   WRITE (UNIT=NUMSTR, FMT=FMTSTR) REAL(X, WP), AIMAG(X)
                END IF
                READ (UNIT=NUMSTR, FMT=*) TMPX
-               IF ((X /= 0._wp) .AND. (TMPX == 0._wp)) THEN                     !   disp. underflow
+               IF (.not.isclose(x, C0) .AND. isclose(TMPX, C0)) THEN                     !   disp. underflow
                   WRITE (UNIT=FMTSTR, FMT=820) DISP_DIGITS, DISP_DIGITS
   820             FORMAT ("(EN25.",I0,",SP,4X,ES25.",I0,",2H i)")
                   WRITE (UNIT=NUMSTR, FMT=FMTSTR) REAL(X, WP), AIMAG(X)
