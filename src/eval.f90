@@ -22,18 +22,18 @@ CHARACTER(*), INTENT(IN) :: STR
 
 real(wp), PARAMETER :: PI = 4._wp * atan(1._wp)
 real(wp), PARAMETER :: TWOPI = 2*pi
-real(wp), PARAMETER :: LN2 = 0.6931471805599453094172321214581765680755001343602552541206800094933936219696947156059D0
-real(wp), PARAMETER :: EULER = 0.57721566490153286060651209008240243104215933593992359880576723488486772677766467094D0
-real(wp), PARAMETER :: GOLDEN = 1.6180339887498948482045868343656381177203091798057628621354486227052604628189024497D0
+real(wp), PARAMETER :: LN2 = log(2._wp)
+real(wp), PARAMETER :: EULER = 0.5772156649_wp
+real(wp), PARAMETER :: GOLDEN = 1.618033988745_wp
 COMPLEX(wp),  PARAMETER :: II = (0._wp,1._wp)
 real(wp), PARAMETER :: KG_PER_LB = 0.45359237D0
-real(wp), PARAMETER :: CM_PER_IN = 2.54D0
+real(wp), PARAMETER :: CM_PER_IN = 2.54_wp
 real(wp), PARAMETER :: L_PER_GAL = 3.785411784D0
 real(wp), PARAMETER :: A0 = 0.5291772108D-10                          ! m
-real(wp), PARAMETER :: AMU = 1.66053886D-27                           ! kg
+real(wp), PARAMETER :: AMU = 1.660539040e-27_wp                       ! kg
 real(wp), PARAMETER :: AU = 1.49597870D11                             ! m
 real(wp), PARAMETER :: C = 299792458.0D0                              ! m/s
-real(wp), PARAMETER :: ECHG = 1.60217653D-19                          ! C
+real(wp), PARAMETER :: ECHG = 1.6021766e-19_wp                        ! C
 real(wp), PARAMETER :: EPS0 = 8.8541878176203898505D-12               ! F/m
 real(wp), PARAMETER :: G = 9.80665D0                                  ! m/s^2
 real(wp), PARAMETER :: GRAV = 6.6742D-11                              ! m^3/kg s^2
@@ -204,10 +204,10 @@ case('%')                                                  ! %
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
-         STACK(1) = STACK(2) * 1.0D-2*STACK(1)
+         STACK(1) = STACK(2) * 0.01_wp*STACK(1)
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CSTACK(2) * 1.0D-2*CSTACK(1)
+         CSTACK(1) = CSTACK(2) * 0.01_wp*CSTACK(1)
       CASE (3)
          NUM = RNSTACK(1)
          DEN = RDSTACK(1)
@@ -228,14 +228,14 @@ case('%CHG')                                               ! %CHG
             write(stderr, *) '  Divide Error'
          ELSE
             LASTX = STACK(1)
-            STACK(1) = 100.0D0*(STACK(1)-STACK(2))/STACK(2)
+            STACK(1) = 100._wp*(STACK(1)-STACK(2))/STACK(2)
          END IF
       CASE (2)
          IF (CSTACK(2) == (0._wp, 0._wp)) THEN
             write(stderr, *) '  Divide Error'
          ELSE
             CLASTX = CSTACK(1)
-            CSTACK(1) = 100.0D0*(CSTACK(1)-CSTACK(2))/CSTACK(2)
+            CSTACK(1) = 100._wp*(CSTACK(1)-CSTACK(2))/CSTACK(2)
          END IF
       CASE (3)
          NUM = RNSTACK(1)
@@ -252,49 +252,55 @@ case('%CHG')                                               ! %CHG
    END SELECT
 
 case('!')                                                  ! !
-   SELECT CASE (DOMAIN_MODE)
-      CASE (1)
+  SELECT CASE (DOMAIN_MODE)
+    CASE (1)
+      IF (ISINT(STACK(1)).AND.(STACK(1) < 0._wp)) THEN
+        write(stderr, *) '  Factorial Error'
+        return
+      endif
+
+      LASTX = STACK(1)
+      STACK(1) = gamma(STACK(1)+1._wp)
+
+    CASE (2)
+      IF (CSTACK(1) == (-1._wp, 0._wp)) THEN
+        write(stderr, *) '  Factorial Error'
+        return
+      endif
+     
+      CLASTX = CSTACK(1)
+      CSTACK(1) = CGAMMA(CSTACK(1)+(1._wp, 0._wp))
+     
+    CASE (3)
+      IF ((RDSTACK(1)==1).AND.(RNSTACK(1)<0)) THEN
+        write(stderr, *) '  Factorial Error'
+        return
+      endif
+      
+      IF (RDSTACK(1)==1) THEN
+         ITMP = RNSTACK(1)
+         IF (ITMP<0) THEN
+            write(stderr, *) '  Factorial Error'
+            return
+         endif   
+         
+         ITMP2 = 1
+         DO I = 2, ITMP
+           ITMP2 = ITMP2 * I
+         END DO
+         RNLASTX = RNSTACK(1)
+         RDLASTX = RDSTACK(1)
+         RNSTACK(1) = ITMP2
+         RDSTACK(1) = 1
+      ELSE
+         CALL SWITCH_RAT_TO_REAL
          IF (ISINT(STACK(1)).AND.(STACK(1)<0.0D0)) THEN
-            write(stderr, *) '  Factorial Error'
-         ELSE
-            LASTX = STACK(1)
-            STACK(1) = gamma(STACK(1)+1._wp)
-         END IF
-      CASE (2)
-         IF (CSTACK(1) == (-1._wp, 0._wp)) THEN
-            write(stderr, *) '  Factorial Error'
-         ELSE
-            CLASTX = CSTACK(1)
-            CSTACK(1) = CGAMMA(CSTACK(1)+(1._wp, 0._wp))
-         END IF
-      CASE (3)
-         IF ((RDSTACK(1)==1).AND.(RNSTACK(1)<0)) THEN
-            write(stderr, *) '  Factorial Error'
-         ELSE
-            IF (RDSTACK(1)==1) THEN
-               ITMP = RNSTACK(1)
-               IF (ITMP<0) THEN
-                  write(stderr, *) '  Factorial Error'
-               ELSE
-                  ITMP2 = 1
-                  DO I = 2, ITMP
-                     ITMP2 = ITMP2 * I
-                  END DO
-                  RNLASTX = RNSTACK(1)
-                  RDLASTX = RDSTACK(1)
-                  RNSTACK(1) = ITMP2
-                  RDSTACK(1) = 1
-               END IF
-            ELSE
-               CALL SWITCH_RAT_TO_REAL
-               IF (ISINT(STACK(1)).AND.(STACK(1)<0.0D0)) THEN
-                  write(stderr, *) '  Factorial Error'
-               ELSE
-                  LASTX = STACK(1)
-                  STACK(1) = gamma(STACK(1)+1._wp)
-               END IF
-            END IF
-         END IF
+           write(stderr, *) '  Factorial Error'
+           return
+         endif
+         LASTX = STACK(1)
+         STACK(1) = gamma(STACK(1)+1._wp)
+      END IF
    END SELECT
 
 case('!!')                                                 ! !!
