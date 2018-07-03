@@ -1,25 +1,18 @@
+! main program for Fortran 2008 RPN calculator
+
+!---- (historical notes) -----------
 !  Programmer:   David G. Simpson
 !                NASA Goddard Space Flight Center
 !                Greenbelt, Maryland  20771
 !  Date:         December 28, 2005
-!  Language:     Fortran-95
-!  Version:      1.01d  (August 23, 2006)
-!  Description:  Reverse Polish Notation (RPN) calculator.
-!  Files:        Source file:
-!                   rpn.f95                   Main program
-!  Note:         This program assumes that the COMPLEX(wp) data type contains 8 bytes for the real component
-!                and 8 bytes for the imaginary component, for a total of 16 bytes.  In other words, the real and
-!                imaginary components are both DOUBLE PRECISION types.
+!-----------------------------------
 
-!***********************************************************************************************************************************
-!  Main program
-!***********************************************************************************************************************************
 
       PROGRAM RPN
       use, intrinsic:: iso_fortran_env, only: stdout=>output_unit, stdin=>input_unit
       USE GLOBAL
-      use funcs, only:  isrational, isreal, iscomplex
-      use ui, only: rprintx, cprintx, printx, eval, rpush_stack, cpush_stack, push_stack
+      use funcs, only:  isrational, isreal, iscomplex, toUpper
+      use ui, only: rprintx, cprintx, printx, eval, push_stack
       IMPLICIT NONE
 
       real(wp), PARAMETER :: PI = 4._wp * atan(1._wp)
@@ -32,11 +25,8 @@
       LOGICAL :: NUM_FLAG
 
 
-!-----------------------------------------------------------------------------------------------------------------------------------
-
       print *, 'Fortran 2008  RPN Calculator, Version '//VERSION
 
-!
 !     Initialize data.
 
       call init_stack()
@@ -97,31 +87,23 @@
 
       FRACTOL = INITIAL_FRACTOL                                                     ! set decimal-to-fraction tolerance
 
-      CALL RANDOM_SEED                                                              ! init random number generator
+!     call random_init()   ! Fortran 2018 + the following line
+      CALL RANDOM_SEED()                                                           ! init random number generator
 
-!
-!     Main loop.
-!
+! -----  Main loop.
 
       DO                                                                            ! loop once for each input line
-
          WRITE(stdout,'(A)', ADVANCE='NO') '  ? '
          READ (stdin,'(A132)', iostat=ierr) LINE
          if (ierr<0) stop  ! Ctrl D was pressed
 
-!
-!     Convert the input line to all uppercase.
-!
+!     Convert the input line to all uppercase, removing leftmost blanks
 
-         LINE = ADJUSTL(LINE)                                                       ! remove leading blanks
-         DO I = 1, LEN_TRIM(LINE)                                                   ! scan each character in line
-            IF (LGE(LINE(I:I),'a') .AND. LLE(LINE(I:I),'z')) THEN                   ! if between 'a' and 'z'..
-               LINE(I:I) = ACHAR(IACHAR(LINE(I:I)) - DEL)                           ! ..then convert to uppercase
-            END IF
-         END DO
+         LINE = toUpper(ADJUSTL(LINE))
+         
 !     Search for QUIT 'Q'
 
-         IF (TRIM(LINE) .EQ. 'Q')    EXIT
+         IF (TRIM(LINE) == 'Q') exit
 
          PTR = 1
 
@@ -146,9 +128,9 @@
                   CASE (1)
                      CALL PUSH_STACK (X)                                            ! push real number onto real stack
                   CASE (2)
-                     CALL CPUSH_STACK (CX)                                          ! push complex number onto complex stack
+                     CALL push_stack(CX)                                          ! push complex number onto complex stack
                   CASE (3)
-                     CALL RPUSH_STACK (RN, RD)                                      ! push rational number onto rational stack
+                     CALL push_stack(RN, RD)                                      ! push rational number onto rational stack
                END SELECT
             ELSE                                                                    ! else it's an operator
                CALL EVAL (SUBSTR)                                                   ! evaluate operator
@@ -175,6 +157,4 @@
       END DO
 
       END PROGRAM RPN
-
-
 

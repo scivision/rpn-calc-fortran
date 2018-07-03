@@ -672,4 +672,42 @@ E5 = REDUCE (E5, 0._wp)
 END FUNCTION KEPLER
 
 
+elemental function toLower(str)
+! Michael Hirsch
+! can be trivially extended to non-ASCII
+  character(*), intent(in) :: str
+  character(len(str)) :: toLower
+  character(*), parameter :: lower="abcdefghijklmnopqrstuvwxyz", &
+                             upper="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  integer :: i,j
+
+  toLower = str
+
+  do concurrent (i = 1:len(str))
+    j = index(upper,str(i:i))
+    if (j > 0) toLower(i:i) = lower(j:j)
+  end do
+
+end function toLower
+
+
+elemental function toUpper(str)
+! Michael Hirsch
+! can be trivially extended to non-ASCII
+  character(*), intent(in) :: str
+  character(len(str)) :: toUpper
+  character(*), parameter :: lower="abcdefghijklmnopqrstuvwxyz", &
+                             upper="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  integer :: i,j
+
+  toUpper = str
+
+  do concurrent (i = 1:len(str))
+    j = index(lower,str(i:i))
+    if (j > 0) toUpper(i:i) = upper(j:j)
+  end do
+
+end function toUpper
+
+
 end module funcs

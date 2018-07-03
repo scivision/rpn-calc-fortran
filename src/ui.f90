@@ -5,6 +5,10 @@ use assert, only: wp
 use funcs
 implicit none
 
+interface push_stack
+  procedure push_stack_r, cpush_stack, rpush_stack
+end interface push_stack
+
 contains
 
 !***********************************************************************************************************************************
@@ -13,17 +17,17 @@ contains
 !  Push a number onto the real stack.
 !***********************************************************************************************************************************
 
-SUBROUTINE PUSH_STACK(X)
+SUBROUTINE PUSH_STACK_r(X)
 real(wp), INTENT(IN) :: X
 
 stack = cshift(stack, -1)
 
 STACK(1) = X
-END SUBROUTINE PUSH_STACK
+END SUBROUTINE PUSH_STACK_r
 
 
 !***********************************************************************************************************************************
-!  CPUSH_STACK
+!  push_stack
 !
 !  Push a number onto the complex stack.
 !***********************************************************************************************************************************
@@ -34,7 +38,6 @@ COMPLEX(wp), INTENT(IN) :: X
  cstack = cshift(cstack, -1)
 
  CSTACK(1) = X
-
 END SUBROUTINE CPUSH_STACK
 
 
@@ -674,12 +677,12 @@ case('10X')                                                ! 10X
 case('2PI')                                                ! 2PI
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         CALL PUSH_STACK (TWOPI)
+         CALL PUSH_STACK(TWOPI)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(TWOPI, 0._wp, wp))
+         CALL PUSH_STACK(CMPLX(TWOPI, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         CALL PUSH_STACK (TWOPI)
+         CALL PUSH_STACK(TWOPI)
    END SELECT
 
 case('2PII')                                               ! 2PII
@@ -687,7 +690,7 @@ case('2PII')                                               ! 2PII
       CASE (1)
          write(stderr, *) ' 2PIi not available in REAL mode'
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(0._wp,TWOPI, wp))
+         CALL PUSH_STACK(CMPLX(0._wp,TWOPI, wp))
       CASE (3)
          write(stderr, *) ' 2PIi not available in RATIONAL mode'
    END SELECT
@@ -708,7 +711,7 @@ case('A0')                                                 ! A0
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(A0, 0._wp, wp))
+         CALL push_stack(CMPLX(A0, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (A0)
@@ -966,7 +969,7 @@ case('AMU')                                                ! AMU
       CASE (1)
          CALL PUSH_STACK (AMU)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(AMU, 0._wp, wp))
+         CALL push_stack(CMPLX(AMU, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (AMU)
@@ -1149,7 +1152,7 @@ case('AU')                                                 ! AU
       CASE (1)
          CALL PUSH_STACK (AU)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(AU, 0._wp, wp))
+         CALL push_stack(CMPLX(AU, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (AU)
@@ -1567,7 +1570,7 @@ case('C')                                                  ! C
       CASE (1)
          CALL PUSH_STACK (C)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(C, 0._wp, wp))
+         CALL push_stack(CMPLX(C, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (C)
@@ -1958,8 +1961,8 @@ case('D>F')                                                ! D>F
          CALL DEC_TO_FRAC (real(CSTACK(1), wp), NUM, DEN, FRACTOL)
          CALL DEC_TO_FRAC (AIMAG(CSTACK(1)), NUM2, DEN2, FRACTOL)
          CALL CDROP_STACK(1)
-         CALL CPUSH_STACK(CMPLX(real(NUM, wp),real(NUM2, wp), wp))
-         CALL CPUSH_STACK(CMPLX(real(DEN, wp),real(DEN2, wp), wp))
+         CALL push_stack(CMPLX(real(NUM, wp),real(NUM2, wp), wp))
+         CALL push_stack(CMPLX(real(DEN, wp),real(DEN2, wp), wp))
    END SELECT
 
 case('D>R')                                                ! D>R
@@ -2021,9 +2024,9 @@ case('DUP')                                                ! DUP
       CASE (1)
          CALL PUSH_STACK(STACK(1))
       CASE (2)
-         CALL CPUSH_STACK(CSTACK(1))
+         CALL push_stack(CSTACK(1))
       CASE (3)
-         CALL RPUSH_STACK(RNSTACK(1),RDSTACK(1))
+         CALL push_stack(RNSTACK(1),RDSTACK(1))
    END SELECT
 
 case('ECHG')                                               ! ECHG
@@ -2031,7 +2034,7 @@ case('ECHG')                                               ! ECHG
       CASE (1)
          CALL PUSH_STACK (ECHG)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(ECHG, 0._wp, wp))
+         CALL push_stack(CMPLX(ECHG, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (ECHG)
@@ -2055,7 +2058,7 @@ case('EPS0')                                               ! EPS0
       CASE (1)
          CALL PUSH_STACK (EPS0)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(EPS0, 0._wp, wp))
+         CALL push_stack(CMPLX(EPS0, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (EPS0)
@@ -2092,7 +2095,7 @@ case('EULER')                                             ! EULER
       CASE (1)
          CALL PUSH_STACK (EULER)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(EULER, 0._wp, wp))
+         CALL push_stack(CMPLX(EULER, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (EULER)
@@ -2190,7 +2193,7 @@ case('G')                                                  ! G
       CASE (1)
          CALL PUSH_STACK (G)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(G, 0._wp, wp))
+         CALL push_stack(CMPLX(G, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (G)
@@ -2292,7 +2295,7 @@ case('GOLDEN')                                             ! GOLDEN
       CASE (1)
          CALL PUSH_STACK (GOLDEN)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(GOLDEN, 0._wp, wp))
+         CALL push_stack(CMPLX(GOLDEN, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (GOLDEN)
@@ -2307,7 +2310,7 @@ case('GRAV')                                               ! GRAV
       CASE (1)
          CALL PUSH_STACK (GRAV)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(GRAV, 0._wp, wp))
+         CALL push_stack(CMPLX(GRAV, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (GRAV)
@@ -2318,7 +2321,7 @@ case('H')                                                  ! H
       CASE (1)
          CALL PUSH_STACK (H)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(H, 0._wp, wp))
+         CALL push_stack(CMPLX(H, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (H)
@@ -2350,7 +2353,7 @@ case('HBAR')                                               ! HBAR
       CASE (1)
          CALL PUSH_STACK (HBAR)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(HBAR, 0._wp, wp))
+         CALL push_stack(CMPLX(HBAR, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (HBAR)
@@ -2558,7 +2561,7 @@ case('I')                                                  ! I
       CASE (1)
          write(stderr, *) ' i not available in REAL mode'
       CASE (2)
-         CALL CPUSH_STACK (II)
+         CALL push_stack(II)
       CASE (3)
          write(stderr, *) ' i not available in RATIONAL mode'
    END SELECT
@@ -2646,7 +2649,7 @@ case('KB')                                                 ! KB
       CASE (1)
          CALL PUSH_STACK (KB)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(KB, 0._wp, wp))
+         CALL push_stack(CMPLX(KB, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (KB)
@@ -2701,9 +2704,9 @@ case('LASTX')                                             ! LASTX
       CASE (1)
          CALL PUSH_STACK (LASTX)
       CASE (2)
-         CALL CPUSH_STACK (CLASTX)
+         CALL push_stack(CLASTX)
       CASE (3)
-         CALL RPUSH_STACK (RNLASTX, RDLASTX)
+         CALL push_stack(RNLASTX, RDLASTX)
    END SELECT
 
 case('LB>KG')                                             ! LB>KG
@@ -2851,16 +2854,16 @@ case('LR')                                                 ! LR
             write(stderr, *) '  LR Error'
          ELSE
             CALL CLINREG (CTMPM,CTMPB,CTMPR)
-            CALL CPUSH_STACK (CTMPM)
-            CALL CPUSH_STACK (CTMPB)
+            CALL push_stack(CTMPM)
+            CALL push_stack(CTMPB)
          END IF
       CASE (3)
          IF (RNNN <= 1) THEN
             write(stderr, *) '  LR Error'
          ELSE
             CALL RLINREG (NUMM,DENM,NUMB,DENB,TMPR)
-            CALL RPUSH_STACK (NUMM,DENM)
-            CALL RPUSH_STACK (NUMB,DENB)
+            CALL push_stack(NUMM,DENM)
+            CALL push_stack(NUMB,DENB)
          END IF
    END SELECT
 
@@ -2869,7 +2872,7 @@ case('ME')                                                 ! ME
       CASE (1)
          CALL PUSH_STACK (ME)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(ME, 0._wp, wp))
+         CALL push_stack(CMPLX(ME, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (ME)
@@ -2883,7 +2886,7 @@ case('MN')                                                 ! MN
       CASE (1)
          CALL PUSH_STACK (MN)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(MN, 0._wp, wp))
+         CALL push_stack(CMPLX(MN, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (MN)
@@ -2977,7 +2980,7 @@ case('MP')                                                 ! MP
       CASE (1)
          CALL PUSH_STACK (MP)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(MP, 0._wp, wp))
+         CALL push_stack(CMPLX(MP, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (MP)
@@ -2988,7 +2991,7 @@ case('MU0')                                                ! MU0
       CASE (1)
          CALL PUSH_STACK (MU0)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(MU0, 0._wp, wp))
+         CALL push_stack(CMPLX(MU0, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (MU0)
@@ -2999,7 +3002,7 @@ case('MUB')                                                ! MUB
       CASE (1)
          CALL PUSH_STACK (MUB)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(MUB, 0._wp, wp))
+         CALL push_stack(CMPLX(MUB, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (MUB)
@@ -3010,7 +3013,7 @@ case('MUN')                                                ! MUN
       CASE (1)
          CALL PUSH_STACK (MUN)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(MUN, 0._wp, wp))
+         CALL push_stack(CMPLX(MUN, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (MUN)
@@ -3021,9 +3024,9 @@ case('N')                                                  ! N
       CASE (1)
          CALL PUSH_STACK (NN)
       CASE (2)
-         CALL CPUSH_STACK (CNN)
+         CALL push_stack(CNN)
       CASE (3)
-         CALL RPUSH_STACK (RNNN, RDNN)
+         CALL push_stack(RNNN, RDNN)
    END SELECT
 
 case('NA')                                                 ! NA
@@ -3031,7 +3034,7 @@ case('NA')                                                 ! NA
       CASE (1)
          CALL PUSH_STACK (NA)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(NA, 0._wp, wp))
+         CALL push_stack(CMPLX(NA, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (NA)
@@ -3107,7 +3110,7 @@ case('PI')                                                 ! PI
       CASE (1)
          CALL PUSH_STACK (PI)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(PI, 0._wp, wp))
+         CALL push_stack(CMPLX(PI, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (PI)
@@ -3323,11 +3326,11 @@ case('RAND')                                               ! RAND
       CASE (2)
          CALL RANDOM_NUMBER (TMP)
          CALL RANDOM_NUMBER (TMP2)
-         CALL CPUSH_STACK(CMPLX(TMP,TMP2, wp))
+         CALL push_stack(CMPLX(TMP,TMP2, wp))
       CASE (3)
          CALL RANDOM_NUMBER (TMP)
          CALL DEC_TO_FRAC (TMP, NUM, DEN, FRACTOL)
-         CALL RPUSH_STACK(NUM, DEN)
+         CALL push_stack(NUM, DEN)
    END SELECT
 
 case('RATIONAL')                                           ! RATIONAL
@@ -3415,9 +3418,9 @@ case('RCL')                                                 ! RCL
                CASE (1)
                   CALL PUSH_STACK(REG(ITMP))
                CASE (2)
-                  CALL CPUSH_STACK(CREG(ITMP))
+                  CALL push_stack(CREG(ITMP))
                CASE (3)
-                  CALL RPUSH_STACK(RNREG(ITMP),RDREG(ITMP))
+                  CALL push_stack(RNREG(ITMP),RDREG(ITMP))
             END SELECT
          END IF
       END IF
@@ -3438,7 +3441,7 @@ case('RCORR')                                             ! RCORR
             write(stderr, *) '  RCORR Error'
          ELSE
             CALL CLINREG (CTMPM,CTMPB,CTMPR)
-            CALL CPUSH_STACK (CTMPR)
+            CALL push_stack(CTMPR)
          END IF
       CASE (3)
          IF (RNNN <= 1) THEN
@@ -3483,7 +3486,7 @@ case('REARTH')                                             ! REARTH
       CASE (1)
          CALL PUSH_STACK (REARTH)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(REARTH, 0._wp, wp))
+         CALL push_stack(CMPLX(REARTH, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (REARTH)
@@ -3577,7 +3580,7 @@ case('RGAS')                                               ! RGAS
       CASE (1)
          CALL PUSH_STACK (RGAS)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(RGAS, 0._wp, wp))
+         CALL push_stack(CMPLX(RGAS, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (RGAS)
@@ -3906,7 +3909,7 @@ case('STEFAN')                                             ! STEFAN
       CASE (1)
          CALL PUSH_STACK (STEFAN)
       CASE (2)
-         CALL CPUSH_STACK (CMPLX(STEFAN, 0._wp, wp))
+         CALL push_stack(CMPLX(STEFAN, 0._wp, wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (STEFAN)
@@ -3942,9 +3945,9 @@ case('SUMX')                                               ! SUMX
       CASE (1)
          CALL PUSH_STACK (SUMX)
       CASE (2)
-         CALL CPUSH_STACK (CSUMX)
+         CALL push_stack(CSUMX)
       CASE (3)
-         CALL RPUSH_STACK (RNSUMX,RDSUMX)
+         CALL push_stack(RNSUMX,RDSUMX)
    END SELECT
 
 case('SUMX2')                                             ! SUMX2
@@ -3952,9 +3955,9 @@ case('SUMX2')                                             ! SUMX2
       CASE (1)
          CALL PUSH_STACK (SUMX2)
       CASE (2)
-         CALL CPUSH_STACK (CSUMX2)
+         CALL push_stack(CSUMX2)
       CASE (3)
-         CALL RPUSH_STACK (RNSUMX2,RDSUMX2)
+         CALL push_stack(RNSUMX2,RDSUMX2)
    END SELECT
 
 case('SUMXY')                                             ! SUMXY
@@ -3962,9 +3965,9 @@ case('SUMXY')                                             ! SUMXY
       CASE (1)
          CALL PUSH_STACK (SUMXY)
       CASE (2)
-         CALL CPUSH_STACK (CSUMXY)
+         CALL push_stack(CSUMXY)
       CASE (3)
-         CALL RPUSH_STACK (RNSUMXY,RDSUMXY)
+         CALL push_stack(RNSUMXY,RDSUMXY)
    END SELECT
 
 case('SUMY')                                               ! SUMY
@@ -3972,9 +3975,9 @@ case('SUMY')                                               ! SUMY
       CASE (1)
          CALL PUSH_STACK (SUMY)
       CASE (2)
-         CALL CPUSH_STACK (CSUMY)
+         CALL push_stack(CSUMY)
       CASE (3)
-         CALL RPUSH_STACK (RNSUMY,RDSUMY)
+         CALL push_stack(RNSUMY,RDSUMY)
    END SELECT
 
 case('SUMY2')                                             ! SUMY2
@@ -3982,9 +3985,9 @@ case('SUMY2')                                             ! SUMY2
       CASE (1)
          CALL PUSH_STACK (SUMY2)
       CASE (2)
-         CALL CPUSH_STACK (CSUMY2)
+         CALL push_stack(CSUMY2)
       CASE (3)
-         CALL RPUSH_STACK (RNSUMY2,RDSUMY2)
+         CALL push_stack(RNSUMY2,RDSUMY2)
    END SELECT
 
 case('TAN')                                                ! TAN
@@ -4118,14 +4121,14 @@ case('XMEAN')                                             ! XMEAN
             write(stderr, *) '  XMEAN Error'
          ELSE
             CTMP = CSUMX/CNN
-            CALL CPUSH_STACK(CTMP)
+            CALL push_stack(CTMP)
          END IF
       CASE (3)
          IF (RNNN == 0) THEN
             write(stderr, *) '  XMEAN Error'
          ELSE
             CALL RDIV (RNSUMX,RDSUMX,RNNN,RDNN,NUM,DEN)
-            CALL RPUSH_STACK(NUM,DEN)
+            CALL push_stack(NUM,DEN)
          END IF
    END SELECT
 
@@ -4182,7 +4185,7 @@ case('XS')                                                 ! XS
             write(stderr, *) '  XS Error'
          ELSE
             CTMP = SQRT((CSUMX2-CSUMX**2/CNN)/(CNN-1._wp))
-            CALL CPUSH_STACK(CTMP)
+            CALL push_stack(CTMP)
          END IF
       CASE (3)
          IF (RNNN <= RDNN) THEN
@@ -4208,7 +4211,7 @@ case('XSIG')                                               ! XSIG
             write(stderr, *) '  XSIG Error'
          ELSE
             CTMP = SQRT((CSUMX2-CSUMX**2/CNN)/CNN)
-            CALL CPUSH_STACK(CTMP)
+            CALL push_stack(CTMP)
          END IF
       CASE (3)
          IF (RNNN <= RDNN) THEN
@@ -4285,14 +4288,14 @@ case('YMEAN')                                             ! YMEAN
             write(stderr, *) '  YMEAN Error'
          ELSE
             CTMP = CSUMY/CNN
-            CALL CPUSH_STACK(CTMP)
+            CALL push_stack(CTMP)
          END IF
       CASE (3)
          IF (RNNN == 0) THEN
             write(stderr, *) '  YMEAN Error'
          ELSE
             CALL RDIV (RNSUMY,RDSUMY,RNNN,RDNN,NUM,DEN)
-            CALL RPUSH_STACK(NUM,DEN)
+            CALL push_stack(NUM,DEN)
          END IF
    END SELECT
 
@@ -4310,7 +4313,7 @@ case('YS')                                                 ! YS
             write(stderr, *) '  YS Error'
          ELSE
             CTMP = SQRT((CSUMY2-CSUMY**2/CNN)/(CNN-1._wp))
-            CALL CPUSH_STACK(CTMP)
+            CALL push_stack(CTMP)
          END IF
       CASE (3)
          IF (RNNN <= RDNN) THEN
@@ -4336,7 +4339,7 @@ case('YSIG')                                               ! YSIG
             write(stderr, *) '  YSIG Error'
          ELSE
             CTMP = SQRT((CSUMY2-CSUMY**2/CNN)/CNN)
-            CALL CPUSH_STACK(CTMP)
+            CALL push_stack(CTMP)
          END IF
       CASE (3)
          IF (RNNN <= RDNN) THEN
