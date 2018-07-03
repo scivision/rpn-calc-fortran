@@ -9,6 +9,10 @@ interface push_stack
   procedure push_stack_r, cpush_stack, rpush_stack
 end interface push_stack
 
+interface printx
+  procedure printx_r, cprintx, rprintx
+end interface 
+
 contains
 
 !***********************************************************************************************************************************
@@ -117,7 +121,7 @@ END SUBROUTINE RDROP_STACK
 !  Print a real number to a string.
 !***********************************************************************************************************************************
 
-SUBROUTINE PRINTX (X, NUMSTR)
+SUBROUTINE PRINTX_r(X, NUMSTR)
 
 real(wp), INTENT(IN) :: X
 CHARACTER(LEN=100), INTENT(OUT) :: NUMSTR
@@ -163,9 +167,7 @@ ELSE
    END SELECT
 END IF
 
-END SUBROUTINE PRINTX
-
-
+END SUBROUTINE PRINTX_r
 
 !***********************************************************************************************************************************
 !  CPRINTX
@@ -223,8 +225,6 @@ END SUBROUTINE PRINTX
                WRITE (UNIT=NUMSTR, FMT=FMTSTR) INT(REAL(X, WP)), INT(AIMAG(X))
          END SELECT
       END IF
-
-      RETURN
 
       END SUBROUTINE CPRINTX
 
@@ -3173,9 +3173,9 @@ case('PR')                                                 ! PR
          CASE (1)
             CALL PRINTX(REG(I), NUMSTR)
          CASE (2)
-            CALL CPRINTX(CREG(I), NUMSTR)
+            CALL printx(CREG(I), NUMSTR)
          CASE (3)
-            CALL RPRINTX(RNREG(I), RDREG(I), NUMSTR)
+            CALL printx(RNREG(I), RDREG(I), NUMSTR)
       END SELECT
       WRITE (UNIT=*, FMT='(1X,I3,A)') I, ':  '//TRIM(NUMSTR)
    END DO
@@ -3200,9 +3200,9 @@ case('PS')                                                 ! PS
          CASE (1)
             CALL PRINTX(STACK(I), NUMSTR)
          CASE (2)
-            CALL CPRINTX(CSTACK(I), NUMSTR)
+            CALL printx(CSTACK(I), NUMSTR)
          CASE (3)
-            CALL RPRINTX(RNSTACK(I), RDSTACK(I), NUMSTR)
+            CALL printx(RNSTACK(I), RDSTACK(I), NUMSTR)
       END SELECT
       WRITE (UNIT=*, FMT='(2X,A)') REGNAME//':  '//TRIM(NUMSTR)
    END DO
@@ -3227,32 +3227,32 @@ case('PSUMS')                                             ! PSUMS
          print *, ' '
       CASE (2)
          WRITE (UNIT=*, FMT='()')
-         CALL CPRINTX(CNN, NUMSTR)
+         CALL printx(CNN, NUMSTR)
          print *, '  N:   '//TRIM(NUMSTR)
-         CALL CPRINTX(CSUMX, NUMSTR)
+         CALL printx(CSUMX, NUMSTR)
          print *, '  X:   '//TRIM(NUMSTR)
-         CALL CPRINTX(CSUMX2, NUMSTR)
+         CALL printx(CSUMX2, NUMSTR)
          print *, '  X2:  '//TRIM(NUMSTR)
-         CALL CPRINTX(CSUMY, NUMSTR)
+         CALL printx(CSUMY, NUMSTR)
          print *, '  Y:   '//TRIM(NUMSTR)
-         CALL CPRINTX(CSUMY2, NUMSTR)
+         CALL printx(CSUMY2, NUMSTR)
          print *, '  Y2:  '//TRIM(NUMSTR)
-         CALL CPRINTX(CSUMXY, NUMSTR)
+         CALL printx(CSUMXY, NUMSTR)
          print *, '  XY:  '//TRIM(NUMSTR)
          print *, ' '
       CASE (3)
          WRITE (UNIT=*, FMT='()')
-         CALL RPRINTX(RNNN, RDNN, NUMSTR)
+         CALL printx(RNNN, RDNN, NUMSTR)
          print *, '  N:   '//TRIM(NUMSTR)
-         CALL RPRINTX(RNSUMX, RDSUMX, NUMSTR)
+         CALL printx(RNSUMX, RDSUMX, NUMSTR)
          print *, '  X:   '//TRIM(NUMSTR)
-         CALL RPRINTX(RNSUMX2, RDSUMX2, NUMSTR)
+         CALL printx(RNSUMX2, RDSUMX2, NUMSTR)
          print *, '  X2:  '//TRIM(NUMSTR)
-         CALL RPRINTX(RNSUMY, RDSUMY, NUMSTR)
+         CALL printx(RNSUMY, RDSUMY, NUMSTR)
          print *, '  Y:   '//TRIM(NUMSTR)
-         CALL RPRINTX(RNSUMY2, RDSUMY2, NUMSTR)
+         CALL printx(RNSUMY2, RDSUMY2, NUMSTR)
          print *, '  Y2:  '//TRIM(NUMSTR)
-         CALL RPRINTX(RNSUMXY, RDSUMXY, NUMSTR)
+         CALL printx(RNSUMXY, RDSUMXY, NUMSTR)
          print *, '  XY:  '//TRIM(NUMSTR)
          print *, ' '
    END SELECT

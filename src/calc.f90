@@ -12,7 +12,7 @@
       use, intrinsic:: iso_fortran_env, only: stdout=>output_unit, stdin=>input_unit
       USE GLOBAL
       use funcs, only:  isrational, isreal, iscomplex, toUpper
-      use ui, only: rprintx, cprintx, printx, eval, push_stack
+      use ui, only: printx, eval, push_stack
       IMPLICIT NONE
 
       real(wp), PARAMETER :: PI = 4._wp * atan(1._wp)
@@ -147,9 +147,9 @@
             CASE (1)
                CALL PRINTX(STACK(1), NUMSTR)                                        ! format REAL X
             CASE (2)
-               CALL CPRINTX(CSTACK(1), NUMSTR)                                      ! format COMPLEX X
+               CALL PRINTX(CSTACK(1), NUMSTR)                                      ! format COMPLEX X
             CASE (3)
-               CALL RPRINTX(RNSTACK(1), RDSTACK(1), NUMSTR)                         ! format RATIONAL X
+               CALL PRINTX(RNSTACK(1), RDSTACK(1), NUMSTR)                         ! format RATIONAL X
          END SELECT
 
          print '(3X,A)', TRIM(NUMSTR)                                  ! print X
