@@ -9,7 +9,7 @@ else()
 endif()
 
 if(${CMAKE_Fortran_COMPILER_ID} STREQUAL GNU)
-  list(APPEND FFLAGS -march=native #-Wall -Wextra -Wpedantic 
+  list(APPEND FFLAGS -march=native #-Wall #-Wextra #-Wpedantic 
   -Werror=array-bounds -fbacktrace -fcheck=all
   -fexceptions -ffpe-trap=invalid,zero,overflow
   -finit-real=nan -Wconversion -fimplicit-none) #-Warray-temporaries
@@ -51,6 +51,8 @@ target_compile_options(assert PRIVATE ${FFLAGS})
 
 if(UNIX)
   add_test(NAME UIrpn COMMAND bash -c "echo -e '2 5 * \n q' | ./rpncalc")
+  add_test(NAME RPNinput COMMAND "./test.sh" 
+           WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../tests)
 endif()
 
 #--- install

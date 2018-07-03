@@ -96,7 +96,7 @@ CALL RANDOM_SEED()                                                           ! i
 DO                                                                            ! loop once for each input line
    WRITE(stdout,'(A)', ADVANCE='NO') '  ? '
    READ (stdin,'(A132)', iostat=ierr) LINE
-   if (ierr<0) stop  ! Ctrl D was pressed
+   if (ierr<0) exit  ! Ctrl D was pressed
 
 !     Convert the input line to all uppercase, removing leftmost blanks
 
@@ -156,6 +156,18 @@ DO                                                                            ! 
    print '(3X,A)', TRIM(NUMSTR)                                  ! print X
 
 END DO
+
+! -- end program by printing last value (helping automatic self test cases)
+   print *,new_line('')
+   SELECT CASE (DOMAIN_MODE)
+      CASE (1)
+        print *, STACK(1)
+      CASE (2)
+        print *, CSTACK(1)
+      CASE (3)
+        print *, RNSTACK(1), RDSTACK(1)
+   END SELECT
+
 
 END PROGRAM RPN
 

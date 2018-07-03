@@ -33,7 +33,7 @@ before_install:
 install:
   - cd bin
   - cmake ../src
-  - cmake --build .
+  - cmake --build . --target install
 
 script: 
   - ctest -V
