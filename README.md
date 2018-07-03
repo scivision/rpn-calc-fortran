@@ -64,11 +64,6 @@ The default mode is REAL
     REAL        REAL mode
     RATIONAL    Rational (fraction) mode
 
-    IMPROPER    Improper fraction display mode
-    MIXED       Mixed fraction display mode
-
-    ALL         ALL display mode  
-    
 Additionally, angle modes can be selected like any scientific calculator:
 
   
@@ -121,6 +116,14 @@ Iinternal precision remains at 32 or 64 bits, set when compiled.
     ENGx         Engineering notation
     FIXx         Fix notation
     SCIx         Scientific notation
+
+Other display modes:
+
+    IMPROPER    Improper fraction display mode
+    MIXED       Mixed fraction display mode
+
+    ALL         ALL digits display mode  
+    
     
 ### Common Functions
 
