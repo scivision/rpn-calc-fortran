@@ -158,16 +158,17 @@ DO                                                                            ! 
 END DO
 
 ! -- end program by printing last value (helping automatic self test cases)
-   print *,new_line('')
-   SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-        print *, STACK(1)
-      CASE (2)
-        print *, CSTACK(1)
-      CASE (3)
-        print *, RNSTACK(1), RDSTACK(1)
-   END SELECT
+print *,new_line('')
+SELECT CASE (DOMAIN_MODE)
+CASE (1)
+  CALL PRINTX(STACK(1), NUMSTR) 
+CASE (2)
+  CALL PRINTX(CSTACK(1), NUMSTR) 
+CASE (3)
+  CALL PRINTX(RNSTACK(1), RDSTACK(1), NUMSTR) 
+END SELECT
 
+print '(3X,A)', TRIM(NUMSTR)
 
 END PROGRAM RPN
 
