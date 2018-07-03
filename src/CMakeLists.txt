@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.7)
 project(RPNcalc Fortran)
 enable_testing()
 
-list(APPEND FFLAGS -g -O3)
+list(APPEND FFLAGS -g -O0)
 
 add_executable(rpncalc eval.f90 ui.f90 calc.f90)
 target_link_libraries(rpncalc PRIVATE reg funcs)

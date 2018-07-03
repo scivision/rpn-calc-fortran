@@ -67,9 +67,6 @@ The default mode is REAL
     IMPROPER    Improper fraction display mode
     MIXED       Mixed fraction display mode
 
-    ENG         Engineering notation
-    FIX         Fix notation
-    SCI         Scientific notation
     ALL         ALL display mode  
     
 Additionally, angle modes can be selected like any scientific calculator:
@@ -103,13 +100,27 @@ These operations are fundamental to RPN use, and constitute some of RPN's key ad
 
     RESET       Reset calculator to initial state
 
-    STO         Store
-    RCL         Recall
     LASTX       Recall last X
     
     PR          Print registers
     PS          Print stack
     PSUMS       Print sums
+    
+### Registers
+There are ten registers (0..9) accessed with:
+
+
+    STOx       Store, where x ~ 0..9  e.g. STO3   STO6
+    RCLx       Recall, where x ~ 0..9 e.g. RCL3   RCL6
+    
+### Digits of precision display
+
+For each case, x ~ (0..9) digits of DISPLAYED precision.
+Iinternal precision remains at 32 or 64 bits, set when compiled.
+
+    ENGx         Engineering notation
+    FIXx         Fix notation
+    SCIx         Scientific notation
     
 ### Common Functions
 

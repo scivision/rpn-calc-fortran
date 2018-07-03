@@ -1736,19 +1736,6 @@ case('ECHG')                                               ! ECHG
          CALL PUSH_STACK (ECHG)
    END SELECT
 
-case('ENG')                                                 ! ENG
-   IF (LEN_TRIM(STR) == 3) THEN
-      write(stderr, *) '  ENG Error'
-   ELSE
-      READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-      IF (IERR /= 0) THEN
-         write(stderr, *) '  ENG Error'
-      ELSE
-         DISP_MODE = 3
-         DISP_DIGITS = ITMP
-      END IF
-   END IF
-
 case('EPS0')                                               ! EPS0
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -1841,19 +1828,6 @@ case('F>C')                                                ! F>C
          RNSTACK(1) = NUM2
          RDSTACK(1) = DEN2
    END SELECT
-
-case('FIX')                                                 ! FIX
-   IF (LEN_TRIM(STR) == 3) THEN
-      write(stderr, *) '  FIX Error'
-   ELSE
-      READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-      IF (IERR /= 0) THEN
-         write(stderr, *) '  FIX Error'
-      ELSE
-         DISP_MODE = 1
-         DISP_DIGITS = ITMP
-      END IF
-   END IF
 
 case('FRAC')                                               ! FRAC
    SELECT CASE (DOMAIN_MODE)
@@ -3099,30 +3073,6 @@ case('RATIONAL')                                           ! RATIONAL
          RDSUMXY = ITMP2
    END SELECT
 
-case('RCL')                                                 ! RCL
-   IF (LEN_TRIM(STR) == 3) THEN
-      write(stderr, *) '  RCL Error'
-   ELSE
-      READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-      IF (IERR /= 0) THEN
-         write(stderr, *) '  RCL Error'
-      ELSE
-         IF ((ITMP<0).OR.(ITMP>=REG_SIZE)) THEN
-            write(stderr, *) '  RCL Error'
-         ELSE
-            SELECT CASE (DOMAIN_MODE)
-               CASE (1)
-                  CALL PUSH_STACK(REG(ITMP))
-               CASE (2)
-                  CALL push_stack(CREG(ITMP))
-               CASE (3)
-                  CALL push_stack(RNREG(ITMP),RDREG(ITMP))
-            END SELECT
-         END IF
-      END IF
-   END IF
-   PRINT *, REG(ITMP)
-
 case('RCORR')                                             ! RCORR
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -3410,19 +3360,6 @@ case('S-')                                                  ! S-
          RDSTACK(1) = RDNN
    END SELECT
 
-case('SCI')                                                 ! SCI
-   IF (LEN_TRIM(STR) == 3) THEN
-      write(stderr, *) '  SCI Error'
-   ELSE
-      READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-      IF (IERR /= 0) THEN
-         write(stderr, *) '  SCI Error'
-      ELSE
-         DISP_MODE = 2
-         DISP_DIGITS = ITMP
-      END IF
-   END IF
-
 case('SEC')                                                ! SEC
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -3609,32 +3546,6 @@ case('STEFAN')                                             ! STEFAN
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (STEFAN)
    END SELECT
-
-case('STO')                                                 ! STO
-   IF (LEN_TRIM(STR) == 3) THEN
-      write(stderr, *) '  STO requires specifying a integer register (>10) to store in.  E.g.  STO 15' 
-      return
-   ELSE
-      READ (UNIT=STR(4:), FMT=*, IOSTAT=IERR) ITMP
-      IF (IERR /= 0) THEN
-         write(stderr, *) '  STO Error'//str(4:)
-      ELSE
-         IF ((ITMP<0).OR.(ITMP>=REG_SIZE)) THEN
-            write(stderr, *) '  STO Error'
-         ELSE
-            SELECT CASE (DOMAIN_MODE)
-               CASE (1)
-                  REG(ITMP) = STACK(1)
-               CASE (2)
-                  CREG(ITMP) = CSTACK(1)
-               CASE (3)
-                  RNREG(ITMP) = RNSTACK(1)
-                  RDREG(ITMP) = RDSTACK(1)
-            END SELECT
-         END IF
-      END IF
-   END IF
-   PRINT *, REG(ITMP)
 
 case('SUMX')                                               ! SUMX
    SELECT CASE (DOMAIN_MODE)
@@ -4048,9 +3959,124 @@ case('YSIG')                                               ! YSIG
    END SELECT
 
 case default
-   WRITE (stderr, *) '  Input error:  "'//TRIM(STR)//'"'
+   call regops(str)
 END select
 
 END SUBROUTINE EVAL
+
+
+subroutine regops(str)
+
+character(*), intent(in) :: str
+integer :: ierr, itmp
+
+select case(str(:3))
+
+case('RCL')                                                 ! RCL
+  IF (LEN_TRIM(STR) == 3) THEN
+    write(stderr, *) '  RCLx requires specifying a integer register x ~ (0..9) to store in.  E.g.  RCL6' 
+    return
+  endif
+  
+  READ(STR(4:4), '(I1)', IOSTAT=IERR) ITMP
+  IF (IERR /= 0) THEN
+    write(stderr, *) '  RCL Error with register '//str(4:4)
+    return
+  endif
+  
+  IF ((ITMP < 0).OR.(ITMP >= REG_SIZE)) THEN
+    write(stderr, *) '  RCL Error: no register at',itmp
+    return
+  endif
+  
+  SELECT CASE (DOMAIN_MODE)
+    CASE (1)
+      CALL PUSH_STACK(REG(ITMP))
+    CASE (2)
+      CALL push_stack(CREG(ITMP))
+    CASE (3)
+      CALL push_stack(RNREG(ITMP),RDREG(ITMP))
+  END SELECT
+
+  PRINT *, REG(ITMP)
+
+case('STO')                                                 ! STO
+  IF (LEN_TRIM(STR) == 3) THEN
+    write(stderr, *) '  STOx requires specifying a integer register x ~ (0..9) to store in.  E.g.  STO6' 
+    return
+  endif
+  
+  READ (STR(4:4), '(I1)', IOSTAT=IERR) ITMP
+  IF (IERR /= 0) THEN
+    write(stderr, *) '  STO Error with register '//str(4:4)
+    return
+  endif
+  
+  IF ((ITMP < 0).OR.(ITMP >= REG_SIZE)) THEN
+    write(stderr, *) '  STO Error: no register at',itmp
+    return
+  endif
+  
+  SELECT CASE (DOMAIN_MODE)
+    CASE (1)
+      REG(ITMP) = STACK(1)
+    CASE (2)
+      CREG(ITMP) = CSTACK(1)
+    CASE (3)
+      RNREG(ITMP) = RNSTACK(1)
+      RDREG(ITMP) = RDSTACK(1)
+  END SELECT
+  
+  PRINT *, REG(ITMP)
+   
+case('ENG')                                                 ! ENG
+  IF (LEN_TRIM(STR) == 3) THEN
+    write(stderr, *) '  ENG Error: must specify # of digits of precision (0..9)'
+    return
+  endif
+  
+  READ(STR(4:4), '(I1)', IOSTAT=IERR) ITMP
+  IF (IERR /= 0) THEN
+    write(stderr, *) '  ENG Error: with # digits: '//str(4:4)
+    return
+  endif
+  
+  DISP_MODE = 3
+  DISP_DIGITS = ITMP
+
+case('FIX')                                                 ! FIX
+  IF (LEN_TRIM(STR) == 3) THEN
+    write(stderr, *) '  FIX Error: must specify # of digits of precision (0..9)'
+    return
+  endif
+  READ (UNIT=STR(4:4), FMT=*, IOSTAT=IERR) ITMP
+  IF (IERR /= 0) THEN
+    write(stderr, *) '  FIX Error: with # digits: '//str(4:4)
+    return
+  endif
+  
+  DISP_MODE = 1
+  DISP_DIGITS = ITMP
+
+case('SCI')                                                 ! SCI
+   IF (LEN_TRIM(STR) == 3) THEN
+      write(stderr, *) '  SCI Error: must specify # of digits of precision (0..9)'
+    return
+  endif
+  READ (UNIT=STR(4:4), FMT=*, IOSTAT=IERR) ITMP
+  IF (IERR /= 0) THEN
+    write(stderr, *) '  SCI Error: with # digits: '//str(4:4)
+    return
+  endif
+  
+  DISP_MODE = 2
+  DISP_DIGITS = ITMP
+  
+case default
+  WRITE(stderr, *) '  Input error:  "'//TRIM(STR)//'"'
+end select
+
+
+end subroutine regops
 
 end module evals
