@@ -123,7 +123,7 @@ contains
       INTEGER I,N,NQ
 !S    REAL
       real(wp)                                                  &
-         AUG,CONV,DEN,PSI,FOUR,FOURTH,HALF,ONE,P1,P2,PIOV4,Q1,Q2,       &
+         AUG,DEN,PSI,FOUR,FOURTH,HALF,ONE,P1,P2,PIOV4,Q1,Q2,       &
          SGN,THREE,XLARGE,UPPER,W,X,XINF,XMAX1,XMIN1,XSMALL,X01,        &
          X01D,X02,XX,Z,ZERO
       DIMENSION P1(9),P2(7),Q1(8),Q2(6)

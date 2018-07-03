@@ -126,46 +126,40 @@ END SUBROUTINE RDROP_STACK
 SUBROUTINE PRINTX_r(X, NUMSTR)
 
 real(wp), INTENT(IN) :: X
-CHARACTER(LEN=100), INTENT(OUT) :: NUMSTR
+CHARACTER(100), INTENT(OUT) :: NUMSTR
 
 real(wp) :: TMPX
-CHARACTER(LEN=100) :: FMTSTR
+CHARACTER(9) :: F1, F2, F3
+character(1) :: F
+
+write(F,'(I1)') DISP_DIGITS
+F1 ='(4F15.'//F//')' 
+F2 = '(5ES15.'//F//')'
+F3 = '(5EN15.'//F//')'
 
 IF (BASE_MODE == 10) THEN                                                   ! DEC mode
    SELECT CASE (DISP_MODE)
       CASE (1)                                                                ! print X (FIX)
-         WRITE (UNIT=FMTSTR, FMT='(1H(,4HF15.,I0,1H))') DISP_DIGITS
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
-         IF (INDEX(NUMSTR,'*') /= 0) THEN                                   !   disp. overflow
-            WRITE (UNIT=FMTSTR, FMT='(1H(,5HES15.,I0,1H))') DISP_DIGITS
-            WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
-         END IF
-         READ (UNIT=NUMSTR, FMT=*) TMPX
-         IF (.not.isclose(x, 0._wp) .AND. isclose(TMPX,0._wp)) THEN                     !   disp. underflow
-            WRITE (UNIT=FMTSTR, FMT='(1H(,5HES15.,I0,1H))') DISP_DIGITS
-            WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
-         END IF
+         WRITE (NUMSTR, F1) X
+         IF (INDEX(NUMSTR,'*') /= 0)  WRITE(NUMSTR, F2) X
+         
+         READ (NUMSTR, *) TMPX
+         IF (.not.isclose(x, 0._wp) .AND. isclose(TMPX,0._wp)) WRITE (NUMSTR, F2) X      !   disp. underflow          
       CASE (2)                                                                ! print X (SCI)
-         WRITE (UNIT=FMTSTR, FMT='(1H(,5HES15.,I0,1H))') DISP_DIGITS
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
+         WRITE (NUMSTR, F2) X
       CASE (3)                                                                ! print X (ENG)
-         WRITE (UNIT=FMTSTR, FMT='(1H(,5HEN15.,I0,1H))') DISP_DIGITS
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
+         WRITE (NUMSTR, F3) X
       CASE (4)                                                                ! print X (ALL)
-         WRITE (UNIT=FMTSTR, FMT='(A)') '(1PG23.15)'
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) X
+         WRITE (NUMSTR, '(1PG23.15)') X
    END SELECT
 ELSE
    SELECT CASE (BASE_MODE)
-      CASE (2)                                                                ! print X (BIN)
-         WRITE (UNIT=FMTSTR, FMT='(A)') '(B0)'
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) INT(X)
+      CASE (2)                                                                ! print X (BIN) 
+         WRITE (NUMSTR, '(B0)') INT(X)
       CASE (8)                                                                ! print X (OCT)
-         WRITE (UNIT=FMTSTR, FMT='(A)') '(O0)'
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) INT(X)
+         WRITE (NUMSTR, '(O0)') INT(X)
       CASE (16)                                                               ! print X (HEX)
-         WRITE (UNIT=FMTSTR, FMT='(A)') '(Z0)'
-         WRITE (UNIT=NUMSTR, FMT=FMTSTR) INT(X)
+         WRITE (NUMSTR, '(Z0)') INT(X)
    END SELECT
 END IF
 
@@ -189,29 +183,29 @@ END SUBROUTINE PRINTX_r
          SELECT CASE (DISP_MODE)
             CASE (1)                                                                ! print X (FIX)
                WRITE (UNIT=FMTSTR, FMT=800) DISP_DIGITS, DISP_DIGITS
-  800          FORMAT ("(ES25.",I0,",SP,4X,F25.",I0,",2H i)")
+  800          FORMAT ("(ES25.",I0,",SP,4X,F25.",I0,")")
                WRITE (UNIT=NUMSTR, FMT=FMTSTR) REAL(X, WP), AIMAG(X)
                IF (INDEX(NUMSTR,'*') /= 0) THEN                                   !   disp. overflow
                   WRITE (UNIT=FMTSTR, FMT=810)  DISP_DIGITS, DISP_DIGITS
-  810             FORMAT ("(EN25.",I0,",SP,4X,ES25.",I0,",2H i)")
+  810             FORMAT ("(EN25.",I0,",SP,4X,ES25.",I0,")")
                   WRITE (UNIT=NUMSTR, FMT=FMTSTR) REAL(X, WP), AIMAG(X)
                END IF
                READ (UNIT=NUMSTR, FMT=*) TMPX
                IF (.not.isclose(x, C0) .AND. isclose(TMPX, C0)) THEN                     !   disp. underflow
                   WRITE (UNIT=FMTSTR, FMT=820) DISP_DIGITS, DISP_DIGITS
-  820             FORMAT ("(EN25.",I0,",SP,4X,ES25.",I0,",2H i)")
+  820             FORMAT ("(EN25.",I0,",SP,4X,ES25.",I0,")")
                   WRITE (UNIT=NUMSTR, FMT=FMTSTR) REAL(X, WP), AIMAG(X)
                END IF
             CASE (2)                                                                ! print X (SCI)
                WRITE (UNIT=FMTSTR, FMT=830) DISP_DIGITS, DISP_DIGITS
-  830          FORMAT ("(ES25.",I0,",SP,4X,ES25.",I0,",2H i)")
+  830          FORMAT ("(ES25.",I0,",SP,4X,ES25.",I0,")")
                WRITE (UNIT=NUMSTR, FMT=FMTSTR) REAL(X, WP), AIMAG(X)
             CASE (3)                                                                ! print X (ENG)
                WRITE (UNIT=FMTSTR, FMT=840) DISP_DIGITS, DISP_DIGITS
-  840          FORMAT ("(EN25.",I0,",SP,4X,ES25.",I0,",2H i)")
+  840          FORMAT ("(EN25.",I0,",SP,4X,ES25.",I0,")")
                WRITE (UNIT=NUMSTR, FMT=FMTSTR) REAL(X, WP), AIMAG(X)
-            CASE (4)                                                                ! print X (ALL)
-               WRITE (UNIT=FMTSTR, FMT='(A)') '(1PG23.15,SP,4X,G23.15,2H i)'
+            CASE (4)                                                            ! print X (ALL)
+               WRITE (UNIT=FMTSTR, FMT='(A)') '(1PG23.15,SP,4X,G23.15)'
                WRITE (UNIT=NUMSTR, FMT=FMTSTR) REAL(X, WP), AIMAG(X)
          END SELECT
       ELSE
@@ -254,10 +248,10 @@ SELECT CASE (BASE_MODE)
       ELSE
          SELECT CASE (FRACTION_MODE)
             CASE (1)
-               WRITE (UNIT=NUMSTR, FMT='(B0,3H / ,B0)') RN, RD
+               WRITE (UNIT=NUMSTR, FMT='(B0,A3,B0)') RN,' / ', RD
             CASE (2)
                CALL FRAC_TO_MIXED (RN, RD, A1, A2, A3)
-               WRITE (UNIT=NUMSTR, FMT='(B0,3X,B0,3H / ,B0)') A1, A2, A3
+               WRITE (UNIT=NUMSTR, FMT='(B0,3X,B0,A3,B0)') A1, A2,' / ', A3
          END SELECT
       END IF
    CASE (8)                                                                   ! print X (OCT)
@@ -266,10 +260,10 @@ SELECT CASE (BASE_MODE)
       ELSE
          SELECT CASE (FRACTION_MODE)
             CASE (1)
-               WRITE (UNIT=NUMSTR, FMT='(O0,3H / ,O0)') RN, RD
+               WRITE (UNIT=NUMSTR, FMT='(O0,A3,O0)') RN, ' / ',RD
             CASE (2)
                CALL FRAC_TO_MIXED (RN, RD, A1, A2, A3)
-               WRITE (UNIT=NUMSTR, FMT='(O0,3X,O0,3H / ,O0)') A1, A2, A3
+               WRITE (UNIT=NUMSTR, FMT='(O0,3X,O0,A3,O0)') A1, A2, ' / ', A3
          END SELECT
       END IF
    CASE (10)                                                                  ! print X (DEC)
@@ -278,10 +272,10 @@ SELECT CASE (BASE_MODE)
       ELSE
          SELECT CASE (FRACTION_MODE)
             CASE (1)
-               WRITE (UNIT=NUMSTR, FMT='(I0,3H / ,I0)') RN, RD
+               WRITE (UNIT=NUMSTR, FMT='(I0,A3,I0)') RN,' / ', RD
             CASE (2)
                CALL FRAC_TO_MIXED (RN, RD, A1, A2, A3)
-               WRITE (UNIT=NUMSTR, FMT='(I0,3X,I0,3H / ,I0)') A1, A2, A3
+               WRITE (UNIT=NUMSTR, FMT='(I0,3X,I0,A3,I0)') A1, A2,' / ', A3
          END SELECT
       END IF
    CASE (16)                                                                  ! print X (HEX)
@@ -290,10 +284,10 @@ SELECT CASE (BASE_MODE)
       ELSE
          SELECT CASE (FRACTION_MODE)
             CASE (1)
-               WRITE (UNIT=NUMSTR, FMT='(Z0,3H / ,Z0)') RN, RD
+               WRITE (UNIT=NUMSTR, FMT='(Z0,A3,Z0)') RN,' / ', RD
             CASE (2)
                CALL FRAC_TO_MIXED (RN, RD, A1, A2, A3)
-               WRITE (UNIT=NUMSTR, FMT='(Z0,3X,Z0,3H / ,Z0)') A1, A2, A3
+               WRITE (UNIT=NUMSTR, FMT='(Z0,3X,Z0,A3,Z0)') A1, A2,' / ', A3
          END SELECT
       END IF
 !         CASE (16)                                                                  ! print X (HEX)

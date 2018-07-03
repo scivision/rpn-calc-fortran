@@ -1,6 +1,7 @@
 module rat
 
-use assert, only: wp
+use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
+use assert, only: wp, isclose
 
 implicit none
 
@@ -77,7 +78,7 @@ END FUNCTION ISHEX
 
       CHARACTER(LEN=*), INTENT(IN) :: STR
       real(wp), INTENT(OUT) :: X
-      INTEGER :: I, IERR, ITMP, DPIDX, EIDX, TMPIDX, LENSTR
+      INTEGER :: I, IERR, ITMP, LENSTR
       LOGICAL :: DPFOUND, EFOUND
       CHARACTER :: CH
 
@@ -238,7 +239,7 @@ END FUNCTION ISHEX
       CHARACTER(LEN=*), INTENT(IN) :: STR
       COMPLEX(wp), INTENT(OUT) :: X
       LOGICAL :: NUM_FLAG
-      INTEGER :: I, IERRR, IERRI, DPIDX, EIDX, TMPIDX, LENSTR, COMMAIDX
+      INTEGER :: I, IERRR, IERRI, LENSTR, COMMAIDX
       INTEGER :: IXR, IXI
       real(wp) :: XR, XI
       LOGICAL :: DPFOUND, EFOUND, COMMAFOUND
@@ -626,17 +627,15 @@ SUBROUTINE SWITCH_RAT_TO_REAL
 
 USE GLOBAL
 
-INTEGER :: I
-
 DOMAIN_MODE = 1
 
-DO I = 1, STACK_SIZE
-   STACK(I) = DBLE(RNSTACK(I))/DBLE(RDSTACK(I))
-END DO
+where(rdstack /= 0)
+  STACK = real(RNSTACK, wp) / real(RDSTACK, wp)
+elsewhere
+  stack = 0._wp
+endwhere
 
-DO I = 0, REG_SIZE-1
-   REG(I) = DBLE(RNREG(I))/DBLE(RDREG(I))
-END DO
+reg = real(RNREG, wp) / real(RDREG, wp)
 
 LASTX = DBLE(RNLASTX)/DBLE(RDLASTX)
 
@@ -878,8 +877,6 @@ END SUBROUTINE RDIV
 
       SUBROUTINE DEC_TO_FRAC (X, NUM, DEN, TOL)
 
-      IMPLICIT NONE
-
       real(wp), INTENT(IN) :: X
       INTEGER, INTENT(OUT) :: NUM, DEN
       real(wp), INTENT(IN), OPTIONAL :: TOL
@@ -889,9 +886,14 @@ END SUBROUTINE RDIV
       INTEGER :: N1, N2, D1, D2
       LOGICAL :: SGN
 
-!
+      if (isclose(x, 0._wp)) then
+        num = 0
+        den = 1
+        return
+      endif
+
 !     Set a default value for TOL if TOL was not provided.
-!
+
 
       IF (PRESENT(TOL)) THEN
          TOL1 = TOL
@@ -904,7 +906,7 @@ END SUBROUTINE RDIV
 !
 
       NU = X                                                                        ! make a local copy of X
-      SGN = NU .LT. 0.0D0                                                           ! save sign
+      SGN = NU < 0._wp                                                           ! save sign
       NU = ABS(NU)                                                                  ! remove sign from X
 
 !
