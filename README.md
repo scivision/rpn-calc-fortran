@@ -45,7 +45,7 @@ To exit the program, type:
     q
 
 ### set stack size
-The default stack size is 4.
+The default stack size is 4, and may be betweeen 2..99 levels.
 Set the stack size at runtime, say 25 by:
 
     rpncalc 25

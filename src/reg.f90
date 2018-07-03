@@ -45,6 +45,8 @@ stack_size = 4  ! default
 call get_command_argument(1, argv, status=i)
 if (i==0) read(argv,'(I2)') stack_size
 
+if (stack_size < 2) stack_size=2  ! doesn't make sense to have only 1 level
+
 allocate(stack(stack_size), cstack(stack_size), rdstack(stack_size), rnstack(stack_size))
 
 end subroutine init_stack
