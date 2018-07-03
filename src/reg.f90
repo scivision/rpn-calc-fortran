@@ -41,7 +41,7 @@ subroutine init_stack()
 integer :: i
 character(16) :: argv
 
-stack_size=4  ! default
+stack_size = 4  ! default
 call get_command_argument(1, argv, status=i)
 if (i==0) read(argv,'(I2)') stack_size
 

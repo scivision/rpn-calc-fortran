@@ -12,7 +12,8 @@
       use, intrinsic:: iso_fortran_env, only: stdout=>output_unit, stdin=>input_unit
       USE GLOBAL
       use funcs, only:  isrational, isreal, iscomplex, toUpper
-      use ui, only: printx, eval, push_stack
+      use stackops, only: printx, push_stack
+      use evals, only: eval
       IMPLICIT NONE
 
       real(wp), PARAMETER :: PI = 4._wp * atan(1._wp)

@@ -4,7 +4,7 @@ enable_testing()
 
 list(APPEND FFLAGS -g -O3)
 
-add_executable(rpncalc ui.f90 calc.f90)
+add_executable(rpncalc eval.f90 ui.f90 calc.f90)
 target_link_libraries(rpncalc PRIVATE reg funcs)
 target_compile_options(rpncalc PRIVATE ${FFLAGS})
 
