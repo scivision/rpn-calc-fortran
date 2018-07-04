@@ -4,7 +4,8 @@
 # RPN Reverse Polish Notation Calculator -- in Fortran
 
 The `funcs.90` module provides over 100 elemental functions not found in Fortran instrinsics.
-A Fortran 2008 compiler is required such as `gfortran` or `ifort`.
+A basically Fortran 2008/2018 compatible compiler is required such as `gfortran` or `ifort`.
+Fortran 2008 compliance is a must.
 
 Specifically, RPNcalc is covered by continuous integration and testing on Linux, Mac and Windows, including:
 * Gfortran 5, 6, 7, 8 
@@ -16,7 +17,7 @@ Default size is 4.
 
 #### Authors
 * Fortran 77 code: David G. Simpson
-* Fortran 2008 code: Michael Hirsch
+* Fortran 2018 code: Michael Hirsch
 
 ## Build
 
@@ -61,7 +62,7 @@ Show what modes the calculator is in with:
     
     
 ### Modes
-The Fortran 2008 RPN calculator has 3 operating modes.
+The Fortran 2018 RPN calculator has 3 operating modes.
 The default mode is REAL
 
     COMPLEX     COMPLEX mode
@@ -418,6 +419,6 @@ Many functions not commonly found in RPN calculators are included:
     
 ## Notes
 
-Due to lack of basic Fortran 2008 support, the following compilers do NOT yet work:
+Due to lack of basic Fortran 2008/2018 support, the following compilers do NOT yet work:
 * Flang 5.0
 * PGI 2018

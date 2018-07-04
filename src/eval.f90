@@ -73,6 +73,7 @@ IF (LEN_TRIM(STR) == 0) return
 select case(str)
 
 case('HELP')
+  call eval('VER')
   call eval('MODES')
   call eval('PS')
   call eval('PR')
@@ -3581,7 +3582,7 @@ case('TIME')                                               ! TIME
    print '(A,I2.2,A1,I2.2,A1,I2.2)', '  Time:  ', HOUR, ':', MINUTE, ':', SECOND
 
 case('VER')                                                ! VER
-   print *, 'Fortran 2008  RPN Calculator.  Version '//VERSION
+   print *, 'Fortran 2018  RPN Calculator.  Version '//VERSION
 
 case('VERS')                                               ! VERS
    SELECT CASE (DOMAIN_MODE)

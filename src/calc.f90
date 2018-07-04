@@ -1,4 +1,4 @@
-! main program for Fortran 2008 RPN calculator
+! main program for Fortran 2018 RPN calculator
 
 !---- (historical notes) -----------
 !  Programmer:   David G. Simpson
@@ -26,7 +26,7 @@ CHARACTER(100) :: NUMSTR
 LOGICAL :: NUM_FLAG = .false.
 
 
-print *, 'Fortran 2008  RPN Calculator, Version '//VERSION
+print *, 'Fortran 2018  RPN Calculator, Version '//VERSION
 
 !     Initialize data.
 
