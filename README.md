@@ -43,6 +43,10 @@ For example:
 To exit the program, type: 
   
     q
+    
+To get a brief help:
+
+    help
 
 ### set stack size
 The default stack size is 4, and may be betweeen 2..99 levels.
