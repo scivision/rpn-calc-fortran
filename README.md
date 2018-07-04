@@ -6,8 +6,8 @@
 The `funcs.90` module provides over 100 elemental functions not found in Fortran instrinsics.
 A Fortran 2008 compiler is required such as `gfortran` or `ifort`.
 
-Specifically, RPNcalc has been tested on Linux, Mac and Windows, including:
-* Gfortran 6, 7, 8 
+Specifically, RPNcalc is covered by continuous integration and testing on Linux, Mac and Windows, including:
+* Gfortran 5, 6, 7, 8 
 * ifort 2019
 
 The stack size is set by the user with command line option. 
