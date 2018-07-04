@@ -5,8 +5,9 @@ os:
   - linux
   - osx
 
-env: FC=gfortran-6
+env: FC=gfortran-5
 
+dist: xenial
 group: travis_latest
 
 git:
@@ -14,8 +15,7 @@ git:
 
 addons:
   apt:
-    sources: ubuntu-toolchain-r-test
-    packages: gfortran-6
+    packages: gfortran-5
     
 before_install:
   - mkdir -p ~/.local/bin

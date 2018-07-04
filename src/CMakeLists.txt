@@ -14,21 +14,19 @@ if(${CMAKE_Fortran_COMPILER_ID} STREQUAL GNU)
   -fexceptions -ffpe-trap=invalid,zero,overflow
   -finit-real=nan -Wconversion -fimplicit-none) #-Warray-temporaries
   
-  if (NOT CYGWIN AND NOT WIN32)
+  if (UNIX AND NOT APPLE)
     list(APPEND FFLAGS -fstack-protector-all)
   endif()
 
   if(${CMAKE_Fortran_COMPILER_VERSION} VERSION_GREATER_EQUAL 8.1)
-    list(APPEND FFLAGS -std=f2018)
-  else()
-    list(APPEND FFLAGS -std=f2008ts)
+    #list(APPEND FFLAGS -std=f2018)
   endif()
   
 elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
   list(APPEND FFLAGS -warn -fpe0 -traceback)# -debug extended -check all)
 endif()
 
-add_executable(rpncalc eval.f90 ui.f90 calc.f90)
+add_executable(rpncalc help.f90 eval.f90 ui.f90 calc.f90)
 target_link_libraries(rpncalc PRIVATE reg funcs)
 target_compile_options(rpncalc PRIVATE ${FFLAGS})
 
@@ -62,3 +60,9 @@ endif()
 
 install(TARGETS rpncalc
         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+        
+# Fortran does not have a sense of where it's executing from...
+#install(FILES ${PROJECT_SOURCE_DIR}/../README.md
+#        DESTINATION ${CMAKE_INSTALL_PREFIX}/../share/doc
+#        PERMISSIONS OWNER_READ
+#        RENAME help_rpncalc.txt)

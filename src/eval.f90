@@ -4,6 +4,7 @@ use global
 use funcs
 use stackops
 use assert, only: wp, isclose
+use help, only: print_help
 
 implicit none
 private
@@ -22,7 +23,7 @@ contains
 !  Evaluate a operation.
 !***********************************************************************************************************************************
 
-SUBROUTINE EVAL (STR)
+recursive SUBROUTINE EVAL (STR)
 
 CHARACTER(*), INTENT(IN) :: STR
 
@@ -71,21 +72,21 @@ IF (LEN_TRIM(STR) == 0) return
 
 select case(str)
 
+case('HELP')
+  call eval('MODES')
+  call eval('PS')
+  call eval('PR')
+  call print_help()
 case('+')                                                  ! +
   call add(domain_mode)
-  
 case('-')                                                  ! -
   call subtract(domain_mode)
-  
 case('*')                                                  ! *
   call multiply(domain_mode)
-
 case('/')                                                  ! /
   call divide(domain_mode)
-
 case('^')                                                  ! ^
   call power(domain_mode)
-
 case('\')                                                  ! \
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
