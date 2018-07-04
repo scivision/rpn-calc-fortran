@@ -111,8 +111,8 @@ INTEGER, INTENT(IN) :: N
 RNSTACK(N:stack_size-1) = RNSTACK(N+1:stack_size)
 RDSTACK(N:stack_size-1) = RDSTACK(N+1:stack_size)
 
-RNstack(stack_size) = 0._wp
-RDstack(stack_size) = 0._wp
+RNstack(stack_size) = 0
+RDstack(stack_size) = 0
 
 END SUBROUTINE RDROP_STACK
 
