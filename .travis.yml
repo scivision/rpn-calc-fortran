@@ -1,5 +1,4 @@
 language: c
-fast_finish: true
 sudo: required
 
 os:
@@ -13,16 +12,12 @@ group: travis_latest
 
 git:
   depth: 3
+  quiet: true
 
 addons:
   apt:
     packages: gfortran-5
     
-before_install:
-  - mkdir -p ~/.local/bin
-  - ln -s /usr/bin/gfortran-6 ~/.local/bin/gfortran
-  - export PATH="$HOME/.local/bin/:$PATH"
-
 before_install:
   - if [[ $TRAVIS_OS_NAME == osx ]]; then
       brew update > /dev/null;
