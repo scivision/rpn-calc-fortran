@@ -367,7 +367,7 @@ COMPLEX(wp), INTENT(IN) :: Z
 
 
 IF (isclose(z, c0)) THEN
-   Y = (1._wp,0.0D0)
+   Y = (1._wp,0._wp)
 ELSE
    Y = SINH(Z)/Z
 END IF
@@ -517,9 +517,6 @@ SUM = SUM+(FN**NEGS)*(0.5D00+FN/(S-1.0D00) &
 riemannZETA = SUM
 
 END FUNCTION RIEMANNZETA
-
-
-
 
 
 
@@ -683,7 +680,8 @@ elemental function toLower(str)
 
   toLower = str
 
-  do concurrent (i = 1:len(str))
+  !do concurrent (i = 1:len(str)) ! FIXME: Flang
+  do i=1,len(str)
     j = index(upper,str(i:i))
     if (j > 0) toLower(i:i) = lower(j:j)
   end do
@@ -702,7 +700,8 @@ elemental function toUpper(str)
 
   toUpper = str
 
-  do concurrent (i = 1:len(str))
+  !do concurrent (i = 1:len(str))  ! FIXME: Flang
+  do i = 1,len(str)
     j = index(lower,str(i:i))
     if (j > 0) toUpper(i:i) = upper(j:j)
   end do

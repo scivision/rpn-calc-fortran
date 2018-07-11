@@ -329,11 +329,9 @@ END FUNCTION CCOVERS
 !***********************************************************************************************************************************
 
 elemental real(wp) FUNCTION ACOVERS (Y) RESULT (X)
-
 real(wp), INTENT (IN) :: Y
 
 X = ASIN(1._wp - Y)
-
 END FUNCTION ACOVERS
 
 
@@ -347,11 +345,9 @@ END FUNCTION ACOVERS
 !***********************************************************************************************************************************
 
 elemental complex(wp) FUNCTION CACOVERS (Y) RESULT (X)
-
 COMPLEX(wp), INTENT (IN) :: Y
 
 X = ASIN(1._wp - Y)
-
 END FUNCTION CACOVERS
 
 
@@ -364,14 +360,14 @@ END FUNCTION CACOVERS
 elemental real(wp) FUNCTION HAV_r(X) RESULT (Y)
 real(wp), INTENT (IN) :: X
 
-Y = (SIN(0.5D0*X))**2
+Y = (SIN(0.5_wp*X))**2
 END FUNCTION HAV_r
 
 
 elemental complex(wp) FUNCTION HAV_c(Z) RESULT (Y)
 COMPLEX(wp), INTENT(IN) :: Z
 
-Y = (SIN(0.5D0*Z))**2
+Y = (SIN(0.5_wp*Z))**2
 END FUNCTION HAV_c
 
 

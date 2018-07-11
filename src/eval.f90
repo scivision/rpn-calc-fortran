@@ -88,7 +88,7 @@ case('/')                                                  ! /
   call divide(domain_mode)
 case('^')                                                  ! ^
   call power(domain_mode)
-case('\')                                                  ! \
+case(achar(92))  ! for PGI/Flang     !('\')                                                  ! \
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          IF (isclose(stack(1), 0._wp)) THEN
@@ -375,27 +375,7 @@ case('ACOS')                                               ! ACOS
    END SELECT
 
 case('ACOSH')                                             ! ACOSH
-   SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         IF (STACK(1) < 1._wp) THEN
-            write(stderr, *) '  ACOSH Error'
-         ELSE
-            LASTX = STACK(1)
-            STACK(1) = ACOSH(STACK(1))
-         END IF
-      CASE (2)
-         CLASTX = CSTACK(1)
-         CSTACK(1) = ACOSH(CSTACK(1))
-      CASE (3)
-         IF (RNSTACK(1) < RDSTACK(1)) THEN
-            write(stderr, *) '  ACOSH Error'
-         ELSE
-            CALL SWITCH_RAT_TO_REAL
-            LASTX = STACK(1)
-            STACK(1) = ACOSH(STACK(1))
-         END IF
-   END SELECT
-
+  call hacos(domain_mode)
 case('ACOT')                                               ! ACOT
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -438,7 +418,7 @@ case('ACOTH')                                             ! ACOTH
          END IF
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CACOTH(CSTACK(1))
+         CSTACK(1) = acoth(CSTACK(1))
       CASE (3)
          IF (RNSTACK(1) == 0) THEN
             write(stderr, *) '  ACOTH Error'
@@ -526,7 +506,7 @@ case('ACSCH')                                             ! ACSCH
          END IF
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CACSCH(CSTACK(1))
+         CSTACK(1) = ACSCH(CSTACK(1))
       CASE (3)
          IF (RNSTACK(1) == 0) THEN
             write(stderr, *) '  ACSCH Error'
@@ -667,7 +647,7 @@ case('ASECH')                                             ! ASECH
          END IF
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CASECH(CSTACK(1))
+         CSTACK(1) = ASECH(CSTACK(1))
       CASE (3)
          IF ((RNSTACK(1)<=0).OR.(RNSTACK(1)>RDSTACK(1))) THEN
             write(stderr, *) '  ASECH Error'
@@ -701,19 +681,7 @@ case('ASIN')                                               ! ASIN
    END SELECT
 
 case('ASINH')                                             ! ASINH
-   SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         LASTX = STACK(1)
-         STACK(1) = ASINH(STACK(1))
-      CASE (2)
-         CLASTX = CSTACK(1)
-         CSTACK(1) = ASINH(CSTACK(1))
-      CASE (3)
-         CALL SWITCH_RAT_TO_REAL
-         LASTX = STACK(1)
-         STACK(1) = ASINH(STACK(1))
-   END SELECT
-
+  call hasin(domain_mode)
 case('ATAN')                                               ! ATAN
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -746,27 +714,7 @@ case('ATAN2')                                             ! ATAN2
    END SELECT
 
 case('ATANH')                                             ! ATANH
-   SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         IF (ABS(STACK(1)) >= 1._wp) THEN
-            write(stderr, *) '  ATANH Error'
-         ELSE
-            LASTX = STACK(1)
-            STACK(1) = ATANH(STACK(1))
-         END IF
-      CASE (2)
-         CLASTX = CSTACK(1)
-         CSTACK(1) = ATANH(CSTACK(1))
-      CASE (3)
-         IF (ABS(RNSTACK(1)) >= ABS(RDSTACK(1))) THEN
-            write(stderr, *) '  ATANH Error'
-         ELSE
-            CALL SWITCH_RAT_TO_REAL
-            LASTX = STACK(1)
-            STACK(1) = ATANH(STACK(1))
-         END IF
-   END SELECT
-
+   call hatan(domain_mode)
 case('AU')                                                 ! AU
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -1480,7 +1428,7 @@ case('COTH')                                               ! COTH
          STACK(1) = COTH(STACK(1))
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CCOTH(CSTACK(1))
+         CSTACK(1) = COTH(CSTACK(1))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
@@ -1536,7 +1484,7 @@ case('CSCH')                                               ! CSCH
          STACK(1) = CSCH(STACK(1))
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CCSCH(CSTACK(1))
+         CSTACK(1) = CSCH(CSTACK(1))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
@@ -3060,22 +3008,19 @@ case('REDUCE')                                             ! REDUCE
          TMP = STACK(1)
          CALL DROP_STACK(1)
          LASTX = STACK(1)
-         STACK(1) = REDUCE(STACK(1)*ANGLE_FACTOR,TMP*ANGLE_FACTOR) &
-            / ANGLE_FACTOR
+         STACK(1) = REDUCE(STACK(1)*ANGLE_FACTOR,TMP*ANGLE_FACTOR) / ANGLE_FACTOR
       CASE (2)
          TMP = real(CSTACK(1), wp)
          CALL CDROP_STACK(1)
          CLASTX = CSTACK(1)
-         TMP2 = REDUCE(real(CSTACK(1), wp)*ANGLE_FACTOR,TMP*ANGLE_FACTOR) &
-            / ANGLE_FACTOR
+         TMP2 = REDUCE(real(CSTACK(1), wp)*ANGLE_FACTOR,TMP*ANGLE_FACTOR) / ANGLE_FACTOR
          CSTACK(1) = CMPLX(TMP2, 0._wp, wp)
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          TMP = STACK(1)
          CALL DROP_STACK(1)
          LASTX = STACK(1)
-         STACK(1) = REDUCE(STACK(1)*ANGLE_FACTOR,TMP*ANGLE_FACTOR) &
-            / ANGLE_FACTOR
+         STACK(1) = REDUCE(STACK(1)*ANGLE_FACTOR,TMP*ANGLE_FACTOR) / ANGLE_FACTOR
    END SELECT
 
 case('RESET')                                             ! RESET
@@ -3298,7 +3243,7 @@ case('SECH')                                               ! SECH
          STACK(1) = SECH(STACK(1))
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CSECH(CSTACK(1))
+         CSTACK(1) = SECH(CSTACK(1))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)

@@ -18,13 +18,20 @@ if(${CMAKE_Fortran_COMPILER_ID} STREQUAL GNU)
     list(APPEND FFLAGS -fstack-protector-all)
   endif()
 
-  if(${CMAKE_Fortran_COMPILER_VERSION} VERSION_GREATER_EQUAL 8.1)
-    #list(APPEND FFLAGS -std=f2018)
+  if(${CMAKE_Fortran_COMPILER_VERSION} VERSION_GREATER_EQUAL 8)
+    list(APPEND FFLAGS -std=f2018)
   endif()
   
 elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
   list(APPEND FFLAGS -warn -fpe0 -traceback)# -debug extended -check all)
+elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL Flang)
+  link_libraries(-static-flang-libs)
+  list(APPEND FFLAGS -Mallocatable=03)
+elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL PGI)
+  list(APPEND FFLAGS -Mallocatable=03)
 endif()
+
+set(f08 GNU Intel)
 
 add_executable(rpncalc help.f90 eval.f90 ui.f90 calc.f90)
 target_link_libraries(rpncalc PRIVATE reg funcs)
@@ -34,9 +41,16 @@ add_library(reg reg.f90)
 target_compile_options(reg PRIVATE ${FFLAGS})
 target_link_libraries(reg PRIVATE assert)
 
-add_library(funcs funcs.f90 bessel.f90 trig.f90 rat.f90 hyper.f90 stats.f90 gamma.f90)
+#--- fucntions (usable in other programs too)
+add_library(funcs funcs.f90 bessel.f90 trig.f90 rat.f90 stats.f90 gamma.f90)
 target_link_libraries(funcs PRIVATE assert reg)
 target_compile_options(funcs PRIVATE ${FFLAGS})
+
+if(CMAKE_Fortran_COMPILER_ID IN_LIST f08)
+  target_sources(funcs PRIVATE hyper.f90)
+else()
+  target_sources(funcs PRIVATE hyper2003.f90)
+endif()
 
 #--- tests
 add_executable(testcalc tests/test.f90)
@@ -44,8 +58,16 @@ target_link_libraries(testcalc assert funcs)
 target_compile_options(testcalc PRIVATE ${FFLAGS})
 add_test(NAME RPNfunc COMMAND testcalc)
 
-add_library(assert tests/assert.f90 tests/error2008.f90)
+#--- errors
+add_library(assert tests/assert.f90)
 target_compile_options(assert PRIVATE ${FFLAGS})
+
+if(CMAKE_Fortran_COMPILER_ID IN_LIST f08)
+  target_sources(assert PRIVATE tests/error2008.f90)
+else()
+  target_sources(assert PRIVATE tests/error2003.f90)
+endif()
+
 
 if(UNIX)
   add_test(NAME UIrpn COMMAND bash -c "echo -e '2 5 * \n q' | ./rpncalc")

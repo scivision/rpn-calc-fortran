@@ -68,7 +68,9 @@ END FUNCTION ASECH_r
 elemental complex(wp) FUNCTION ASECH_c(Y) result(asech)
 COMPLEX(wp), INTENT (IN) :: Y
 
-asech = ACOSH(1._wp/Y)
+!asech = ACOSH(1._wp/Y)
+write(stderr,*) 'Complex ASECH() not yet available on your compiler'
+
 END FUNCTION ASECH_c
 
 !***********************************************************************************************************************************
@@ -106,7 +108,9 @@ END FUNCTION ACSCH_r
 elemental complex(wp) FUNCTION ACSCH_c(Y) RESULT (X)
 COMPLEX(wp), INTENT (IN) :: Y
 
-X = ASINH(1._wp/Y)
+!X = ASINH(1._wp/Y)
+write(stderr,*) 'Complex ACSCH() not yet available on your compiler'
+
 END FUNCTION ACSCH_c
 
 
@@ -159,8 +163,9 @@ SELECT CASE (DOMAIN_MODE)
      LASTX = STACK(1)
      STACK(1) = ASINH(STACK(1))
   CASE (2)
-     CLASTX = CSTACK(1)
-     CSTACK(1) = ASINH(CSTACK(1))
+     !CLASTX = CSTACK(1)
+     !CSTACK(1) = ASINH(CSTACK(1))
+     write(stderr,*) 'your compiler  does not yet support complex ASINH'
   CASE (3)
      CALL SWITCH_RAT_TO_REAL
      LASTX = STACK(1)
@@ -182,8 +187,10 @@ integer, intent(in) :: domain_mode
             STACK(1) = ACOSH(STACK(1))
          END IF
       CASE (2)
-         CLASTX = CSTACK(1)
-         CSTACK(1) = ACOSH(CSTACK(1))
+         !CLASTX = CSTACK(1)
+         !CSTACK(1) = ACOSH(CSTACK(1))
+         
+          write(stderr,*) 'your compiler  does not yet support complex ACOSH'
       CASE (3)
          IF (RNSTACK(1) < RDSTACK(1)) THEN
             write(stderr, *) '  ACOSH Error'
@@ -208,9 +215,9 @@ SELECT CASE (DOMAIN_MODE)
         STACK(1) = ATANH(STACK(1))
      END IF
   CASE (2)
-     CLASTX = CSTACK(1)
-     CSTACK(1) = ATANH(CSTACK(1))
-
+     !CLASTX = CSTACK(1)
+     !CSTACK(1) = ATANH(CSTACK(1))
+     write(stderr,*) 'your compiler  does not yet support complex ATANH'
   CASE (3)
      IF (ABS(RNSTACK(1)) >= ABS(RDSTACK(1))) THEN
         write(stderr, *) '  ATANH Error'
