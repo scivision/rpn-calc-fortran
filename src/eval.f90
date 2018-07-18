@@ -58,11 +58,11 @@ real(wp), PARAMETER :: STEFAN = 5.670400D-8                           ! W/m^2 K^
 
 INTEGER :: I, ITMP, ITMP2, NUM, DEN, NUM2, DEN2, NUM3, DEN3, NUM4, DEN4, &
    NUMM, DENM, NUMB, DENB
-real(wp) :: TMP, TMP2, TMP3, TMPM, TMPB, TMPR, BES_X, BES_ALPHA
+real(wp) :: TMP, TMP2, TMP3, TMPM, TMPB, TMPR
 COMPLEX(wp) :: CTMP, CTMPM, CTMPB, CTMPR
 CHARACTER(LEN=2) :: REGNAME
 INTEGER :: DT(8)
-INTEGER :: YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, BES_NB, BES_NCALC
+INTEGER :: YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, NB, NCALC
 CHARACTER(LEN=100) :: NUMSTR
 CHARACTER(LEN=10) :: TIME, DATE, ZONE
 
@@ -254,7 +254,7 @@ case('!!')                                                 ! !!
                ITMP = ITMP - 2
                IF (ITMP <= 1) EXIT
             END DO
-            CSTACK(1) = CMPLX(TMP, 0._wp, wp)
+            CSTACK(1) = CMPLX(TMP, kind=wp)
          END IF
       CASE (3)
          IF (RNSTACK(1) < 0) THEN
@@ -299,7 +299,7 @@ case('2PI')                                                ! 2PI
       CASE (1)
          CALL PUSH_STACK(2*pi)
       CASE (2)
-         CALL PUSH_STACK(CMPLX(2*pi, 0._wp, wp))
+         CALL PUSH_STACK(CMPLX(2*pi, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK(2*pi)
@@ -331,7 +331,7 @@ case('A0')                                                 ! A0
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
       CASE (2)
-         CALL push_stack(CMPLX(A0, 0._wp, wp))
+         CALL push_stack(CMPLX(A0, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (A0)
@@ -344,7 +344,7 @@ case('ABS')                                                ! ABS
          STACK(1) = ABS(STACK(1))
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CMPLX(ABS(CSTACK(1)), 0._wp, wp)
+         CSTACK(1) = CMPLX(ABS(CSTACK(1)), kind=wp)
       CASE (3)
          RNLASTX = RNSTACK(1)
          RDLASTX = RDSTACK(1)
@@ -376,6 +376,7 @@ case('ACOS')                                               ! ACOS
 
 case('ACOSH')                                             ! ACOSH
   call hacos(domain_mode)
+  
 case('ACOT')                                               ! ACOT
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -569,7 +570,7 @@ case('AMU')                                                ! AMU
       CASE (1)
          CALL PUSH_STACK (AMU)
       CASE (2)
-         CALL push_stack(CMPLX(AMU, 0._wp, wp))
+         CALL push_stack(CMPLX(AMU, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (AMU)
@@ -605,7 +606,7 @@ case('ARG')                                                ! ARG
       CASE (2)
          TMP = ATAN2(AIMAG(CSTACK(1)),real(CSTACK(1), wp))/ANGLE_FACTOR
          CLASTX = CSTACK(1)
-         CSTACK(1) = CMPLX(TMP, 0._wp, wp)
+         CSTACK(1) = CMPLX(TMP, kind=wp)
       CASE (3)
          RNLASTX = RNSTACK(1)
          RDLASTX = RDSTACK(1)
@@ -720,7 +721,7 @@ case('AU')                                                 ! AU
       CASE (1)
          CALL PUSH_STACK (AU)
       CASE (2)
-         CALL push_stack(CMPLX(AU, 0._wp, wp))
+         CALL push_stack(CMPLX(AU, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (AU)
@@ -761,86 +762,56 @@ case('BESSELJ0')                                           ! BESSELJ0
          STACK(1) = bessel_j0(STACK(1))
    END SELECT
 
-case('BESSELJ1')                                           ! BESSELJ1
+case('BESSELJ1')
+  associate(x=>stack(1))
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         LASTX = STACK(1)
-         STACK(1) = bessel_j1(STACK(1))
+         LASTX = x
+         x = bessel_j1(x)
       CASE (2)
          write(stderr, *) '  Error:  BESSELJ1 not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         LASTX = STACK(1)
-         STACK(1) = bessel_j1(STACK(1))
+         LASTX = x
+         x = bessel_j1(x)
    END SELECT
-
-case('BESSELJ')                                            ! BESSELJ
+  end associate
+  
+case('BESSELJ1P')
+  associate(x=>stack(1))
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
-            write(stderr, *) '  BESSELJ Error 1'
-         ELSE
-            BES_X = STACK(1)
-            BES_NB = INT(STACK(2)) + 1
-            BES_ALPHA = FRAC(STACK(2))
-            ALLOCATE (BES_B(BES_NB))
-            CALL RJBESL(BES_X, BES_ALPHA, BES_NB, BES_B, BES_NCALC)
-            IF (BES_NCALC < 0) THEN
-               write(stderr, *) '  BESSELJ Error 2'
-            ELSE IF (BES_NCALC /= BES_NB) THEN
-               write(stderr, *) '  BESSELJ Error 3'
-            ELSE
-               LASTX = STACK(1)
-               STACK(1) = BES_B(BES_NB)
-               CALL DROP_STACK(2)
-            END IF
-            DEALLOCATE (BES_B)
-         END IF
+         LASTX = x
+         x = bessel_j0(x) - 1 / x * bessel_j1(x)
+      CASE (2)
+         write(stderr, *) " Error:  BESSELJ0' not available in COMPLEX mode."
+      CASE (3)
+         CALL SWITCH_RAT_TO_REAL
+         LASTX = x
+         x = bessel_j0(x) - 1 / x * bessel_j1(x)
+   END SELECT
+  end associate
+  
+case('BESSELJ')
+   SELECT CASE (DOMAIN_MODE)
+      CASE (1)
+         call bsj()
       CASE (2)
          write(stderr, *) '  Error:  BESSELJ not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
-            write(stderr, *) '  BESSELJ Error 1'
-         ELSE
-            BES_X = STACK(1)
-            BES_NB = INT(STACK(2)) + 1
-            BES_ALPHA = FRAC(STACK(2))
-            ALLOCATE (BES_B(BES_NB))
-            CALL RJBESL(BES_X, BES_ALPHA, BES_NB, BES_B, BES_NCALC)
-            IF (BES_NCALC < 0) THEN
-               write(stderr, *) '  BESSELJ Error 2'
-            ELSE IF (BES_NCALC /= BES_NB) THEN
-               write(stderr, *) '  BESSELJ Error 3'
-            ELSE
-               LASTX = STACK(1)
-               STACK(1) = BES_B(BES_NB)
-               CALL DROP_STACK(2)
-            END IF
-            DEALLOCATE (BES_B)
-         END IF
+         call bsj()
    END SELECT
 
 case('BESSELY0')                                           ! BESSELY0
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) <= 0._wp) THEN
-            write(stderr, *) '  BESSELY0 Error'
-         ELSE
-            LASTX = STACK(1)
-            STACK(1) = bessel_y0(STACK(1))
-         END IF
+         call bsy0()
       CASE (2)
-         write(stderr, *) '  Error:  BESSELY0 not available '// &
-            'in COMPLEX mode.'
+         write(stderr, *) '  Error:  BESSELY0 not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF (STACK(1) <= 0._wp) THEN
-            write(stderr, *) '  BESSELY0 Error'
-         ELSE
-            LASTX = STACK(1)
-            STACK(1) = bessel_y0(STACK(1))
-         END IF
+         call bsy0()
    END SELECT
 
 case('BESSELY1')                                           ! BESSELY1
@@ -853,8 +824,7 @@ case('BESSELY1')                                           ! BESSELY1
             STACK(1) = bessel_y1(STACK(1))
          END IF
       CASE (2)
-         write(stderr, *) '  Error:  BESSELY1 not available '// &
-            'in COMPLEX mode.'
+         write(stderr, *) '  Error:  BESSELY1 not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          IF (STACK(1) <= 0._wp) THEN
@@ -871,18 +841,16 @@ case('BESSELY')                                            ! BESSELY
          IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
             write(stderr, *) '  BESSELY Error 1'
          ELSE
-            BES_X = STACK(1)
-            BES_NB = INT(STACK(2)) + 1
-            BES_ALPHA = FRAC(STACK(2))
-            ALLOCATE (BES_B(BES_NB))
-            CALL RYBESL(BES_X, BES_ALPHA, BES_NB, BES_B, BES_NCALC)
-            IF (BES_NCALC < 0) THEN
+            NB = INT(STACK(2)) + 1
+            ALLOCATE (BES_B(NB))
+            CALL RYBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, BY=BES_B, NCALC=NCALC)
+            IF (NCALC < 0) THEN
                write(stderr, *) '  BESSELY Error 2'
-            ELSE IF (BES_NCALC /= BES_NB) THEN
+            ELSE IF (NCALC /= NB) THEN
                write(stderr, *) '  BESSELY Error 3'
             ELSE
                LASTX = STACK(1)
-               STACK(1) = BES_B(BES_NB)
+               STACK(1) = BES_B(NB)
                CALL DROP_STACK(2)
             END IF
             DEALLOCATE (BES_B)
@@ -895,18 +863,16 @@ case('BESSELY')                                            ! BESSELY
          IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
             write(stderr, *) '  BESSELY Error 1'
          ELSE
-            BES_X = STACK(1)
-            BES_NB = INT(STACK(2)) + 1
-            BES_ALPHA = FRAC(STACK(2))
-            ALLOCATE (BES_B(BES_NB))
-            CALL RYBESL(BES_X, BES_ALPHA, BES_NB, BES_B, BES_NCALC)
-            IF (BES_NCALC < 0) THEN
+            NB = INT(STACK(2)) + 1
+            ALLOCATE (BES_B(NB))
+            CALL RYBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, BY=BES_B, NCALC=NCALC)
+            IF (NCALC < 0) THEN
                write(stderr, *) '  BESSELY Error 2'
-            ELSE IF (BES_NCALC /= BES_NB) THEN
+            ELSE IF (NCALC /= NB) THEN
                write(stderr, *) '  BESSELY Error 3'
             ELSE
                LASTX = STACK(1)
-               STACK(1) = BES_B(BES_NB)
+               STACK(1) = BES_B(NB)
                CALL DROP_STACK(2)
             END IF
             DEALLOCATE (BES_B)
@@ -945,18 +911,16 @@ case('BESSELI')                                            ! BESSELI
          IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
             write(stderr, *) '  BESSELI Error 1'
          ELSE
-            BES_X = STACK(1)
-            BES_NB = INT(STACK(2)) + 1
-            BES_ALPHA = FRAC(STACK(2))
-            ALLOCATE (BES_B(BES_NB))
-            CALL RIBESL(BES_X, BES_ALPHA, BES_NB, 1, BES_B, BES_NCALC)
-            IF (BES_NCALC < 0) THEN
+            NB = INT(STACK(2)) + 1
+            ALLOCATE (BES_B(NB))
+            CALL RIBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, IZE=1, B=BES_B, NCALC=NCALC)
+            IF (NCALC < 0) THEN
                write(stderr, *) '  BESSELI Error 2'
-            ELSE IF (BES_NCALC /= BES_NB) THEN
+            ELSE IF (NCALC /= NB) THEN
                write(stderr, *) '  BESSELI Error 3'
             ELSE
                LASTX = STACK(1)
-               STACK(1) = BES_B(BES_NB)
+               STACK(1) = BES_B(NB)
                CALL DROP_STACK(2)
             END IF
             DEALLOCATE (BES_B)
@@ -968,18 +932,16 @@ case('BESSELI')                                            ! BESSELI
          IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
             write(stderr, *) '  BESSELI Error 1'
          ELSE
-            BES_X = STACK(1)
-            BES_NB = INT(STACK(2)) + 1
-            BES_ALPHA = FRAC(STACK(2))
-            ALLOCATE (BES_B(BES_NB))
-            CALL RIBESL(BES_X, BES_ALPHA, BES_NB, 1, BES_B, BES_NCALC)
-            IF (BES_NCALC < 0) THEN
+            NB = INT(STACK(2)) + 1
+            ALLOCATE (BES_B(NB))
+            CALL RIBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, IZE=1, B=BES_B, NCALC=NCALC)
+            IF (NCALC < 0) THEN
                write(stderr, *) '  BESSELI Error 2'
-            ELSE IF (BES_NCALC /= BES_NB) THEN
+            ELSE IF (NCALC /= NB) THEN
                write(stderr, *) '  BESSELI Error 3'
             ELSE
                LASTX = STACK(1)
-               STACK(1) = BES_B(BES_NB)
+               STACK(1) = BES_B(NB)
                CALL DROP_STACK(2)
             END IF
             DEALLOCATE (BES_B)
@@ -1034,20 +996,18 @@ case('BESSELK')                                            ! BESSELK
          IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
             write(stderr, *) '  BESSELK Error 1'
          ELSE
-            BES_X = STACK(1)
-            BES_NB = INT(STACK(2)) + 1
-            BES_ALPHA = FRAC(STACK(2))
-            ALLOCATE (BES_B(BES_NB))
-            CALL RKBESL(BES_X, BES_ALPHA, BES_NB, 1, BES_B, BES_NCALC)
-            IF (BES_NCALC < -1) THEN
+            NB = INT(STACK(2)) + 1
+            ALLOCATE (BES_B(NB))
+            CALL RKBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, IZE=1, BK=BES_B, NCALC=NCALC)
+            IF (NCALC < -1) THEN
                write(stderr, *) '  BESSELK Error 2'
-            ELSE IF (BES_NCALC == -1) THEN
+            ELSE IF (NCALC == -1) THEN
                write(stderr, *) '  BESSELK Error 3'
-            ELSE IF (BES_NCALC /= BES_NB) THEN
+            ELSE IF (NCALC /= NB) THEN
                write(stderr, *) '  BESSELK Error 4'
             ELSE
                LASTX = STACK(1)
-               STACK(1) = BES_B(BES_NB)
+               STACK(1) = BES_B(NB)
                CALL DROP_STACK(2)
             END IF
             DEALLOCATE (BES_B)
@@ -1059,20 +1019,18 @@ case('BESSELK')                                            ! BESSELK
          IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
             write(stderr, *) '  BESSELK Error 1'
          ELSE
-            BES_X = STACK(1)
-            BES_NB = INT(STACK(2)) + 1
-            BES_ALPHA = FRAC(STACK(2))
-            ALLOCATE (BES_B(BES_NB))
-            CALL RKBESL(BES_X, BES_ALPHA, BES_NB, 1, BES_B, BES_NCALC)
-            IF (BES_NCALC < -1) THEN
+            NB = INT(STACK(2)) + 1
+            ALLOCATE (BES_B(NB))
+            CALL RKBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, IZE=1, BK=BES_B, NCALC=NCALC)
+            IF (NCALC < -1) THEN
                write(stderr, *) '  BESSELK Error 2'
-            ELSE IF (BES_NCALC == -1) THEN
+            ELSE IF (NCALC == -1) THEN
                write(stderr, *) '  BESSELK Error 3'
-            ELSE IF (BES_NCALC /= BES_NB) THEN
+            ELSE IF (NCALC /= NB) THEN
                write(stderr, *) '  BESSELK Error 4'
             ELSE
                LASTX = STACK(1)
-               STACK(1) = BES_B(BES_NB)
+               STACK(1) = BES_B(NB)
                CALL DROP_STACK(2)
             END IF
             DEALLOCATE (BES_B)
@@ -1133,7 +1091,7 @@ case('C')                                                  ! C
       CASE (1)
          CALL PUSH_STACK (C)
       CASE (2)
-         CALL push_stack(CMPLX(C, 0._wp, wp))
+         CALL push_stack(CMPLX(C, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (C)
@@ -1320,7 +1278,7 @@ case('CNR')                                                ! CNR
             ITMP2 = NINT(real(CSTACK(2), wp))
             TMP = CNR (ITMP2, ITMP)
             CLASTX = CSTACK(1)
-            CSTACK(1) = CMPLX(TMP, 0._wp, wp)
+            CSTACK(1) = CMPLX(TMP, kind=wp)
             CALL CDROP_STACK(2)
          END IF
       CASE (3)
@@ -1338,39 +1296,33 @@ case('CNR')                                                ! CNR
          END IF
    END SELECT
 
-case('COMPLEX')                                            ! COMPLEX
+case('COMPLEX')
+   DOMAIN_MODE = 2
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         DOMAIN_MODE = 2
+      
+         CSTACK = CMPLX(STACK, kind=wp)
+         CREG = CMPLX(REG, kind=wp)
          
-         CSTACK = CMPLX(STACK, 0._wp, wp)
-         
-         CREG = CMPLX(REG, 0._wp, wp)
-         
-         CLASTX = CMPLX(LASTX, 0._wp, wp)
-         CNN = CMPLX(NN, 0._wp, wp)
-         CSUMX = CMPLX(SUMX, 0._wp, wp)
-         CSUMX2 = CMPLX(SUMX2, 0._wp, wp)
-         CSUMY = CMPLX(SUMY, 0._wp, wp)
-         CSUMY2 = CMPLX(SUMY2, 0._wp, wp)
-         CSUMXY = CMPLX(SUMXY, 0._wp, wp)
+         CLASTX = CMPLX(LASTX, kind=wp)
+         CNN = CMPLX(NN, kind=wp)
+         CSUMX = CMPLX(SUMX, kind=wp)
+         CSUMX2 = CMPLX(SUMX2, kind=wp)
+         CSUMY = CMPLX(SUMY, kind=wp)
+         CSUMY2 = CMPLX(SUMY2, kind=wp)
+         CSUMXY = CMPLX(SUMXY, kind=wp)
       CASE (3)
-         DOMAIN_MODE = 2
-         DO I = 1, STACK_SIZE
-            TMP = real(RNSTACK(I), wp)/real(RDSTACK(I), wp)
-            CSTACK(I) = CMPLX(TMP, 0._wp, wp)
-         END DO
-         DO I = 0, REG_SIZE-1
-            TMP = DBLE(RNREG(I))/DBLE(RDREG(I))
-            CREG(I) = CMPLX(TMP, 0._wp, wp)
-         END DO
-         CLASTX = CMPLX(real(RNLASTX, wp)/real(RDLASTX, wp), 0._wp, wp)
-         CNN = CMPLX(real(RNNN, wp)/real(RDNN, wp), 0._wp, wp)
-         CSUMX = CMPLX(real(RNSUMX, wp)/real(RDSUMX, wp), 0._wp, wp)
-         CSUMX2 = CMPLX(real(RNSUMX2, wp)/real(RDSUMX2, wp), 0._wp, wp)
-         CSUMY = CMPLX(real(RNSUMY, wp)/real(RDSUMY, wp), 0._wp, wp)
-         CSUMY2 = CMPLX(real(RNSUMY2, wp)/real(RDSUMY2, wp), 0._wp, wp)
-         CSUMXY = CMPLX(real(RNSUMXY, wp)/real(RDSUMXY, wp), 0._wp, wp)
+    
+         CSTACK = CMPLX(real(RNSTACK, wp) / real(RDSTACK, wp), kind=wp)
+         CREG = CMPLX(real(RNREG, wp)/ real(RDREG, wp), kind=wp)
+         
+         CLASTX = CMPLX(real(RNLASTX, wp)/real(RDLASTX, wp), kind=wp)
+         CNN = CMPLX(real(RNNN, wp)/real(RDNN, wp), kind=wp)
+         CSUMX = CMPLX(real(RNSUMX, wp)/real(RDSUMX, wp), kind=wp)
+         CSUMX2 = CMPLX(real(RNSUMX2, wp)/real(RDSUMX2, wp), kind=wp)
+         CSUMY = CMPLX(real(RNSUMY, wp)/real(RDSUMY, wp), kind=wp)
+         CSUMY2 = CMPLX(real(RNSUMY2, wp)/real(RDSUMY2, wp), kind=wp)
+         CSUMXY = CMPLX(real(RNSUMXY, wp)/real(RDSUMXY, wp), kind=wp)
    END SELECT
 
 case('CONJ')                                               ! CONJ
@@ -1596,7 +1548,7 @@ case('ECHG')                                               ! ECHG
       CASE (1)
          CALL PUSH_STACK (ECHG)
       CASE (2)
-         CALL push_stack(CMPLX(ECHG, 0._wp, wp))
+         CALL push_stack(CMPLX(ECHG, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (ECHG)
@@ -1607,7 +1559,7 @@ case('EPS0')                                               ! EPS0
       CASE (1)
          CALL PUSH_STACK (EPS0)
       CASE (2)
-         CALL push_stack(CMPLX(EPS0, 0._wp, wp))
+         CALL push_stack(CMPLX(EPS0, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (EPS0)
@@ -1644,7 +1596,7 @@ case('EULER')                                             ! EULER
       CASE (1)
          CALL PUSH_STACK (EULER)
       CASE (2)
-         CALL push_stack(CMPLX(EULER, 0._wp, wp))
+         CALL push_stack(CMPLX(EULER, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (EULER)
@@ -1729,7 +1681,7 @@ case('G')                                                  ! G
       CASE (1)
          CALL PUSH_STACK (G)
       CASE (2)
-         CALL push_stack(CMPLX(G, 0._wp, wp))
+         CALL push_stack(CMPLX(G, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (G)
@@ -1752,7 +1704,7 @@ case('GAL>L')                                             ! GAL>L
 case('GAMMA')                                             ! GAMMA
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (ISINT(STACK(1)).AND.(STACK(1)<=0.0D0)) THEN
+         IF (ISINT(STACK(1)).AND.(STACK(1) <= 0._wp)) THEN
             write(stderr, *) '  GAMMA Error'
          ELSE
             LASTX = STACK(1)
@@ -1785,7 +1737,7 @@ case('GAMMA')                                             ! GAMMA
                END IF
             ELSE
                CALL SWITCH_RAT_TO_REAL
-               IF (ISINT(STACK(1)).AND.(STACK(1)<=0.0D0)) THEN
+               IF (ISINT(STACK(1)).AND.(STACK(1) <= 0._wp)) THEN
                   write(stderr, *) '  GAMMA Error'
                ELSE
                   LASTX = STACK(1)
@@ -1831,7 +1783,7 @@ case('GOLDEN')                                             ! GOLDEN
       CASE (1)
          CALL PUSH_STACK (GOLDEN)
       CASE (2)
-         CALL push_stack(CMPLX(GOLDEN, 0._wp, wp))
+         CALL push_stack(CMPLX(GOLDEN, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (GOLDEN)
@@ -1846,7 +1798,7 @@ case('GRAV')                                               ! GRAV
       CASE (1)
          CALL PUSH_STACK (GRAV)
       CASE (2)
-         CALL push_stack(CMPLX(GRAV, 0._wp, wp))
+         CALL push_stack(CMPLX(GRAV, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (GRAV)
@@ -1857,7 +1809,7 @@ case('H')                                                  ! H
       CASE (1)
          CALL PUSH_STACK (H)
       CASE (2)
-         CALL push_stack(CMPLX(H, 0._wp, wp))
+         CALL push_stack(CMPLX(H, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (H)
@@ -1889,7 +1841,7 @@ case('HBAR')                                               ! HBAR
       CASE (1)
          CALL PUSH_STACK (HBAR)
       CASE (2)
-         CALL push_stack(CMPLX(HBAR, 0._wp, wp))
+         CALL push_stack(CMPLX(HBAR, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (HBAR)
@@ -1916,7 +1868,7 @@ case('HMS>H')                                             ! HMS>H
             TMP = (real(CSTACK(1), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
             CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
             CLASTX = CSTACK(1)
-            CSTACK(1) = CMPLX(TMP2, 0._wp, wp)
+            CSTACK(1) = CMPLX(TMP2, kind=wp)
          END IF
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
@@ -2024,7 +1976,7 @@ case('HMS-')                                               ! HMS-
          CALL DROP_STACK(2)
    END SELECT
 
-case('HAV')                                                ! HAV
+case('HAV')
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
@@ -2038,11 +1990,11 @@ case('HAV')                                                ! HAV
          STACK(1) = HAV(STACK(1)*ANGLE_FACTOR)
    END SELECT
 
-case('HYPOT')                                             ! HYPOT
+case('HYPOT')
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
-         STACK(1) = SQRT(STACK(1)**2+STACK(2)**2)
+         STACK(1) = hypot(STACK(1), STACK(2))
          CALL DROP_STACK(2)
       CASE (2)
          CLASTX = CSTACK(1)
@@ -2109,7 +2061,7 @@ case('IM')                                                 ! IM
          STACK(1) = 0._wp
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CMPLX(AIMAG(CSTACK(1)), 0._wp, wp)
+         CSTACK(1) = CMPLX(AIMAG(CSTACK(1)), kind=wp)
       CASE (3)
          RNLASTX = RNSTACK(1)
          RDLASTX = RDSTACK(1)
@@ -2185,7 +2137,7 @@ case('KB')                                                 ! KB
       CASE (1)
          CALL PUSH_STACK (KB)
       CASE (2)
-         CALL push_stack(CMPLX(KB, 0._wp, wp))
+         CALL push_stack(CMPLX(KB, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (KB)
@@ -2200,7 +2152,7 @@ case('KEPLER')                                             ! KEPLER
          TMP = KEPLER(real(CSTACK(2), wp)*ANGLE_FACTOR,real(CSTACK(1), wp)) / &
             ANGLE_FACTOR
          CLASTX = CSTACK(1)
-         CSTACK(1) = CMPLX(TMP, 0._wp, wp)
+         CSTACK(1) = CMPLX(TMP, kind=wp)
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
@@ -2220,7 +2172,20 @@ case('KG>LB')                                             ! KG>LB
          LASTX = STACK(1)
          STACK(1) = STACK(1) / KG_PER_LB
    END SELECT
-
+   
+case('JINC')
+   SELECT CASE (DOMAIN_MODE)
+      CASE (1)
+         LASTX = STACK(1)
+         STACK(1) = jinc(STACK(1))
+      CASE (2)
+         write(stderr, *) '  Error:  JINC not available in COMPLEX mode.'
+      CASE (3)
+         CALL SWITCH_RAT_TO_REAL
+         LASTX = STACK(1)
+         STACK(1) = jinc(STACK(1))
+   END SELECT
+   
 case('L>GAL')                                             ! L>GAL
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -2407,7 +2372,7 @@ case('ME')                                                 ! ME
       CASE (1)
          CALL PUSH_STACK (ME)
       CASE (2)
-         CALL push_stack(CMPLX(ME, 0._wp, wp))
+         CALL push_stack(CMPLX(ME, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (ME)
@@ -2421,7 +2386,7 @@ case('MN')                                                 ! MN
       CASE (1)
          CALL PUSH_STACK (MN)
       CASE (2)
-         CALL push_stack(CMPLX(MN, 0._wp, wp))
+         CALL push_stack(CMPLX(MN, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (MN)
@@ -2515,7 +2480,7 @@ case('MP')                                                 ! MP
       CASE (1)
          CALL PUSH_STACK (MP)
       CASE (2)
-         CALL push_stack(CMPLX(MP, 0._wp, wp))
+         CALL push_stack(CMPLX(MP, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (MP)
@@ -2526,7 +2491,7 @@ case('MU0')                                                ! MU0
       CASE (1)
          CALL PUSH_STACK (MU0)
       CASE (2)
-         CALL push_stack(CMPLX(MU0, 0._wp, wp))
+         CALL push_stack(CMPLX(MU0, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (MU0)
@@ -2537,7 +2502,7 @@ case('MUB')                                                ! MUB
       CASE (1)
          CALL PUSH_STACK (MUB)
       CASE (2)
-         CALL push_stack(CMPLX(MUB, 0._wp, wp))
+         CALL push_stack(CMPLX(MUB, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (MUB)
@@ -2548,7 +2513,7 @@ case('MUN')                                                ! MUN
       CASE (1)
          CALL PUSH_STACK (MUN)
       CASE (2)
-         CALL push_stack(CMPLX(MUN, 0._wp, wp))
+         CALL push_stack(CMPLX(MUN, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (MUN)
@@ -2569,7 +2534,7 @@ case('NA')                                                 ! NA
       CASE (1)
          CALL PUSH_STACK (NA)
       CASE (2)
-         CALL push_stack(CMPLX(NA, 0._wp, wp))
+         CALL push_stack(CMPLX(NA, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (NA)
@@ -2645,7 +2610,7 @@ case('PI')                                                 ! PI
       CASE (1)
          CALL PUSH_STACK (PI)
       CASE (2)
-         CALL push_stack(CMPLX(PI, 0._wp, wp))
+         CALL push_stack(CMPLX(PI, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (PI)
@@ -2683,7 +2648,7 @@ case('PNR')                                                ! PNR
             ITMP2 = NINT(real(CSTACK(2), wp))
             TMP = PNR (ITMP2, ITMP)
             CLASTX = CSTACK(1)
-            CSTACK(1) = CMPLX(TMP, 0._wp, wp)
+            CSTACK(1) = CMPLX(TMP, kind=wp)
             CALL CDROP_STACK(2)
          END IF
       CASE (3)
@@ -2968,7 +2933,7 @@ case('RE')                                                 ! RE
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CMPLX(real(CSTACK(1), wp), 0._wp, wp)
+         CSTACK(1) = CMPLX(real(CSTACK(1), wp), kind=wp)
    END SELECT
 
 case('REAL')                                               ! REAL
@@ -2996,7 +2961,7 @@ case('REARTH')                                             ! REARTH
       CASE (1)
          CALL PUSH_STACK (REARTH)
       CASE (2)
-         CALL push_stack(CMPLX(REARTH, 0._wp, wp))
+         CALL push_stack(CMPLX(REARTH, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (REARTH)
@@ -3014,7 +2979,7 @@ case('REDUCE')                                             ! REDUCE
          CALL CDROP_STACK(1)
          CLASTX = CSTACK(1)
          TMP2 = REDUCE(real(CSTACK(1), wp)*ANGLE_FACTOR,TMP*ANGLE_FACTOR) / ANGLE_FACTOR
-         CSTACK(1) = CMPLX(TMP2, 0._wp, wp)
+         CSTACK(1) = CMPLX(TMP2, kind=wp)
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          TMP = STACK(1)
@@ -3087,7 +3052,7 @@ case('RGAS')                                               ! RGAS
       CASE (1)
          CALL PUSH_STACK (RGAS)
       CASE (2)
-         CALL push_stack(CMPLX(RGAS, 0._wp, wp))
+         CALL push_stack(CMPLX(RGAS, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (RGAS)
@@ -3314,7 +3279,7 @@ case('SINC')                                               ! SINC
          STACK(1) = SINC(STACK(1)*ANGLE_FACTOR)
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CSINC(CSTACK(1)*ANGLE_FACTOR)
+         CSTACK(1) = SINC(CSTACK(1)*ANGLE_FACTOR)
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
@@ -3403,7 +3368,7 @@ case('STEFAN')                                             ! STEFAN
       CASE (1)
          CALL PUSH_STACK (STEFAN)
       CASE (2)
-         CALL push_stack(CMPLX(STEFAN, 0._wp, wp))
+         CALL push_stack(CMPLX(STEFAN, kind=wp))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          CALL PUSH_STACK (STEFAN)
@@ -3480,7 +3445,7 @@ case('TANC')                                               ! TANC
          STACK(1) = TANC(STACK(1)*ANGLE_FACTOR)
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CTANC(CSTACK(1)*ANGLE_FACTOR)
+         CSTACK(1) = TANC(CSTACK(1)*ANGLE_FACTOR)
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
@@ -4024,19 +3989,23 @@ SELECT CASE (MODE)
   CASE (1)
      IF (isclose(stack(1), 0._wp)) THEN
         write(stderr, *) '  Divide by zero Error'
-     ELSE
-        LASTX = STACK(1)
-        STACK(1) = STACK(2) / STACK(1)
-        CALL DROP_STACK(2)
-     END IF
+        return
+     ENDIF
+
+     LASTX = STACK(1)
+     STACK(1) = STACK(2) / STACK(1)
+     CALL DROP_STACK(2)
+
   CASE (2)
      IF (isclose(cstack(1), C0)) THEN
         write(stderr, *) '  Divide by zero Error'
-     ELSE
-        CLASTX = CSTACK(1)
-        CSTACK(1) = CSTACK(2) / CSTACK(1)
-        CALL CDROP_STACK(2)
-     END IF
+        return
+     ENDIF
+     
+     CLASTX = CSTACK(1)
+     CSTACK(1) = CSTACK(2) / CSTACK(1)
+     CALL CDROP_STACK(2)
+     
   CASE (3)
      CALL RDIV (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
      RNLASTX = RNSTACK(1)
@@ -4077,5 +4046,55 @@ SELECT CASE (MODE)
 END SELECT
 
 end subroutine power
+
+
+subroutine bsj()
+  integer :: Nb, ncalc
+  real(wp), allocatable :: B(:)
+  
+  associate(X=>stack(1), y=>stack(2))
+           
+  IF ((x < 0._wp) .OR. (y < 0._wp)) THEN
+    write(stderr, *) '  BESSELJ Error 1'
+    return
+  ENDIF
+  
+
+  
+  NB = INT(y) + 1
+  ALLOCATE (B(NB))
+  
+  CALL RJBESL(X=x, ALPHA=FRAC(y), NB=NB, B=B, NCALC=NCALC)
+  
+  IF (NCALC < 0) THEN
+     write(stderr, *) '  BESSELJ Error 2'
+     return
+  ELSE IF (NCALC /= NB) THEN
+     write(stderr, *) '  BESSELJ Error 3'
+     return
+  Endif
+     
+  LASTX = x
+  x = B(NB)
+  CALL DROP_STACK(2)
+ 
+  end associate
+end subroutine bsj
+
+
+subroutine bsy0()
+
+  associate(X=>stack(1))
+  
+  IF (x <= 0._wp) THEN
+    write(stderr, *) '  BESSELY0 Error'
+  ELSE
+    LASTX = x
+    x = bessel_y0(x)
+  END IF
+  
+  end associate
+
+end subroutine bsy0
 
 end module evals

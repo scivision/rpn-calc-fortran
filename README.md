@@ -8,12 +8,13 @@
 ![Fortran RPN Calculator screen](doc/FortranCalculatorDemo.png)
 
 The `funcs.90` module provides over 100 elemental functions not found in Fortran instrinsics.
-A basically Fortran 2008/2018 compatible compiler is required such as `gfortran` or `ifort`.
-Fortran 2008 compliance is a must.
+For full functionality, a Fortran 2008/2018 compatible compiler is required such as `gfortran` or `ifort`.
 
 Specifically, RPNcalc is covered by continuous integration and testing on Linux, Mac and Windows, including:
 * Gfortran 5, 6, 7, 8 
 * ifort 2019
+* PGI `pgf95`
+* Nvidia `flang`
 
 The stack size is set by the user with command line option. 
 Default size is 4.
@@ -349,6 +350,8 @@ Many functions not commonly found in RPN calculators are included:
     BESSELK1    Modified Bessel function of the second kind, order 1
     BESSELK     Modified Bessel function of the second kind, real order
     
+    JINC        [JINC sombrero function](https://en.wikipedia.org/wiki/Sombrero_function)  J1(x)/x 
+    
     BETA        Beta function
 
     COVERS      Coversine
@@ -388,7 +391,7 @@ Many functions not commonly found in RPN calculators are included:
 
     SGN         Signum
 
-    SINC        Sine cardinal (sinc) function
+    SINC        [cardinal sine (sinc) function  sin(x) / x](https://en.wikipedia.org/wiki/Sinc_function)
 
     SINHC       Sinhc function
 
@@ -410,7 +413,6 @@ Many functions not commonly found in RPN calculators are included:
     
     ?           Incomplete gamma functions (upper and lower)
     ?           Incomplete beta function
-    ?           Jinc function
     ?           Spherical Bessel functions j, n
     ?           Legendre functions Pnm, Qnm (various normalizations)
     ?           Legendre polynomials
@@ -420,9 +422,4 @@ Many functions not commonly found in RPN calculators are included:
     ?           Exponential integrals
     ?           Hypergeometric functions
     ?           Hermite polynomials
-    
-## Notes
 
-Due to lack of basic Fortran 2008/2018 support, the following compilers do NOT yet work:
-* Flang 5.0
-* PGI 2018

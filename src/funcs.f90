@@ -18,6 +18,14 @@ interface frac
   procedure frac_r, frac_c
 end interface frac
 
+interface sinc
+  procedure sinc_r, sinc_c
+end interface sinc
+
+interface tanc
+  procedure tanc_r, tanc_c
+end interface tanc
+
 real(wp), parameter, private :: xinf = huge(0._wp), xmax = xinf, xmin = tiny(0._wp)
 complex(wp), parameter, private :: c0 = (0._wp, 0._wp)
 
@@ -232,118 +240,69 @@ COMPLEX(wp), INTENT(IN) :: X
  CLOG10 = LOG(X) / LOG(10._wp)
 
 END FUNCTION CLOG10
-!***********************************************************************************************************************************
-!  LOG1P
-!
-!  Compute log(1+x).
-!***********************************************************************************************************************************
+
 
 elemental real(wp) FUNCTION LOG1P (X) RESULT (Y)
+!  Compute log(1+x).
 real(wp), INTENT(IN) :: X
 real(wp) :: Z
 
 Z = 1._wp + X
-Y = LOG(Z) - ((Z-1.0D0)-X)/Z                                                  ! cancels errors with IEEE arithmetic
+Y = LOG(Z) - ((Z-1._wp)-X) / Z                ! cancels errors with IEEE arithmetic
 
 END FUNCTION LOG1P
 
 
-
-!***********************************************************************************************************************************
-!  SINC
-!
+elemental real(wp) FUNCTION SINC_r(X) result(sinc)
 !  Sine cardinal (sinc) function.
-!***********************************************************************************************************************************
-
-elemental real(wp) FUNCTION SINC (X) RESULT (Y)
-
 real(wp), INTENT(IN) :: X
 
 IF (isclose(x, 0._wp)) THEN
-   Y = 1._wp
+   sinc = 1._wp
 ELSE
-   Y = SIN(X)/X
+   sinc = SIN(X)/X
 END IF
+END FUNCTION SINC_r
 
 
-END FUNCTION SINC
-
-
-
-!***********************************************************************************************************************************
-!  CSINC
-!
+elemental complex(wp) FUNCTION SINC_c (Z) RESULT (sinc)
 !  Complex sine cardinal (sinc) function.
-!***********************************************************************************************************************************
-
-elemental complex(wp) FUNCTION CSINC (Z) RESULT (Y)
 COMPLEX(wp), INTENT(IN) :: Z
 
 IF (isclose(z, c0)) THEN
-   Y = (1._wp,0.0D0)
+   sinc = (1._wp, 0._wp)
 ELSE
-   Y = SIN(Z)/Z
+   sinc = SIN(Z)/Z
 END IF
-
-END FUNCTION CSINC
-
+END FUNCTION SINC_c
 
 
-
-
-!***********************************************************************************************************************************
-!  TANC
-!
+elemental real(wp) FUNCTION TANC_r(X) RESULT (tanc)
 !  Tanc function.
-!***********************************************************************************************************************************
-
-FUNCTION TANC (X) RESULT (Y)
-
-IMPLICIT NONE
-
 real(wp), INTENT(IN) :: X
-real(wp) :: Y
 
 IF (isclose(x, 0._wp)) THEN
-   Y = 1._wp
+   tanc = 1._wp
 ELSE
-   Y = TAN(X)/X
+   tanc = TAN(X)/X
 END IF
-
-RETURN
-
-END FUNCTION TANC
+END FUNCTION TANC_r
 
 
-
-!***********************************************************************************************************************************
-!  CTANC
-!
+elemental complex(wp) FUNCTION TANC_c (Z) RESULT (tanc)
 !  Complex tanc function.
-!***********************************************************************************************************************************
-
-elemental complex(wp) FUNCTION CTANC (Z) RESULT (Y)
-
 COMPLEX(wp), INTENT(IN) :: Z
 
 IF (isclose(z, c0)) THEN
-   Y = (1._wp,0.0D0)
+   tanc = (1._wp, 0._wp)
 ELSE
-   Y = TAN(Z)/Z
+   tanc = TAN(Z)/Z
 END IF
+END FUNCTION TANC_c
 
-END FUNCTION CTANC
-
-
-
-!***********************************************************************************************************************************
-!  SINHC
-!
-!  Sinhc function.
-!***********************************************************************************************************************************
 
 elemental real(wp) FUNCTION SINHC (X) RESULT (Y)
-
+!  Sinhc function.
 real(wp), INTENT(IN) :: X
 
 IF (isclose(x, 0._wp)) THEN
@@ -351,27 +310,18 @@ IF (isclose(x, 0._wp)) THEN
 ELSE
    Y = SINH(X)/X
 END IF
-
 END FUNCTION SINHC
 
 
-
-!***********************************************************************************************************************************
-!  CSINHC
-!
-!  Complex sinhc function.
-!***********************************************************************************************************************************
-
 elemental complex(wp) FUNCTION CSINHC (Z) RESULT (Y)
+!  Complex sinhc function.
 COMPLEX(wp), INTENT(IN) :: Z
-
 
 IF (isclose(z, c0)) THEN
    Y = (1._wp,0._wp)
 ELSE
    Y = SINH(Z)/Z
 END IF
-
 END FUNCTION CSINHC
 
 

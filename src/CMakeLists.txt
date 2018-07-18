@@ -42,7 +42,9 @@ target_compile_options(reg PRIVATE ${FFLAGS})
 target_link_libraries(reg PRIVATE assert)
 
 #--- fucntions (usable in other programs too)
-add_library(funcs funcs.f90 bessel.f90 trig.f90 rat.f90 stats.f90 gamma.f90)
+add_library(funcs funcs.f90 
+            bessel.f90 rjbesl.f rybesl.f i0.f i1.f k0.f k1.f ribesl.f rkbesl.f
+            trig.f90 rat.f90 stats.f90 gamma.f90)
 target_link_libraries(funcs PRIVATE assert reg)
 target_compile_options(funcs PRIVATE ${FFLAGS})
 
@@ -71,8 +73,9 @@ endif()
 
 if(UNIX)
   add_test(NAME UIrpn COMMAND bash -c "echo -e '2 5 * \n q' | ./rpncalc")
-  add_test(NAME RPNinput COMMAND "./test.sh" 
-           WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../tests)
+  
+  add_test(NAME RPNinput 
+           COMMAND bash -c "./rpncalc < ../tests/test.asc | tail -n1 | grep '308 / 29'")
 endif()
 
 #--- install
