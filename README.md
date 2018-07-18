@@ -339,13 +339,17 @@ Many functions not commonly found in RPN calculators are included:
     AVERS       Inverse versine
     BESSELJ0    Bessel function of the first kind, order 0
     BESSELJ1    Bessel function of the first kind, order 1
+    BESSELJ1P   first derivative J'1(x)
     BESSELJ     Bessel function of the first kind, real order
+    
     BESSELY0    Bessel function of the second kind, order 0
     BESSELY1    Bessel function of the second kind, order 1
     BESSELY     Bessel function of the second kind, real order
+    
     BESSELI0    Modified Bessel function of the first kind, order 0
     BESSELI1    Modified Bessel function of the first kind, order 1
     BESSELI     Modified Bessel function of the first kind, real order
+    
     BESSELK0    Modified Bessel function of the second kind, order 0
     BESSELK1    Modified Bessel function of the second kind, order 1
     BESSELK     Modified Bessel function of the second kind, real order
