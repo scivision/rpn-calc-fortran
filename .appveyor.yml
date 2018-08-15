@@ -19,6 +19,5 @@ install:
 
 - cmake --build . --target install
 
-test_script:
-- ctest -V
+test_script: ctest -V
 

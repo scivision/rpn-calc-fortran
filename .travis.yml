@@ -8,8 +8,8 @@ git:
   quiet: true
 
 os:
-  - linux
-  - osx
+- linux
+- osx
 
 env: FC=gfortran-5
 
@@ -18,17 +18,16 @@ addons:
     packages: gfortran-5
     
 before_install:
-  - if [[ $TRAVIS_OS_NAME == osx ]]; then
-      brew update > /dev/null;
-      brew install gcc > /dev/null || brew link --overwrite gcc > /dev/null;
-      export FC=gfortran;
-    fi
+- if [[ $TRAVIS_OS_NAME == osx ]]; then
+  brew update > /dev/null;
+  brew install gcc > /dev/null || brew link --overwrite gcc > /dev/null;
+  export FC=gfortran;
+  fi
 
 install:
-  - cd bin
-  - cmake ../src
-  - cmake --build . --target install
+- cd bin
+- cmake ../src
+- cmake --build . --target install
 
-script: 
-  - ctest -V
+script: ctest -V
 
