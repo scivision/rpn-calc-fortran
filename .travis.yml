@@ -1,33 +1,34 @@
 language: c
-sudo: required
-dist: xenial
 group: travis_latest
+dist: xenial
 
 git:
   depth: 3
   quiet: true
 
-os:
-- linux
-- osx
-
-env: FC=gfortran-5
+env: FC=gfortran
 
 addons:
   apt:
-    packages: gfortran-5
+    packages: gfortran
     
-before_install:
-- if [[ $TRAVIS_OS_NAME == osx ]]; then
-  brew update > /dev/null;
-  brew install gcc > /dev/null || brew link --overwrite gcc > /dev/null;
-  export FC=gfortran;
-  fi
+matrix:
+  include:
+  - os: linux
+  - os: osx
+    before_install:
+    - brew install gcc > /dev/null
+  - os: windows
+    language: sh
+    install: 
+    - cd bin
+    - cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ../src
+    - cmake --build . --target install
 
 install:
 - cd bin
 - cmake ../src
 - cmake --build . --target install
 
-script: ctest -V
+script: ctest --output-on-failure
 

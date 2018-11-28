@@ -4,7 +4,6 @@ module assert
 use, intrinsic:: iso_c_binding, only: sp=>c_float, dp=>c_double
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 use, intrinsic:: ieee_arithmetic
-use error
 
 implicit none
 
@@ -125,6 +124,17 @@ impure elemental subroutine assert_isclose(actual, desired, rtol, atol, equal_na
   endif
 
 end subroutine assert_isclose
+
+
+pure subroutine errorstop
+
+#ifdef F08
+error stop
+#else
+stop 1
+#endif
+
+end subroutine errorstop
 
 end module assert
 
