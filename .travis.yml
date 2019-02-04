@@ -26,7 +26,7 @@ matrix:
     - cmake --build . --target install
 
 install:
-- cd bin
+- cd build
 - cmake ../src
 - cmake --build . --target install
 

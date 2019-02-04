@@ -717,7 +717,7 @@ END SUBROUTINE FRAC_TO_MIXED
 !  Find the greatest common divisor of two integers using Euclid's algorithm.
 !***********************************************************************************************************************************
 
-elemental integer FUNCTION GCD (A, B)
+elemental integer FUNCTION GCD(A, B)
 
 INTEGER, INTENT(IN) :: A, B
 
@@ -763,7 +763,7 @@ END FUNCTION LCM
 
 elemental SUBROUTINE RATNORM (NUM, DEN)
 
-INTEGER, INTENT(IN OUT) :: NUM, DEN
+INTEGER, INTENT(INOUT) :: NUM, DEN
 
 INTEGER :: G
 LOGICAL :: NEGFLAG
@@ -781,12 +781,12 @@ IF (NUM .EQ. 0) THEN                                                        ! if
    RETURN
 END IF
 
-NEGFLAG = (NUM .LT. 0) .NEQV. (DEN .LT. 0)                                ! save sign of fraction in NEGFLAG
+NEGFLAG = (NUM .LT. 0 .AND..NOT. DEN .LT. 0)       ! save sign of fraction in NEGFLAG
 
 NUM = ABS(NUM)                                                            ! take absolute value of NUM and DEN
 DEN = ABS(DEN)
 
-G = GCD (NUM, DEN)                                                        ! find GCD of NUM and DEN
+G = GCD(NUM, DEN)                                                        ! find GCD of NUM and DEN
 
 NUM = NUM / G                                                             ! reduce the fraction
 DEN = DEN / G
@@ -819,7 +819,7 @@ END SUBROUTINE RADD
 !  Subtract two rational numbers.
 !***********************************************************************************************************************************
 
-elemental SUBROUTINE RSUB (N1, D1, N2, D2, NR, DR)
+elemental SUBROUTINE RSUB(N1, D1, N2, D2, NR, DR)
 
 INTEGER, INTENT(IN) :: N1, D1, N2, D2
 INTEGER, INTENT(OUT) :: NR, DR
@@ -837,14 +837,14 @@ END SUBROUTINE RSUB
 !  Multiply two rational numbers.
 !***********************************************************************************************************************************
 
-elemental SUBROUTINE RMUL (N1, D1, N2, D2, NR, DR)
+elemental SUBROUTINE RMUL(N1, D1, N2, D2, NR, DR)
 
 INTEGER, INTENT(IN) :: N1, D1, N2, D2
 INTEGER, INTENT(OUT) :: NR, DR
 
 NR = N1*N2
 DR = D1*D2
-CALL RATNORM (NR, DR)
+CALL RATNORM(NR, DR)
 
 END SUBROUTINE RMUL
 
@@ -862,7 +862,7 @@ INTEGER, INTENT(OUT) :: NR, DR
 
 NR = N1*D2
 DR = D1*N2
-CALL RATNORM (NR, DR)
+CALL RATNORM(NR, DR)
 
 END SUBROUTINE RDIV
 
@@ -949,7 +949,5 @@ END SUBROUTINE RDIV
       IF (R .NE. 0.0D0) GO TO 100
 
       END SUBROUTINE DEC_TO_FRAC
-
-
 
 end module rat

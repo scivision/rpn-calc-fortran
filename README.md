@@ -26,12 +26,30 @@ Default size is 4.
 
 ## Build
 
-    cd bin
-    
-    cmake ../src
-    
-    cmake --build . --target install
-    
+Use Meson or CMake.
+Do NOT use sudo. 
+These commands install `rpncalc` to ~/.local/bin.
+
+### Meson
+
+```sh
+cd build
+
+meson ../src --prefix=$HOME/.local
+
+meson install
+
+
+### CMake
+
+```sh
+cd build
+
+cmake ../src
+
+cmake --build . --target install
+```
+
 ## Usage
 
     rpncalc

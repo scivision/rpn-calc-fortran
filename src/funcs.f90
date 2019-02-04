@@ -3,7 +3,8 @@ use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 use assert, only: wp, isclose
 use bessel
 use trig
-use rat
+use rat, only: ratnorm, rdiv, rsub, radd, rmul, isfrac, lcm, gcd, isint, isreal, iscomplex, isdigit, isrational, &
+  dec_to_frac, frac_to_mixed
 use hyper
 use stats
 use fgamma
@@ -478,7 +479,7 @@ END FUNCTION RIEMANNZETA
 
 elemental real(wp) FUNCTION REDUCE (THETA, ANGLE_MIN) RESULT (RHO)
 
-real(wp), PARAMETER :: TWOPI = 2*4._wp*atan(1._wp)
+real(wp), PARAMETER :: tau = 2*4._wp*atan(1._wp)
 
 real(wp), INTENT(IN) :: THETA
 real(wp), INTENT(IN) :: ANGLE_MIN
@@ -491,14 +492,14 @@ real(wp) :: REVS
 !     Start of code.
 !
 
-ANGLE_MAX = ANGLE_MIN + TWOPI
+ANGLE_MAX = ANGLE_MIN + tau
 
 IF (THETA .LT. ANGLE_MIN) THEN
-   REVS = AINT((ANGLE_MIN-THETA)/TWOPI) + 1
-   RHO = THETA + REVS*TWOPI
+   REVS = AINT((ANGLE_MIN-THETA)/tau) + 1
+   RHO = THETA + REVS*tau
 ELSE IF (THETA .GE. ANGLE_MAX) THEN
-   REVS = AINT((THETA-ANGLE_MIN)/TWOPI)
-   RHO = THETA - REVS*TWOPI
+   REVS = AINT((THETA-ANGLE_MIN)/tau)
+   RHO = THETA - REVS*tau
 ELSE
    RHO = THETA
 END IF
@@ -524,9 +525,8 @@ real(wp), INTENT(IN) :: ECC
 !     Parameters.
 !
 !     PI           = PI
-!     TWOPI        = 2*PI
+!     tau        = 2*PI
 !     PI_SQR       = PI**2
-!     THREE_PI_SQR = 3 * PI**2
 !     ONEP6_PI     = 1.6*PI
 !     TWO_THIRDS   = 2/3
 !     SIXTH        = 1/6
@@ -534,13 +534,6 @@ real(wp), INTENT(IN) :: ECC
 !
 
 real(wp), PARAMETER :: PI = 4._wp * atan(1._wp)
-real(wp), PARAMETER :: TWOPI = 2 * pi
-real(wp), PARAMETER :: PI_SQR = sqrt(pi)
-real(wp), PARAMETER :: THREE_PI_SQR = 29.608813203268075856503472999628453405941098221722371879240048128660134467258D0
-real(wp), PARAMETER :: ONEP6_PI = 5.02654824574366918154022941324720461471547103900016931355991134769250625005793440D0
-real(wp), PARAMETER :: TWO_THIRDS = 2._wp / 3._wp
-real(wp), PARAMETER :: SIXTH = 1._wp / 6._wp
-real(wp), PARAMETER :: R24 = 4.166666666666666666666666666666666666666666666666666666666666666666666666666666666667D-2
 
 !
 !     Other variables.
@@ -565,17 +558,17 @@ M = REDUCE (MA, -PI)
 !     Compute parameters.
 !
 
-ALPHA = (THREE_PI_SQR + ONEP6_PI*(PI-ABS(M))/(1._wp+ECC)) / (PI_SQR - 6.0D0)
+ALPHA = (3*pi**2 + 1.6_wp*pi*(PI-ABS(M))/(1._wp+ECC)) / (pi**2 - 6.0D0)
 D = 3.0D0*(1._wp-ECC) + ALPHA*ECC
 Q = 2.0D0*ALPHA*D*(1._wp-ECC)-M**2
 R = 3.0D0*ALPHA*D*(D-1.0D0+ECC)*M + M**3
-W = (ABS(R) + SQRT(Q**3 + R**2)) ** TWO_THIRDS
+W = (ABS(R) + SQRT(Q**3 + R**2)) ** (2._wp / 3._wp)
 
 !
 !     Compute first-order solution to Kepler's Equation (E1).
 !
 
-E1 = (2.0D0*R*W/(W**2 + W*Q + Q**2) + M) / D
+E1 = (2._wp*R*W/(W**2 + W*Q + Q**2) + M) / D
 
 !
 !     Save SIN(E1) into SE so we only have to evaluate it once.
@@ -601,8 +594,8 @@ F4 = -F2
 !
 
 DELTA3 = -F/(F1-0.5D0*F*F2/F1)
-DELTA4 = -F/(F1+0.5D0*DELTA3*F2+SIXTH*DELTA3**2*F3)
-DELTA5 = -F/(F1+0.5D0*DELTA4*F2+SIXTH*DELTA4**2*F3+R24*DELTA4**3*F4)
+DELTA4 = -F/(F1+0.5D0*DELTA3*F2+ DELTA3**2*F3 / 6._wp)
+DELTA5 = -F/(F1+0.5D0*DELTA4*F2+ DELTA4**2*F3 / 6._wp + DELTA4**3*F4 / 24._wp)
 
 !
 !     Find fifth-order refined estimate of E (E5).
