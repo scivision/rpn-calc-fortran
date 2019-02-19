@@ -1,11 +1,11 @@
 image:
 - Visual Studio 2017
-- ubuntu1804
+- Ubuntu1804
 
 environment:
   MINGW_DIR: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin
 
-clone_depth: 3
+clone_depth: 25
 
 build: off
 

@@ -3,7 +3,7 @@ group: travis_latest
 dist: xenial
 
 git:
-  depth: 3
+  depth: 25
   quiet: true
 
 env: FC=gfortran
@@ -11,7 +11,7 @@ env: FC=gfortran
 addons:
   apt:
     packages: gfortran
-    
+
 matrix:
   include:
   - os: linux
@@ -20,8 +20,8 @@ matrix:
     - brew install gcc > /dev/null
   - os: windows
     language: sh
-    install: 
-    - cd bin
+    install:
+    - cd build
     - cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ../src
     - cmake --build . --target install
 
