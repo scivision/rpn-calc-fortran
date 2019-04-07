@@ -1,4 +1,4 @@
-language: c
+language: minimal
 group: travis_latest
 dist: xenial
 
@@ -14,21 +14,31 @@ addons:
 
 matrix:
   include:
-  - os: linux
+#  - os: linux  # old cmake
   - os: osx
     before_install:
+    - brew upgrade cmake > /dev/null
     - brew install gcc > /dev/null
   - os: windows
-    language: sh
     install:
     - cd build
-    - cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ../src
+    - cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ..
     - cmake --build . --target install
 
 install:
 - cd build
-- cmake ../src
+- cmake ..
 - cmake --build . --target install
 
 script: ctest --output-on-failure
 
+deploy:
+  provider: releases
+  api_key:
+    secure: $APIKEY
+  file:
+    - rpncalc.exe
+  skip_cleanup: true
+  on:
+    repo: scivision/rpn-calc-fortran
+    tags: true

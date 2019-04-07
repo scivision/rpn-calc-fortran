@@ -46,7 +46,7 @@ elemental logical function isclose_r(actual, desired, rtol, atol, equal_nan) res
   if (present(rtol)) r = rtol
   if (present(atol)) a = atol
   if (present(equal_nan)) n = equal_nan
-  
+
   !print*,r,a,n,actual,desired
 
 !--- sanity check
@@ -88,7 +88,7 @@ elemental logical function isclose_c(actual, desired, rtol, atol) result(isclose
   a = 0._wp
   if (present(rtol)) r = rtol
   if (present(atol)) a = atol
-  
+
   !print*,r,a,n,actual,desired
 
 !--- sanity check
@@ -117,7 +117,7 @@ impure elemental subroutine assert_isclose(actual, desired, rtol, atol, equal_na
   real(wp), intent(in), optional :: rtol, atol
   logical, intent(in), optional :: equal_nan
   character(*), intent(in), optional :: err_msg
-  
+
   if (.not.isclose(actual,desired,rtol,atol,equal_nan)) then
     write(stderr,*) merge(err_msg,'',present(err_msg)),': actual',actual,'desired',desired
     call errorstop
@@ -137,4 +137,3 @@ stop 1
 end subroutine errorstop
 
 end module assert
-
