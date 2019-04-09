@@ -40,13 +40,11 @@ if(f08errorstop)
   set_target_properties(assert PROPERTIES COMPILE_DEFINITIONS F08)
 endif()
 
-include(FindUnixCommands)
-if(BASH AND NOT WIN32)
-  add_test(NAME UIrpn COMMAND ${BASH} -c "echo -e '2 5 * \n q' | $<TARGET_FILE:rpncalc>")
-  set_tests_properties(UIrpn PROPERTIES TIMEOUT 5)
+find_package(Python3)
+if(Python3_FOUND)
+  add_test(NAME UI COMMAND Python3::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_ui.py $<TARGET_FILE:rpncalc>)
 
-  add_test(NAME RPNinput
-           COMMAND ${BASH} -c "$<TARGET_FILE:rpncalc> < ${CMAKE_CURRENT_SOURCE_DIR}/tests/test.asc | tail -n1 | grep '308 / 29'")
+  add_test(NAME Value COMMAND Python3::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_value.py $<TARGET_FILE:rpncalc>)
 endif()
 
 #--- install

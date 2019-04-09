@@ -38,3 +38,9 @@ rpncalc_exe = executable('rpncalc', rpncalc_src,
 testcalc_exe = executable('testcalc', 'tests/test.f90',
   link_with: [assert, funcs, reg, hyper])
 test('RPNfunc', testcalc_exe)
+
+testUI = find_program('tests/test_ui.py')
+test('UI', testUI, args: rpncalc_exe)
+
+tester = find_program('tests/test_value.py')
+test('Values', tester, args: rpncalc_exe)
