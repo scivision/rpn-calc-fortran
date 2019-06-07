@@ -15,7 +15,7 @@ private
 
 integer,parameter :: wp = dp
 
-public :: wp, isclose, assert_isclose, errorstop
+public :: wp, isclose, assert_isclose
 
 contains
 
@@ -33,34 +33,34 @@ elemental logical function isclose_r(actual, desired, rtol, atol, equal_nan) res
 ! https://www.python.org/dev/peps/pep-0485/#proposed-implementation
 ! https://github.com/PythonCHB/close_pep/blob/master/is_close.py
 
-  real(wp), intent(in) :: actual, desired
-  real(wp), intent(in), optional :: rtol, atol
-  logical, intent(in), optional :: equal_nan
+real(wp), intent(in) :: actual, desired
+real(wp), intent(in), optional :: rtol, atol
+logical, intent(in), optional :: equal_nan
 
-  real(wp) :: r,a
-  logical :: n
-  ! this is appropriate INSTEAD OF merge(), since non present values aren't defined.
-  r = 1e-5_wp
-  a = 0._wp
-  n = .false.
-  if (present(rtol)) r = rtol
-  if (present(atol)) a = atol
-  if (present(equal_nan)) n = equal_nan
+real(wp) :: r,a
+logical :: n
+! this is appropriate INSTEAD OF merge(), since non present values aren't defined.
+r = 1e-5_wp
+a = 0._wp
+n = .false.
+if (present(rtol)) r = rtol
+if (present(atol)) a = atol
+if (present(equal_nan)) n = equal_nan
 
-  !print*,r,a,n,actual,desired
+!print*,r,a,n,actual,desired
 
 !--- sanity check
-  if ((r < 0._wp).or.(a < 0._wp)) call errorstop
+if ((r < 0._wp).or.(a < 0._wp)) error stop 'impossible rel or abs tolerance'
 !--- simplest case -- too unlikely, especially for arrays?
-  !isclose = (actual == desired)
-  !if (isclose) return
+!isclose = (actual == desired)
+!if (isclose) return
 !--- equal nan
-  isclose = n.and.(ieee_is_nan(actual).and.ieee_is_nan(desired))
-  if (isclose) return
+isclose = n.and.(ieee_is_nan(actual).and.ieee_is_nan(desired))
+if (isclose) return
 !--- Inf /= -Inf, unequal NaN
-  if (.not.ieee_is_finite(actual) .or. .not.ieee_is_finite(desired)) return
+if (.not.ieee_is_finite(actual) .or. .not.ieee_is_finite(desired)) return
 !--- floating point closeness check
-  isclose = abs(actual-desired) <= max(r * max(abs(actual), abs(desired)), a)
+isclose = abs(actual-desired) <= max(r * max(abs(actual), abs(desired)), a)
 
 end function isclose_r
 
@@ -79,22 +79,22 @@ elemental logical function isclose_c(actual, desired, rtol, atol) result(isclose
 ! https://www.python.org/dev/peps/pep-0485/#proposed-implementation
 ! https://github.com/PythonCHB/close_pep/blob/master/is_close.py
 
-  complex(wp), intent(in) :: actual, desired
-  real(wp), intent(in), optional :: rtol, atol
+complex(wp), intent(in) :: actual, desired
+real(wp), intent(in), optional :: rtol, atol
 
-  real(wp) :: r,a
-  ! this is appropriate INSTEAD OF merge(), since non present values aren't defined.
-  r = 1e-5_wp
-  a = 0._wp
-  if (present(rtol)) r = rtol
-  if (present(atol)) a = atol
+real(wp) :: r,a
+! this is appropriate INSTEAD OF merge(), since non present values aren't defined.
+r = 1e-5_wp
+a = 0._wp
+if (present(rtol)) r = rtol
+if (present(atol)) a = atol
 
-  !print*,r,a,n,actual,desired
+!print*,r,a,n,actual,desired
 
 !--- sanity check
-  if ((abs(r) < 0._wp).or.(abs(a) < 0._wp)) call errorstop
+if ((abs(r) < 0._wp).or.(abs(a) < 0._wp)) error stop 'impossible rel or abs tolerance'
 !--- floating point closeness check
-  isclose = abs(actual-desired) <= max(r * max(abs(actual), abs(desired)), a)
+isclose = abs(actual-desired) <= max(r * max(abs(actual), abs(desired)), a)
 
 end function isclose_c
 
@@ -113,27 +113,17 @@ impure elemental subroutine assert_isclose(actual, desired, rtol, atol, equal_na
 !
 ! rtol overrides atol when both are specified
 
-  real(wp), intent(in) :: actual, desired
-  real(wp), intent(in), optional :: rtol, atol
-  logical, intent(in), optional :: equal_nan
-  character(*), intent(in), optional :: err_msg
+real(wp), intent(in) :: actual, desired
+real(wp), intent(in), optional :: rtol, atol
+logical, intent(in), optional :: equal_nan
+character(*), intent(in), optional :: err_msg
 
-  if (.not.isclose(actual,desired,rtol,atol,equal_nan)) then
-    write(stderr,*) merge(err_msg,'',present(err_msg)),': actual',actual,'desired',desired
-    call errorstop
-  endif
+if (.not.isclose(actual,desired,rtol,atol,equal_nan)) then
+  write(stderr,*) merge(err_msg,'',present(err_msg)),': actual',actual,'desired',desired
+  error stop
+endif
 
 end subroutine assert_isclose
 
-
-pure subroutine errorstop
-
-#ifdef F08
-error stop
-#else
-stop 1
-#endif
-
-end subroutine errorstop
 
 end module assert

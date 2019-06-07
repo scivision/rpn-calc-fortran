@@ -21,3 +21,5 @@ install:
 
 test_script: ctest --output-on-failure
 
+artifacts:
+- path: rpncalc.exe

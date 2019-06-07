@@ -11,7 +11,7 @@ end interface push_stack
 
 interface printx
   procedure printx_r, cprintx, rprintx
-end interface 
+end interface
 
 complex(wp), parameter, private :: c0 = (0._wp, 0._wp)
 
@@ -133,7 +133,7 @@ CHARACTER(9) :: F1, F2, F3
 character(1) :: F
 
 write(F,'(I1)') DISP_DIGITS
-F1 ='(4F15.'//F//')' 
+F1 ='(4F15.'//F//')'
 F2 = '(5ES15.'//F//')'
 F3 = '(5EN15.'//F//')'
 
@@ -142,9 +142,9 @@ IF (BASE_MODE == 10) THEN                                                   ! DE
       CASE (1)                                                                ! print X (FIX)
          WRITE (NUMSTR, F1) X
          IF (INDEX(NUMSTR,'*') /= 0)  WRITE(NUMSTR, F2) X
-         
+
          READ (NUMSTR, *) TMPX
-         IF (.not.isclose(x, 0._wp) .AND. isclose(TMPX,0._wp)) WRITE (NUMSTR, F2) X      !   disp. underflow          
+         IF (.not.isclose(x, 0._wp) .AND. isclose(TMPX,0._wp)) WRITE (NUMSTR, F2) X      !   disp. underflow
       CASE (2)                                                                ! print X (SCI)
          WRITE (NUMSTR, F2) X
       CASE (3)                                                                ! print X (ENG)
@@ -154,7 +154,7 @@ IF (BASE_MODE == 10) THEN                                                   ! DE
    END SELECT
 ELSE
    SELECT CASE (BASE_MODE)
-      CASE (2)                                                                ! print X (BIN) 
+      CASE (2)                                                                ! print X (BIN)
          WRITE (NUMSTR, '(B0)') INT(X)
       CASE (8)                                                                ! print X (OCT)
          WRITE (NUMSTR, '(O0)') INT(X)

@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Debug or Release")
+endif()
 project(RPNcalc Fortran)
 enable_testing()
 
@@ -34,11 +37,8 @@ target_compile_options(testcalc PRIVATE ${FFLAGS})
 add_test(NAME RPNfunc COMMAND testcalc)
 
 #--- errors
-add_library(assert tests/assert.F90)
+add_library(assert tests/assert.f90)
 target_compile_options(assert PRIVATE ${FFLAGS})
-if(f08errorstop)
-  set_target_properties(assert PROPERTIES COMPILE_DEFINITIONS F08)
-endif()
 
 find_package(Python3)
 if(Python3_FOUND)

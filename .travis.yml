@@ -19,11 +19,11 @@ matrix:
     before_install:
     - brew upgrade cmake > /dev/null
     - brew install gcc > /dev/null
-  - os: windows
-    install:
-    - cd build
-    - cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ..
-    - cmake --build . --target install
+#  - os: windows
+#    install:
+#    - cd build
+#    - cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ..
+#    - cmake --build . --target install
 
 install:
 - cd build
@@ -31,14 +31,3 @@ install:
 - cmake --build . --target install
 
 script: ctest --output-on-failure
-
-deploy:
-  provider: releases
-  api_key:
-    secure: $APIKEY
-  file:
-    - rpncalc.exe
-  skip_cleanup: true
-  on:
-    repo: scivision/rpn-calc-fortran
-    tags: true

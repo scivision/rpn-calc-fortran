@@ -1,7 +1,7 @@
       module rji
-      
+
       implicit none
-      
+
       contains
 
       SUBROUTINE RIBESL(X,ALPHA,NB,IZE,B,NCALC)
@@ -22,19 +22,19 @@ C ALPHA - Working precision fractional part of order for which
 C         I's or exponentially scaled I's (I*EXP(-X)) are
 C         to be calculated.  0 .LE. ALPHA .LT. 1.0.
 C NB    - Integer number of functions to be calculated, NB .GT. 0.
-C         The first function calculated is of order ALPHA, and the 
+C         The first function calculated is of order ALPHA, and the
 C         last is of order (NB - 1 + ALPHA).
 C IZE   - Integer type.  IZE = 1 if unscaled I's are to calculated,
 C         and 2 if exponentially scaled I's are to be calculated.
 C B     - Working precision output vector of length NB.  If the routine
-C         terminates normally (NCALC=NB), the vector B contains the 
+C         terminates normally (NCALC=NB), the vector B contains the
 C         functions I(ALPHA,X) through I(NB-1+ALPHA,X), or the
 C         corresponding exponentially scaled functions.
 C NCALC - Integer output variable indicating possible errors.
 C         Before using the vector B, the user should check that
 C         NCALC=NB, i.e., all orders have been calculated to
 C         the desired accuracy.  See error returns below.
-C 
+C
 C
 C*******************************************************************
 C*******************************************************************
@@ -64,7 +64,7 @@ C            of the backward recursion will be executed.  The value
 C            of 10.0 ** 4 is used on every machine.
 C   EXPARG = Largest working precision argument that the library
 C            EXP routine can handle and upper limit on the
-C            magnitude of X when IZE=1; approximately 
+C            magnitude of X when IZE=1; approximately
 C            LOG(beta**maxexp)
 C
 C
@@ -100,13 +100,13 @@ C VAX D-Format  (D.P.)    17       1.0D+38     1.0D+17     1.0D-5
 C VAX G-Format  (D.P.)    16       1.0D+307    1.0D+16     1.0D-4
 C
 C
-C                         ENMTEN      XLARGE   EXPARG 
+C                         ENMTEN      XLARGE   EXPARG
 C
-C CRAY-1        (S.P.)   1.84E-2466   1.0E+4    5677 
+C CRAY-1        (S.P.)   1.84E-2466   1.0E+4    5677
 C Cyber 180/855
 C   under NOS   (S.P.)   1.25E-293    1.0E+4     741
 C IEEE (IBM/XT,
-C   SUN, etc.)  (S.P.)   4.70E-38     1.0E+4      88  
+C   SUN, etc.)  (S.P.)   4.70E-38     1.0E+4      88
 C IEEE (IBM/XT,
 C   SUN, etc.)  (D.P.)   8.90D-308    1.0D+4     709
 C IBM 3033      (D.P.)   2.16D-78     1.0D+4     174
@@ -177,7 +177,7 @@ C-------------------------------------------------------------------
       double precision, intent(out) :: B(NB)
       integer, intent(out) :: NCALC
       INTEGER IZE,K,L,MAGX,N,NBMX,NEND,NSIG,NSTART
-      double precision            
+      double precision
      1 ALPHA,CONST,EM,EMPAL,EMP2AL,EN,ENMTEN,ENSIG,
      2 ENTEN,EXPARG,HALF,HALFX,ONE,P,PLAST,POLD,PSAVE,PSAVEL,
      3 RTNSIG,SUM,TEMPA,TEMPB,TEMPC,TEST,TOVER,TWO,X,XLARGE,ZERO
@@ -319,8 +319,9 @@ C N .LT. NB, so store B(N) and set higher orders to zero.
 C-------------------------------------------------------------------
                         B(N) = TEMPA
                         NEND = -NEND
-                        DO 130 L = 1, NEND
-  130                      B(N+L) = ZERO
+                        DO L = 1, NEND
+                          B(N+L) = ZERO
+                        enddo
                      ELSE
                         IF (NEND .GT. 0) THEN
 C-------------------------------------------------------------------
@@ -440,6 +441,6 @@ C-------------------------------------------------------------------
       RETURN
 C---------- Last line of RIBESL ----------
       END subroutine ribesl
-      
+
       end module rji
 
