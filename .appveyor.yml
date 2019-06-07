@@ -24,3 +24,16 @@ test_script:
 
 artifacts:
 - path: build/rpncalc.exe
+  name: WindowsExecutable
+
+- path: build/rpncalc
+  name: LinuxExecutable
+
+deploy:
+  description: 'Executables for Fortran 2018 RPN Calculator'
+  draft: true
+  provider: GitHub
+  artifact: build/rpncalc.exe
+  on:
+    branch: master
+    APPVEYOR_REPO_TAG: true
