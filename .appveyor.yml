@@ -13,8 +13,8 @@ init:
 - cmd: set PATH=%MINGW_DIR%;%PATH%
 
 install:
-- cmd: cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" -B $APPVEYOR_BUILD_FOLDER/build
-- sh: cmake -B $APPVEYOR_BUILD_FOLDER/build
+- cmd: cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" -B $APPVEYOR_BUILD_FOLDER/build -S $APPVEYOR_BUILD_FOLDER
+- sh: cmake -B $APPVEYOR_BUILD_FOLDER/build -S $APPVEYOR_BUILD_FOLDER
 
 - cmake --build $APPVEYOR_BUILD_FOLDER/build --target install
 
