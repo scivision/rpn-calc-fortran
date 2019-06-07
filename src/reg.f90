@@ -3,7 +3,7 @@ use assert, only: wp
 
 IMPLICIT NONE
 
-CHARACTER(*), PARAMETER :: VERSION = '1.1.6'
+CHARACTER(*), PARAMETER :: VERSION = '1.1.7'
 
 INTEGER :: STACK_SIZE                                         ! stack size
 INTEGER, PARAMETER :: REG_SIZE = 10                                           ! number of storage registers
