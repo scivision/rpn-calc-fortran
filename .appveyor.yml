@@ -13,13 +13,14 @@ init:
 - cmd: set PATH=%MINGW_DIR%;%PATH%
 
 install:
-- cd build
-- cmd: cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ..
-- sh: cmake ..
+- cmd: cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" -B $APPVEYOR_BUILD_FOLDER/build
+- sh: cmake -B $APPVEYOR_BUILD_FOLDER/build
 
-- cmake --build . --target install
+- cmake --build $APPVEYOR_BUILD_FOLDER/build --target install
 
-test_script: ctest --output-on-failure
+test_script:
+- cd $APPVEYOR_BUILD_FOLDER/build
+- ctest --output-on-failure
 
 artifacts:
-- path: rpncalc.exe
+- path: $APPVEYOR_BUILD_FOLDER/build/rpncalc.exe
