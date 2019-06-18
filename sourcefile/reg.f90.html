@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+   <meta name="description" content="RPN calculator in Fortran">
+    
+    <meta name="author" content="Michael Hirsch, Ph.D." >
+    <link rel="icon" href="../favicon.png">
+
+    <title>reg.f90 &ndash; RPN calculator in Fortran</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+    
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">RPN calculator in Fortran </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+        
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          
+              
+            <li><a href="../lists/files.html">Source Files</a></li>
+        
+        
+        
+            <li><a href="../lists/modules.html">Modules</a></li>
+        
+            
+                                
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+        
+               
+        
+            <li><a href="../program/rpn.html">Program</a></li>
+      
+            </ul>
+            </li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+
+                             
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../program/rpn.html">Program</a></li>
+
+          </ul>
+        
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    
+  
+  <div class="row">
+    <h1>reg.f90
+    <small>Source File</small>
+    
+    </h1>
+    
+<div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+     
+     
+     
+     
+    
+    
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+    data-placement="bottom" data-html="true"
+    title=" 0.6% of total for source files.">39 statements</a>
+     </li> 
+     
+     
+     
+    <li><i class="fa fa-code"></i><a href="../src/reg.f90"> Source File</a></li>
+     
+     
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+  
+    
+  
+     <li class="active">reg.f90</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    
+<div id="sidebar">
+  
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#mods-0">Modules</a></h3></div>
+  <div id="mods-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/global.html">GLOBAL</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+  <div class="list-group">
+    <a class="list-group-item" href="../sourcefile/reg.f90.html#src">reg.f90</a>
+  </div>
+</div>
+
+
+
+</div>
+
+    </div>
+    <div class="col-md-9" id='text'>
+      
+      <br>
+    
+      
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Files dependent on this one</h3>
+      </div>
+      <div class="panel-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: sourcefile~~reg.f90~~AfferentGraph Pages: 1 -->
+<svg id="sourcefileregf90AfferentGraph" width="641pt" height="183pt"
+ viewBox="0.00 0.00 641.00 182.96" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="sourcefile~~reg.f90~~AfferentGraph" class="graph" transform="scale(.8978 .8978) rotate(0) translate(4 199.8008)">
+<title>sourcefile~~reg.f90~~AfferentGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-199.8008 710,-199.8008 710,4 -4,4"/>
+<!-- sourcefile~reg.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_node1" class="node">
+<title>sourcefile~reg.f90</title>
+<polygon fill="none" stroke="#000000" points="54,-109.3695 0,-109.3695 0,-85.3695 54,-85.3695 54,-109.3695"/>
+<text text-anchor="middle" x="27" y="-94.9695" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">reg.f90</text>
+</g>
+<!-- sourcefile~eval.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_node2" class="node">
+<title>sourcefile~eval.f90</title>
+<g id="a_sourcefile~~reg.f90~~AfferentGraph_node2"><a xlink:href=".././sourcefile/eval.f90.html" xlink:title="eval.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="616,-109.3695 562,-109.3695 562,-85.3695 616,-85.3695 616,-109.3695"/>
+<text text-anchor="middle" x="589" y="-94.9695" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">eval.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~eval.f90&#45;&gt;sourcefile~reg.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge1" class="edge">
+<title>sourcefile~eval.f90&#45;&gt;sourcefile~reg.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M580.2817,-109.4715C569.3287,-123.6805 549.1397,-146.7762 526,-158.3695 478.5074,-182.164 460.3596,-168.4139 408,-177.3695"/>
+</g>
+<!-- sourcefile~ui.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_node3" class="node">
+<title>sourcefile~ui.f90</title>
+<g id="a_sourcefile~~reg.f90~~AfferentGraph_node3"><a xlink:href=".././sourcefile/ui.f90.html" xlink:title="ui.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="526,-149.3695 472,-149.3695 472,-125.3695 526,-125.3695 526,-149.3695"/>
+<text text-anchor="middle" x="499" y="-134.9695" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ui.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~eval.f90&#45;&gt;sourcefile~ui.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge9" class="edge">
+<title>sourcefile~eval.f90&#45;&gt;sourcefile~ui.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M561.997,-109.3709C553.7078,-113.055 544.4431,-117.1726 535.6234,-121.0925"/>
+<polygon fill="#000000" stroke="#000000" points="534.0116,-117.9786 526.295,-125.2384 536.8546,-124.3753 534.0116,-117.9786"/>
+</g>
+<!-- sourcefile~funcs.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_node9" class="node">
+<title>sourcefile~funcs.f90</title>
+<g id="a_sourcefile~~reg.f90~~AfferentGraph_node9"><a xlink:href=".././sourcefile/funcs.f90.html" xlink:title="funcs.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="436,-69.3695 380,-69.3695 380,-45.3695 436,-45.3695 436,-69.3695"/>
+<text text-anchor="middle" x="408" y="-54.9695" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">funcs.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~eval.f90&#45;&gt;sourcefile~funcs.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge20" class="edge">
+<title>sourcefile~eval.f90&#45;&gt;sourcefile~funcs.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M561.9025,-91.3811C531.1152,-84.5773 480.6549,-73.4259 445.9581,-65.7581"/>
+<polygon fill="#000000" stroke="#000000" points="446.6977,-62.3371 436.178,-63.5967 445.1871,-69.1722 446.6977,-62.3371"/>
+</g>
+<!-- sourcefile~ui.f90&#45;&gt;sourcefile~reg.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge2" class="edge">
+<title>sourcefile~ui.f90&#45;&gt;sourcefile~reg.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M480.7832,-149.3766C463.0596,-160.0626 434.9359,-174.4444 408,-177.3695"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M408,-177.3695C279.4226,-191.3323 242.0541,-210.3632 117,-177.3695"/>
+</g>
+<!-- sourcefile~ui.f90&#45;&gt;sourcefile~funcs.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge19" class="edge">
+<title>sourcefile~ui.f90&#45;&gt;sourcefile~funcs.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M485.1791,-125.2193C470.3949,-112.2222 446.7524,-91.4376 429.5267,-76.2941"/>
+<polygon fill="#000000" stroke="#000000" points="431.4742,-73.346 421.6528,-69.372 426.8524,-78.6033 431.4742,-73.346"/>
+</g>
+<!-- sourcefile~rat.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_node4" class="node">
+<title>sourcefile~rat.f90</title>
+<g id="a_sourcefile~~reg.f90~~AfferentGraph_node4"><a xlink:href=".././sourcefile/rat.f90.html" xlink:title="rat.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="144,-109.3695 90,-109.3695 90,-85.3695 144,-85.3695 144,-109.3695"/>
+<text text-anchor="middle" x="117" y="-94.9695" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">rat.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~rat.f90&#45;&gt;sourcefile~reg.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge3" class="edge">
+<title>sourcefile~rat.f90&#45;&gt;sourcefile~reg.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M89.997,-97.3695C81.9723,-97.3695 73.0335,-97.3695 64.4691,-97.3695"/>
+<polygon fill="#000000" stroke="#000000" points="64.295,-93.8696 54.295,-97.3695 64.2949,-100.8696 64.295,-93.8696"/>
+</g>
+<!-- sourcefile~calc.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_node5" class="node">
+<title>sourcefile~calc.f90</title>
+<g id="a_sourcefile~~reg.f90~~AfferentGraph_node5"><a xlink:href=".././sourcefile/calc.f90.html" xlink:title="calc.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="706,-109.3695 652,-109.3695 652,-85.3695 706,-85.3695 706,-109.3695"/>
+<text text-anchor="middle" x="679" y="-94.9695" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">calc.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~calc.f90&#45;&gt;sourcefile~reg.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge4" class="edge">
+<title>sourcefile~calc.f90&#45;&gt;sourcefile~reg.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M651.9912,-87.3055C640.9498,-83.4707 627.9786,-79.3183 616,-76.3695 564.8459,-63.777 551.3733,-63.057 499,-57.3695"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M499,-57.3695C469.9617,-52.0886 464.98,-41.9616 436,-36.3695 296.5436,-9.4595 254.3297,18.8629 117,-17.3695"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M117,-17.3695C84.4645,-27.3225 56.9223,-56.9539 41.1742,-77.2202"/>
+<polygon fill="#000000" stroke="#000000" points="38.3562,-75.1443 35.167,-85.2477 43.9607,-79.3383 38.3562,-75.1443"/>
+</g>
+<!-- sourcefile~calc.f90&#45;&gt;sourcefile~eval.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge7" class="edge">
+<title>sourcefile~calc.f90&#45;&gt;sourcefile~eval.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M651.997,-97.3695C643.9723,-97.3695 635.0335,-97.3695 626.4691,-97.3695"/>
+<polygon fill="#000000" stroke="#000000" points="626.295,-93.8696 616.295,-97.3695 626.2949,-100.8696 626.295,-93.8696"/>
+</g>
+<!-- sourcefile~calc.f90&#45;&gt;sourcefile~ui.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge8" class="edge">
+<title>sourcefile~calc.f90&#45;&gt;sourcefile~ui.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M651.9912,-107.4336C640.9498,-111.2684 627.9786,-115.4208 616,-118.3695 589.6612,-124.8533 559.4273,-129.6974 536.2922,-132.8713"/>
+<polygon fill="#000000" stroke="#000000" points="535.6535,-129.4253 526.2016,-134.212 536.5755,-136.3644 535.6535,-129.4253"/>
+</g>
+<!-- sourcefile~calc.f90&#45;&gt;sourcefile~funcs.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge18" class="edge">
+<title>sourcefile~calc.f90&#45;&gt;sourcefile~funcs.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M499,-57.3695C481.8642,-55.5087 462.8061,-55.2339 446.5765,-55.5314"/>
+<polygon fill="#000000" stroke="#000000" points="446.2734,-52.038 436.3684,-55.7985 446.4566,-59.0356 446.2734,-52.038"/>
+</g>
+<!-- sourcefile~hyper.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_node6" class="node">
+<title>sourcefile~hyper.f90</title>
+<g id="a_sourcefile~~reg.f90~~AfferentGraph_node6"><a xlink:href=".././sourcefile/hyper.f90.html" xlink:title="hyper.F90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="241,-149.3695 180,-149.3695 180,-125.3695 241,-125.3695 241,-149.3695"/>
+<text text-anchor="middle" x="210.5" y="-134.9695" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">hyper.F90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~hyper.f90&#45;&gt;sourcefile~reg.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge5" class="edge">
+<title>sourcefile~hyper.f90&#45;&gt;sourcefile~reg.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M197.0093,-149.4647C179.2241,-163.9112 146.7045,-185.2066 117,-177.3695"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M117,-177.3695C83.9251,-168.6432 56.3632,-138.3899 40.7789,-117.6929"/>
+<polygon fill="#000000" stroke="#000000" points="43.5486,-115.55 34.852,-109.4984 37.8766,-119.6524 43.5486,-115.55"/>
+</g>
+<!-- sourcefile~hyper.f90&#45;&gt;sourcefile~rat.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge10" class="edge">
+<title>sourcefile~hyper.f90&#45;&gt;sourcefile~rat.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M182.4469,-125.3682C173.3293,-121.4676 163.0758,-117.0811 153.4377,-112.9578"/>
+<polygon fill="#000000" stroke="#000000" points="154.6402,-109.6655 144.0696,-108.9501 151.8869,-116.1013 154.6402,-109.6655"/>
+</g>
+<!-- sourcefile~stats.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_node7" class="node">
+<title>sourcefile~stats.f90</title>
+<g id="a_sourcefile~~reg.f90~~AfferentGraph_node7"><a xlink:href=".././sourcefile/stats.f90.html" xlink:title="stats.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="237.5,-69.3695 183.5,-69.3695 183.5,-45.3695 237.5,-45.3695 237.5,-69.3695"/>
+<text text-anchor="middle" x="210.5" y="-54.9695" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">stats.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~stats.f90&#45;&gt;sourcefile~reg.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge6" class="edge">
+<title>sourcefile~stats.f90&#45;&gt;sourcefile~reg.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M197.0093,-45.2744C179.2241,-30.8279 146.7045,-9.5324 117,-17.3695"/>
+</g>
+<!-- sourcefile~stats.f90&#45;&gt;sourcefile~rat.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge12" class="edge">
+<title>sourcefile~stats.f90&#45;&gt;sourcefile~rat.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M183.4559,-68.9392C174.1372,-72.9258 163.5398,-77.4595 153.588,-81.7169"/>
+<polygon fill="#000000" stroke="#000000" points="152.1246,-78.5361 144.3072,-85.6873 154.8779,-84.9719 152.1246,-78.5361"/>
+</g>
+<!-- sourcefile~gamma.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_node8" class="node">
+<title>sourcefile~gamma.f90</title>
+<g id="a_sourcefile~~reg.f90~~AfferentGraph_node8"><a xlink:href=".././sourcefile/gamma.f90.html" xlink:title="gamma.f90">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="344,-109.3695 277,-109.3695 277,-85.3695 344,-85.3695 344,-109.3695"/>
+<text text-anchor="middle" x="310.5" y="-94.9695" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">gamma.f90</text>
+</a>
+</g>
+</g>
+<!-- sourcefile~gamma.f90&#45;&gt;sourcefile~rat.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge11" class="edge">
+<title>sourcefile~gamma.f90&#45;&gt;sourcefile~rat.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M276.6282,-95.7145C257.2236,-95.1799 232.4413,-95.1969 210.5,-97.3695"/>
+</g>
+<!-- sourcefile~gamma.f90&#45;&gt;sourcefile~hyper.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge14" class="edge">
+<title>sourcefile~gamma.f90&#45;&gt;sourcefile~hyper.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M280.4967,-109.3709C270.9925,-113.1725 260.3341,-117.4359 250.256,-121.4671"/>
+<polygon fill="#000000" stroke="#000000" points="248.8126,-118.2748 240.8277,-125.2384 251.4124,-124.7741 248.8126,-118.2748"/>
+</g>
+<!-- sourcefile~funcs.f90&#45;&gt;sourcefile~rat.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge13" class="edge">
+<title>sourcefile~funcs.f90&#45;&gt;sourcefile~rat.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M310.5,-57.3695C262.8648,-62.0863 258.1352,-92.6527 210.5,-97.3695"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M210.5,-97.3695C192.0394,-99.1975 171.4279,-99.3934 154.2647,-99.0501"/>
+<polygon fill="#000000" stroke="#000000" points="154.1643,-95.5463 144.0739,-98.7765 153.9763,-102.5437 154.1643,-95.5463"/>
+</g>
+<!-- sourcefile~funcs.f90&#45;&gt;sourcefile~hyper.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge15" class="edge">
+<title>sourcefile~funcs.f90&#45;&gt;sourcefile~hyper.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M399.1345,-69.5428C387.9988,-83.822 367.4808,-106.9868 344,-118.3695 315.0467,-132.4051 278.7022,-136.8464 251.2484,-137.9498"/>
+<polygon fill="#000000" stroke="#000000" points="251.0972,-134.4525 241.1957,-138.2223 251.2869,-141.4499 251.0972,-134.4525"/>
+</g>
+<!-- sourcefile~funcs.f90&#45;&gt;sourcefile~stats.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge16" class="edge">
+<title>sourcefile~funcs.f90&#45;&gt;sourcefile~stats.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M379.7678,-55.9024C360.262,-55.2476 333.7457,-55.0678 310.5,-57.3695"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M310.5,-57.3695C289.8963,-59.4097 266.7874,-59.549 247.9787,-59.1158"/>
+<polygon fill="#000000" stroke="#000000" points="247.8333,-55.6101 237.7348,-58.8147 247.6276,-62.6071 247.8333,-55.6101"/>
+</g>
+<!-- sourcefile~funcs.f90&#45;&gt;sourcefile~gamma.f90 -->
+<g id="sourcefile~~reg.f90~~AfferentGraph_edge17" class="edge">
+<title>sourcefile~funcs.f90&#45;&gt;sourcefile~gamma.f90</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M379.799,-68.9392C370.3373,-72.8209 359.6115,-77.2212 349.4739,-81.3802"/>
+<polygon fill="#000000" stroke="#000000" points="347.9183,-78.2353 339.995,-85.269 350.5752,-84.7115 347.9183,-78.2353"/>
+</g>
+</g>
+</svg>
+</div><script>var pansourcefileregf90AfferentGraph = svgPanZoom('#sourcefileregf90AfferentGraph', {zoomEnabled: true,controlIconsEnabled: true, fit: true, center: true,}); </script><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="190pt" height="32pt"
+ viewBox="0.00 0.00 190.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-28 186,-28 186,4 -4,4"/>
+<!-- Source File -->
+<g id="node1" class="node">
+<title>Source File</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="67,-24 0,-24 0,0 67,0 67,-24"/>
+<text text-anchor="middle" x="33.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Source File</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="182,-24 85,-24 85,0 182,0 182,-24"/>
+<text text-anchor="middle" x="133.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a file to a file which it depends on. A file
+    is dependent upon another if the latter must be compiled before the former
+    can be.
+    </p>
+    </div></div></div></div>
+      </div>
+    </div>
+      
+      <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#mods-1">Modules</a></h3></div>
+  <div id="mods-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/global.html">GLOBAL</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title">Source Code</h3></div>
+  <div class="list-group">
+    <a class="list-group-item" href="../sourcefile/reg.f90.html#src">reg.f90</a>
+  </div>
+</div>
+
+
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    <section>
+      <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl"><pre><span></span><a name="ln-1"></a><span class="k">MODULE </span><span class="n">GLOBAL</span>
+<a name="ln-2"></a><span class="k">use </span><span class="n">assert</span><span class="p">,</span> <span class="n">only</span><span class="p">:</span> <span class="n">wp</span>
+<a name="ln-3"></a>
+<a name="ln-4"></a><span class="k">IMPLICIT NONE</span>
+<a name="ln-5"></a>
+<a name="ln-6"></a><span class="kt">CHARACTER</span><span class="p">(</span><span class="o">*</span><span class="p">),</span> <span class="k">PARAMETER</span> <span class="kd">::</span> <span class="n">VERSION</span> <span class="o">=</span> <span class="s1">&#39;1.1.7&#39;</span>
+<a name="ln-7"></a>
+<a name="ln-8"></a><span class="kt">INTEGER</span> <span class="kd">::</span> <span class="n">STACK_SIZE</span>                                         <span class="c">! stack size</span>
+<a name="ln-9"></a><span class="kt">INTEGER</span><span class="p">,</span> <span class="k">PARAMETER</span> <span class="kd">::</span> <span class="n">REG_SIZE</span> <span class="o">=</span> <span class="mi">10</span>                                           <span class="c">! number of storage registers</span>
+<a name="ln-10"></a><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span> <span class="k">allocatable</span> <span class="kd">::</span> <span class="n">STACK</span><span class="p">(:)</span>                           <span class="c">! real stack</span>
+<a name="ln-11"></a><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span> <span class="k">DIMENSION</span> <span class="p">(</span><span class="mi">0</span><span class="p">:</span><span class="n">REG_SIZE</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="kd">::</span> <span class="n">REG</span>                             <span class="c">! real storage registers</span>
+<a name="ln-12"></a><span class="kt">COMPLEX</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span> <span class="k">allocatable</span> <span class="kd">::</span> <span class="n">CSTACK</span><span class="p">(:)</span>                           <span class="c">! complex stack</span>
+<a name="ln-13"></a><span class="kt">COMPLEX</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span> <span class="k">DIMENSION</span> <span class="p">(</span><span class="mi">0</span><span class="p">:</span><span class="n">REG_SIZE</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="kd">::</span> <span class="n">CREG</span>                             <span class="c">! complex storage registers</span>
+<a name="ln-14"></a><span class="kt">INTEGER</span><span class="p">,</span> <span class="k">allocatable</span> <span class="kd">::</span> <span class="n">RNSTACK</span><span class="p">(:),</span> <span class="n">RDSTACK</span><span class="p">(:)</span>                      <span class="c">! rational stack</span>
+<a name="ln-15"></a><span class="kt">INTEGER</span><span class="p">,</span> <span class="k">DIMENSION</span> <span class="p">(</span><span class="mi">0</span><span class="p">:</span><span class="n">REG_SIZE</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="kd">::</span> <span class="n">RNREG</span><span class="p">,</span> <span class="n">RDREG</span>                             <span class="c">! rational storage registers</span>
+<a name="ln-16"></a><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span> <span class="kd">::</span> <span class="n">LASTX</span>                                                     <span class="c">! real LAST X register</span>
+<a name="ln-17"></a><span class="kt">COMPLEX</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span> <span class="kd">::</span> <span class="n">CLASTX</span>                                                     <span class="c">! complex LAST X register</span>
+<a name="ln-18"></a><span class="kt">INTEGER</span> <span class="kd">::</span> <span class="n">RNLASTX</span><span class="p">,</span> <span class="n">RDLASTX</span>                                                   <span class="c">! rational LAST X register</span>
+<a name="ln-19"></a><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span> <span class="kd">::</span> <span class="n">NN</span><span class="p">,</span> <span class="n">SUMX</span><span class="p">,</span> <span class="n">SUMX2</span><span class="p">,</span> <span class="n">SUMY</span><span class="p">,</span> <span class="n">SUMY2</span><span class="p">,</span> <span class="n">SUMXY</span>                       <span class="c">! real summation registers</span>
+<a name="ln-20"></a><span class="kt">COMPLEX</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span> <span class="kd">::</span> <span class="n">CNN</span><span class="p">,</span> <span class="n">CSUMX</span><span class="p">,</span> <span class="n">CSUMX2</span><span class="p">,</span> <span class="n">CSUMY</span><span class="p">,</span> <span class="n">CSUMY2</span><span class="p">,</span> <span class="n">CSUMXY</span>                  <span class="c">! complex summation registers</span>
+<a name="ln-21"></a><span class="kt">INTEGER</span> <span class="kd">::</span> <span class="n">RNNN</span><span class="p">,</span> <span class="n">RNSUMX</span><span class="p">,</span> <span class="n">RNSUMX2</span><span class="p">,</span> <span class="n">RNSUMY</span><span class="p">,</span> <span class="n">RNSUMY2</span><span class="p">,</span> <span class="n">RNSUMXY</span>                    <span class="c">! rational summation registers (num.)</span>
+<a name="ln-22"></a><span class="kt">INTEGER</span> <span class="kd">::</span> <span class="n">RDNN</span><span class="p">,</span> <span class="n">RDSUMX</span><span class="p">,</span> <span class="n">RDSUMX2</span><span class="p">,</span> <span class="n">RDSUMY</span><span class="p">,</span> <span class="n">RDSUMY2</span><span class="p">,</span> <span class="n">RDSUMXY</span>                    <span class="c">! rational summation registers (den.)</span>
+<a name="ln-23"></a><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span> <span class="kd">::</span> <span class="n">ANGLE_FACTOR</span><span class="p">,</span> <span class="n">FRACTOL</span>
+<a name="ln-24"></a><span class="kt">INTEGER</span> <span class="kd">::</span> <span class="n">ANGLE_MODE</span><span class="p">,</span> <span class="n">DISP_MODE</span><span class="p">,</span> <span class="n">DISP_DIGITS</span><span class="p">,</span> <span class="n">BASE_MODE</span><span class="p">,</span> <span class="n">DOMAIN_MODE</span><span class="p">,</span> <span class="p">&amp;</span>
+<a name="ln-25"></a>   <span class="n">FRACTION_MODE</span>
+<a name="ln-26"></a>
+<a name="ln-27"></a><span class="kt">INTEGER</span><span class="p">,</span> <span class="k">PARAMETER</span> <span class="kd">::</span> <span class="n">INITIAL_ANGLE_MODE</span> <span class="o">=</span> <span class="mi">1</span>                                  <span class="c">! 1=deg 2=rad 3=grad 4=rev</span>
+<a name="ln-28"></a><span class="kt">INTEGER</span><span class="p">,</span> <span class="k">PARAMETER</span> <span class="kd">::</span> <span class="n">INITIAL_DISP_MODE</span> <span class="o">=</span> <span class="mi">4</span>                                   <span class="c">! 1=fix, 2=sci, 3=eng, 4=all</span>
+<a name="ln-29"></a><span class="kt">INTEGER</span><span class="p">,</span> <span class="k">PARAMETER</span> <span class="kd">::</span> <span class="n">INITIAL_DISP_DIGITS</span> <span class="o">=</span> <span class="mi">4</span>
+<a name="ln-30"></a><span class="kt">INTEGER</span><span class="p">,</span> <span class="k">PARAMETER</span> <span class="kd">::</span> <span class="n">INITIAL_DOMAIN_MODE</span> <span class="o">=</span> <span class="mi">1</span>                                 <span class="c">! 1=real, 2=complex, 3=rational</span>
+<a name="ln-31"></a><span class="kt">INTEGER</span><span class="p">,</span> <span class="k">PARAMETER</span> <span class="kd">::</span> <span class="n">INITIAL_BASE_MODE</span> <span class="o">=</span> <span class="mi">10</span>                                  <span class="c">! 2=bin, 8=oct, 10=dec, 16=hex</span>
+<a name="ln-32"></a><span class="kt">INTEGER</span><span class="p">,</span> <span class="k">PARAMETER</span> <span class="kd">::</span> <span class="n">INITIAL_FRACTION_MODE</span> <span class="o">=</span> <span class="mi">1</span>                               <span class="c">! 1=improper, 2=mixed</span>
+<a name="ln-33"></a><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span> <span class="k">PARAMETER</span> <span class="kd">::</span> <span class="n">INITIAL_FRACTOL</span> <span class="o">=</span> <span class="mf">1.0D-4</span>                       <span class="c">! tolerance for decimal to fraction conversion</span>
+<a name="ln-34"></a>
+<a name="ln-35"></a>
+<a name="ln-36"></a><span class="k">contains</span>
+<a name="ln-37"></a>
+<a name="ln-38"></a>
+<a name="ln-39"></a><span class="k">subroutine </span><span class="n">init_stack</span><span class="p">()</span>
+<a name="ln-40"></a>
+<a name="ln-41"></a><span class="kt">integer</span> <span class="kd">::</span> <span class="n">i</span>
+<a name="ln-42"></a><span class="kt">character</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span> <span class="kd">::</span> <span class="n">argv</span>
+<a name="ln-43"></a>
+<a name="ln-44"></a><span class="n">stack_size</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c">! default</span>
+<a name="ln-45"></a><span class="k">call </span><span class="nb">get_command_argument</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+<a name="ln-46"></a><span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="k">read</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span><span class="s1">&#39;(I2)&#39;</span><span class="p">)</span> <span class="n">stack_size</span>
+<a name="ln-47"></a>
+<a name="ln-48"></a><span class="k">if</span> <span class="p">(</span><span class="n">stack_size</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="n">stack_size</span><span class="o">=</span><span class="mi">2</span>  <span class="c">! doesn&#39;t make sense to have only 1 level</span>
+<a name="ln-49"></a>
+<a name="ln-50"></a><span class="k">allocate</span><span class="p">(</span><span class="n">stack</span><span class="p">(</span><span class="n">stack_size</span><span class="p">),</span> <span class="n">cstack</span><span class="p">(</span><span class="n">stack_size</span><span class="p">),</span> <span class="n">rdstack</span><span class="p">(</span><span class="n">stack_size</span><span class="p">),</span> <span class="n">rnstack</span><span class="p">(</span><span class="n">stack_size</span><span class="p">))</span>
+<a name="ln-51"></a>
+<a name="ln-52"></a><span class="k">end subroutine </span><span class="n">init_stack</span>
+<a name="ln-53"></a>
+<a name="ln-54"></a><span class="k">END MODULE </span><span class="n">GLOBAL</span>
+</pre></div>
+
+    </section>
+    </div>
+  </div>
+
+  
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-4"><p>&copy; 2019 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a>
+                                          </p></div>
+        <div class="col-xs-6 col-md-4 col-md-push-4">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/cmacmackin/ford">FORD</a>
+            
+          </p>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-pull-4"><p class="text-center"> RPN calculator in Fortran was developed by Michael Hirsch, Ph.D.</p></div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+    
+  </body>
+</html>

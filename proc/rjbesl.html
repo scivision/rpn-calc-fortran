@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+   <meta name="description" content="RPN calculator in Fortran">
+    
+    <meta name="author" content="Michael Hirsch, Ph.D." >
+    <link rel="icon" href="../favicon.png">
+
+    <title>RJBESL &ndash; RPN calculator in Fortran</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+    
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">RPN calculator in Fortran </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+        
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          
+              
+            <li><a href="../lists/files.html">Source Files</a></li>
+        
+        
+        
+            <li><a href="../lists/modules.html">Modules</a></li>
+        
+            
+                                
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+        
+               
+        
+            <li><a href="../program/rpn.html">Program</a></li>
+      
+            </ul>
+            </li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+
+                             
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../program/rpn.html">Program</a></li>
+
+          </ul>
+        
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    
+  
+  <div class="row">
+    <h1>RJBESL
+      <small>Subroutine</small>
+    
+    </h1>
+    
+<div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+     
+     
+     
+     
+    
+    
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+    data-placement="bottom" data-html="true"
+    title=" 3.6% of total for procedures.">232 statements</a>
+     </li> 
+     
+     
+     
+    <li><i class="fa fa-code"></i><a href="../src/rjbesl.f"> Source File</a></li>
+     
+     
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+  
+    
+     <li><a href='../sourcefile/rjbesl.f.html'>rjbesl.f</a></li>
+    
+     <li><a href='../module/rjb.html'>rjb</a></li>
+    
+  
+     <li class="active">RJBESL</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    
+<div id="sidebar">
+  
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<em>None</em>
+
+
+</div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>
+public subroutine RJBESL(X, ALPHA, NB, B, NCALC)
+    
+    
+   
+</h2>
+    
+  
+
+
+    
+    <hr>
+<hr>
+<p>Explanation of machine-dependent constants</p>
+<p>it     = Number of bits in the mantissa of a working precision
+            variable
+   NSIG   = Decimal significance desired.  Should be set to
+            INT(LOG10(2)<em>it+1).  Setting NSIG lower will result
+            in decreased accuracy while setting NSIG higher will
+            increase CPU time without increasing accuracy.  The
+            truncation error is limited to a relative error of
+            T=.5</em>10<strong>(-NSIG).
+   ENTEN  = 10.0 </strong> K, where K is the largest integer such that
+            ENTEN is machine-representable in working precision
+   ENSIG  = 10.0 <strong> NSIG
+   RTNSIG = 10.0 </strong> (-K) for the smallest integer K such that
+            K .GE. NSIG/4
+   ENMTEN = Smallest ABS(X) such that X/4 does not underflow
+   XLARGE = Upper limit on the magnitude of X.  If ABS(X)=N,
+            then at least N iterations of the backward recursion
+            will be executed.  The value of 10.0 ** 4 is used on
+            every machine.</p>
+<div class="codehilite"><pre><span></span> <span class="nv">Approximate</span> <span class="nv">values</span> <span class="k">for</span> <span class="nv">some</span> <span class="nv">important</span> <span class="nv">machines</span> <span class="nv">are</span>:
+
+
+                        <span class="nv">it</span>    <span class="nv">NSIG</span>    <span class="nv">ENTEN</span>       <span class="nv">ENSIG</span>
+</pre></div>
+
+
+<p>CRAY-1        (S.P.)     48     15    1.0E+2465   1.0E+15
+   Cyber 180/855
+     under NOS   (S.P.)     48     15    1.0E+322    1.0E+15
+   IEEE (IBM/XT,
+     SUN, etc.)  (S.P.)     24      8    1.0E+38     1.0E+8
+   IEEE (IBM/XT,
+     SUN, etc.)  (D.P.)     53     16    1.0D+308    1.0D+16
+   IBM 3033      (D.P.)     14      5    1.0D+75     1.0D+5
+   VAX           (S.P.)     24      8    1.0E+38     1.0E+8
+   VAX D-Format  (D.P.)     56     17    1.0D+38     1.0D+17
+   VAX G-Format  (D.P.)     53     16    1.0D+307    1.0D+16</p>
+<div class="codehilite"><pre><span></span>                       <span class="n">RTNSIG</span>      <span class="n">ENMTEN</span>      <span class="n">XLARGE</span>
+</pre></div>
+
+
+<p>CRAY-1        (S.P.)    1.0E-4    1.84E-2466   1.0E+4
+   Cyber 180/855
+     under NOS   (S.P.)    1.0E-4    1.25E-293    1.0E+4
+   IEEE (IBM/XT,
+     SUN, etc.)  (S.P.)    1.0E-2    4.70E-38     1.0E+4
+   IEEE (IBM/XT,
+     SUN, etc.)  (D.P.)    1.0E-4    8.90D-308    1.0D+4
+   IBM 3033      (D.P.)    1.0E-2    2.16D-78     1.0D+4
+   VAX           (S.P.)    1.0E-2    1.17E-38     1.0E+4
+   VAX D-Format  (D.P.)    1.0E-5    1.17D-38     1.0D+4
+   VAX G-Format  (D.P.)    1.0E-4    2.22D-308    1.0D+4</p>
+<hr>
+<hr>
+<p>Error returns</p>
+<div class="codehilite"><pre><span></span><span class="nv">In</span> <span class="nv">case</span> <span class="nv">of</span> <span class="nv">an</span> <span class="nv">error</span>,  <span class="nv">NCALC</span> .<span class="nv">NE</span>. <span class="nv">NB</span>, <span class="nv">and</span> <span class="nv">not</span> <span class="nv">all</span> <span class="nv">J</span><span class="s1">&#39;</span><span class="s">s are</span>
+<span class="nv">calculated</span> <span class="nv">to</span> <span class="nv">the</span> <span class="nv">desired</span> <span class="nv">accuracy</span>.
+
+<span class="nv">NCALC</span> .<span class="nv">LT</span>. <span class="mi">0</span>:  <span class="nv">An</span> <span class="nv">argument</span> <span class="nv">is</span> <span class="nv">out</span> <span class="nv">of</span> <span class="nv">range</span>. <span class="k">For</span> <span class="nv">example</span>,
+   <span class="nv">NBES</span> .<span class="nv">LE</span>. <span class="mi">0</span>, <span class="nv">ALPHA</span> .<span class="nv">LT</span>. <span class="mi">0</span> <span class="nv">or</span> .<span class="nv">GT</span>. <span class="mi">1</span>, <span class="nv">or</span> <span class="nv">X</span> <span class="nv">is</span> <span class="nv">too</span> <span class="nv">large</span>.
+   <span class="nv">In</span> <span class="nv">this</span> <span class="nv">case</span>, <span class="nv">B</span><span class="ss">(</span><span class="mi">1</span><span class="ss">)</span> <span class="nv">is</span> <span class="nv">set</span> <span class="nv">to</span> <span class="nv">zero</span>, <span class="nv">the</span> <span class="nv">remainder</span> <span class="nv">of</span> <span class="nv">the</span>
+   <span class="nv">B</span><span class="o">-</span><span class="nv">vector</span> <span class="nv">is</span> <span class="nv">not</span> <span class="nv">calculated</span>, <span class="nv">and</span> <span class="nv">NCALC</span> <span class="nv">is</span> <span class="nv">set</span> <span class="nv">to</span>
+   <span class="nv">MIN</span><span class="ss">(</span><span class="nv">NB</span>,<span class="mi">0</span><span class="ss">)</span><span class="o">-</span><span class="mi">1</span> <span class="nv">so</span> <span class="nv">that</span> <span class="nv">NCALC</span> .<span class="nv">NE</span>. <span class="nv">NB</span>.
+
+<span class="nv">NB</span> .<span class="nv">GT</span>. <span class="nv">NCALC</span> .<span class="nv">GT</span>. <span class="mi">0</span>: <span class="nv">Not</span> <span class="nv">all</span> <span class="nv">requested</span> <span class="nv">function</span> <span class="nv">values</span> <span class="nv">could</span>
+   <span class="nv">be</span> <span class="nv">calculated</span> <span class="nv">accurately</span>.  <span class="nv">This</span> <span class="nv">usually</span> <span class="nv">occurs</span> <span class="nv">because</span> <span class="nv">NB</span> <span class="nv">is</span>
+   <span class="nv">much</span> <span class="nv">larger</span> <span class="nv">than</span> <span class="nv">ABS</span><span class="ss">(</span><span class="nv">X</span><span class="ss">)</span>.  <span class="nv">In</span> <span class="nv">this</span> <span class="nv">case</span>, <span class="nv">B</span><span class="ss">(</span><span class="nv">N</span><span class="ss">)</span> <span class="nv">is</span> <span class="nv">calculated</span>
+   <span class="nv">to</span> <span class="nv">the</span> <span class="nv">desired</span> <span class="nv">accuracy</span> <span class="k">for</span> <span class="nv">N</span> .<span class="nv">LE</span>. <span class="nv">NCALC</span>, <span class="nv">but</span> <span class="nv">precision</span>
+   <span class="nv">is</span> <span class="nv">lost</span> <span class="k">for</span> <span class="nv">NCALC</span> .<span class="nv">LT</span>. <span class="nv">N</span> .<span class="nv">LE</span>. <span class="nv">NB</span>.  <span class="k">If</span> <span class="nv">B</span><span class="ss">(</span><span class="nv">N</span><span class="ss">)</span> <span class="nv">does</span> <span class="nv">not</span> <span class="nv">vanish</span>
+   <span class="k">for</span> <span class="nv">N</span> .<span class="nv">GT</span>. <span class="nv">NCALC</span> <span class="ss">(</span><span class="nv">because</span> <span class="nv">it</span> <span class="nv">is</span> <span class="nv">too</span> <span class="nv">small</span> <span class="nv">to</span> <span class="nv">be</span> <span class="nv">represented</span><span class="ss">)</span>,
+   <span class="nv">and</span> <span class="nv">B</span><span class="ss">(</span><span class="nv">N</span><span class="ss">)</span><span class="o">/</span><span class="nv">B</span><span class="ss">(</span><span class="nv">NCALC</span><span class="ss">)</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="ss">(</span><span class="o">-</span><span class="nv">K</span><span class="ss">)</span>, <span class="k">then</span> <span class="nv">only</span> <span class="nv">the</span> <span class="nv">first</span> <span class="nv">NSIG</span><span class="o">-</span><span class="nv">K</span>
+   <span class="nv">significant</span> <span class="nv">figures</span> <span class="nv">of</span> <span class="nv">B</span><span class="ss">(</span><span class="nv">N</span><span class="ss">)</span> <span class="nv">can</span> <span class="nv">be</span> <span class="nv">trusted</span>.
+</pre></div>
+
+
+<p>Intrinsic and other functions required are:</p>
+<div class="codehilite"><pre><span></span> <span class="k">ABS</span><span class="p">,</span> <span class="n">AINT</span><span class="p">,</span> <span class="n">COS</span><span class="p">,</span> <span class="n">DBLE</span><span class="p">,</span> <span class="n">GAMMA</span> <span class="p">(</span><span class="k">or</span> <span class="n">DGAMMA</span><span class="p">),</span> <span class="nb">INT</span><span class="p">,</span> <span class="k">MAX</span><span class="p">,</span> <span class="k">MIN</span><span class="p">,</span>
+
+ <span class="nb">REAL</span><span class="p">,</span> <span class="n">SIN</span><span class="p">,</span> <span class="n">SQRT</span>
+</pre></div>
+
+
+<p>Acknowledgement</p>
+<p>This program is based on a program written by David J. Sookne
+   (2) that computes values of the Bessel functions J or I of real
+   argument and integer order.  Modifications include the restriction
+   of the computation to the J Bessel function of non-negative real
+   argument, the extension of the computation to arbitrary positive
+   order, and the elimination of most underflow.</p>
+<p>References: "A Note on Backward Recurrence Algorithms," Olver,
+               F. W. J., and Sookne, D. J., Math. Comp. 26, 1972,
+               pp 941-947.</p>
+<div class="codehilite"><pre><span></span>          <span class="ss">&quot;Bessel Functions of Real Argument and Integer Order,&quot;</span>
+           <span class="n">Sookne</span><span class="p">,</span> <span class="n">D</span><span class="p">.</span> <span class="n">J</span><span class="p">.,</span> <span class="n">NBS</span> <span class="n">Jour</span><span class="p">.</span> <span class="k">of</span> <span class="n">Res</span><span class="p">.</span> <span class="n">B</span><span class="p">.</span> <span class="mi">77</span><span class="n">B</span><span class="p">,</span> <span class="mi">1973</span><span class="p">,</span> <span class="n">pp</span>
+           <span class="mi">125</span><span class="o">-</span><span class="mi">132</span><span class="p">.</span>
+</pre></div>
+
+
+<p>Latest modification: March 19, 1990</p>
+<p>Author: W. J. Cody
+          Applied Mathematics Division
+          Argonne National Laboratory
+          Argonne, IL  60439</p>
+<hr>
+    
+
+    <h3>Arguments</h3>
+    
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-x~36"></span>double precision</td>
+  <td></td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-alpha~2"></span>double precision</td>
+  <td></td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ALPHA</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-nb~2"></span>integer</td>
+  <td></td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>NB</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-b~4"></span>double precision</td>
+  <td></td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>B</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-ncalc~2"></span>integer</td>
+  <td></td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>NCALC</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+    
+    
+    
+    
+     
+    <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<em>None</em>
+
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+
+    
+    
+    
+    
+    </div>
+  </div>
+
+
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-4"><p>&copy; 2019 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a>
+                                          </p></div>
+        <div class="col-xs-6 col-md-4 col-md-push-4">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/cmacmackin/ford">FORD</a>
+            
+          </p>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-pull-4"><p class="text-center"> RPN calculator in Fortran was developed by Michael Hirsch, Ph.D.</p></div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+    
+  </body>
+</html>

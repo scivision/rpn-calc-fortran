@@ -1,0 +1,2514 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+   <meta name="description" content="RPN calculator in Fortran">
+    
+    <meta name="author" content="Michael Hirsch, Ph.D." >
+    <link rel="icon" href="../favicon.png">
+
+    <title>hyper &ndash; RPN calculator in Fortran</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+    
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">RPN calculator in Fortran </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+        
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          
+              
+            <li><a href="../lists/files.html">Source Files</a></li>
+        
+        
+        
+            <li><a href="../lists/modules.html">Modules</a></li>
+        
+            
+                                
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+        
+               
+        
+            <li><a href="../program/rpn.html">Program</a></li>
+      
+            </ul>
+            </li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+
+                             
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../program/rpn.html">Program</a></li>
+
+          </ul>
+        
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    
+  
+  <div class="row">
+    <h1>hyper 
+    <small>Module</small>
+    
+    </h1>
+    
+<div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+     
+     
+     
+     
+    
+    
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+    data-placement="bottom" data-html="true"
+    title=" 2.0% of total for modules and submodules.">133 statements</a>
+     </li> 
+     
+     
+     
+    <li><i class="fa fa-code"></i><a href="../src/hyper.F90"> Source File</a></li>
+     
+     
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+  
+    
+     <li><a href='../sourcefile/hyper.f90.html'>hyper.F90</a></li>
+    
+  
+     <li class="active">hyper</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    
+<div id="sidebar">
+  
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#inters-0">Interfaces</a></h3></div>
+  <div id="inters-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/hyper.html#interface-sech">sech</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#interface-asech">asech</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#interface-csch">csch</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#interface-acsch">acsch</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#interface-coth">coth</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#interface-acoth">acoth</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-0">Functions</a></h3></div>
+  <div id="funcs-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-sech_r">SECH_r</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-sech_c">SECH_c</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-asech_r">ASECH_r</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-asech_c">ASECH_c</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-csch_r">CSCH_r</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-csch_c">CSCH_c</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-acsch_r">ACSCH_r</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-acsch_c">ACSCH_c</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-coth_r">COTH_r</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-coth_c">COTH_c</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-acoth_r">ACOTH_r</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-acoth_c">ACOTH_c</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-0">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-0" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-hasin">hasin</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-hacos">hacos</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-hatan">hatan</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <hr>
+<p>SECH</p>
+<p>Hyperbolic secant.</p>
+<hr>
+<hr>
+<p>ASECH</p>
+<p>Inverse hyperbolic secant.</p>
+<hr>
+<hr>
+<p>CSCH</p>
+<p>Hyperbolic cosecant.</p>
+<hr>
+<hr>
+<p>ACSCH</p>
+<p>Inverse hyperbolic cosecant.</p>
+<hr>
+<hr>
+<p>COTH</p>
+<p>Hyperbolic cotangent.</p>
+<hr>
+<hr>
+<p>ACOTH</p>
+<p>Inverse hyperbolic cotangent.</p>
+<hr>
+      <br>
+    
+  
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Uses</h3>
+      </div>
+      <ul class="list-group">
+      
+      <li class="list-group-item">
+  <ul class="list-inline">
+    
+    <li><a href="http://fortranwiki.org/fortran/show/ISO_FORTRAN_ENV">iso_fortran_env</a></li>
+    
+    <li>assert</li>
+    
+    <li><a href="http://fortranwiki.org/fortran/show/IEEE_ARITHMETIC">ieee_arithmetic</a></li>
+    
+    <li><a href='../module/global.html'>GLOBAL</a></li>
+    
+    <li><a href='../module/rat.html'>rat</a></li>
+    
+  </ul>
+      </li>
+      
+      
+      
+      <li class="list-group-item">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~hyper~~UsesGraph Pages: 1 -->
+<svg id="modulehyperUsesGraph" width="306pt" height="176pt"
+ viewBox="0.00 0.00 306.00 175.87" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~hyper~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 171.8689)">
+<title>module~~hyper~~UsesGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-171.8689 302,-171.8689 302,4 -4,4"/>
+<!-- module~hyper -->
+<g id="module~~hyper~~UsesGraph_node1" class="node">
+<title>module~hyper</title>
+<polygon fill="none" stroke="#000000" points="298,-104 244,-104 244,-80 298,-80 298,-104"/>
+<text text-anchor="middle" x="271" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">hyper</text>
+</g>
+<!-- assert -->
+<g id="module~~hyper~~UsesGraph_node2" class="node">
+<title>assert</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="70.5,-64 16.5,-64 16.5,-40 70.5,-40 70.5,-64"/>
+<text text-anchor="middle" x="43.5" y="-49.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">assert</text>
+</g>
+<!-- module~hyper&#45;&gt;assert -->
+<g id="module~~hyper~~UsesGraph_edge1" class="edge">
+<title>module~hyper&#45;&gt;assert</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M243.7471,-81.5465C232.7824,-77.703 219.9307,-73.6475 208,-71 164.947,-61.4461 114.4251,-56.5198 80.8437,-54.1056"/>
+<polygon fill="#000000" stroke="#000000" points="80.7811,-50.5934 70.5668,-53.4074 80.3065,-57.5773 80.7811,-50.5934"/>
+</g>
+<!-- iso_fortran_env -->
+<g id="module~~hyper~~UsesGraph_node3" class="node">
+<title>iso_fortran_env</title>
+<g id="a_module~~hyper~~UsesGraph_node3"><a xlink:href="http://fortranwiki.org/fortran/show/ISO_FORTRAN_ENV" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="87,-166 0,-166 0,-142 87,-142 87,-166"/>
+<text text-anchor="middle" x="43.5" y="-151.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~hyper&#45;&gt;iso_fortran_env -->
+<g id="module~~hyper~~UsesGraph_edge2" class="edge">
+<title>module~hyper&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M263.4031,-104.0803C253.0339,-119.2974 232.8655,-144.7004 208,-155 173.0886,-169.4608 130.322,-168.7065 97.1459,-164.6018"/>
+<polygon fill="#000000" stroke="#000000" points="97.5602,-161.126 87.1771,-163.2336 96.6083,-168.0609 97.5602,-161.126"/>
+</g>
+<!-- ieee_arithmetic -->
+<g id="module~~hyper~~UsesGraph_node4" class="node">
+<title>ieee_arithmetic</title>
+<g id="a_module~~hyper~~UsesGraph_node4"><a xlink:href="http://fortranwiki.org/fortran/show/IEEE_ARITHMETIC" xlink:title="ieee_arithmetic">
+<polygon fill="#337ab7" stroke="#337ab7" points="208,-104 123,-104 123,-80 208,-80 208,-104"/>
+<text text-anchor="middle" x="165.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ieee_arithmetic</text>
+</a>
+</g>
+</g>
+<!-- module~hyper&#45;&gt;ieee_arithmetic -->
+<g id="module~~hyper~~UsesGraph_edge3" class="edge">
+<title>module~hyper&#45;&gt;ieee_arithmetic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M243.8311,-92C236.0202,-92 227.2219,-92 218.4174,-92"/>
+<polygon fill="#000000" stroke="#000000" points="218.1377,-88.5001 208.1377,-92 218.1376,-95.5001 218.1377,-88.5001"/>
+</g>
+<!-- module~rat -->
+<g id="module~~hyper~~UsesGraph_node5" class="node">
+<title>module~rat</title>
+<g id="a_module~~hyper~~UsesGraph_node5"><a xlink:href=".././module/rat.html" xlink:title="rat">
+<polygon fill="#337ab7" stroke="#337ab7" points="192.5,-146 138.5,-146 138.5,-122 192.5,-122 192.5,-146"/>
+<text text-anchor="middle" x="165.5" y="-131.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">rat</text>
+</a>
+</g>
+</g>
+<!-- module~hyper&#45;&gt;module~rat -->
+<g id="module~~hyper~~UsesGraph_edge4" class="edge">
+<title>module~hyper&#45;&gt;module~rat</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M243.8311,-102.816C231.156,-107.862 215.8809,-113.9431 202.1984,-119.3902"/>
+<polygon fill="#000000" stroke="#000000" points="200.5731,-116.27 192.5768,-123.2206 203.1622,-122.7736 200.5731,-116.27"/>
+</g>
+<!-- module~global -->
+<g id="module~~hyper~~UsesGraph_node6" class="node">
+<title>module~global</title>
+<g id="a_module~~hyper~~UsesGraph_node6"><a xlink:href=".././module/global.html" xlink:title="GLOBAL">
+<polygon fill="#337ab7" stroke="#337ab7" points="193,-24 138,-24 138,0 193,0 193,-24"/>
+<text text-anchor="middle" x="165.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">GLOBAL</text>
+</a>
+</g>
+</g>
+<!-- module~hyper&#45;&gt;module~global -->
+<g id="module~~hyper~~UsesGraph_edge5" class="edge">
+<title>module~hyper&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M257.9905,-79.7689C245.5928,-68.379 226.174,-51.2183 208,-38 204.0128,-35.1 199.6941,-32.2024 195.3893,-29.45"/>
+<polygon fill="#000000" stroke="#000000" points="197.0261,-26.3466 186.6832,-24.0498 193.3362,-32.2952 197.0261,-26.3466"/>
+</g>
+<!-- module~rat&#45;&gt;assert -->
+<g id="module~~hyper~~UsesGraph_edge7" class="edge">
+<title>module~rat&#45;&gt;assert</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M138.9913,-121.9015C133.5937,-119.162 128.0309,-116.1311 123,-113 102.5621,-100.2801 80.9911,-83.4887 65.4834,-70.7438"/>
+<polygon fill="#000000" stroke="#000000" points="67.4629,-67.8376 57.5375,-64.1311 62.9851,-73.2181 67.4629,-67.8376"/>
+</g>
+<!-- module~rat&#45;&gt;iso_fortran_env -->
+<g id="module~~hyper~~UsesGraph_edge6" class="edge">
+<title>module~rat&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M138.4242,-138.4386C126.3357,-140.4204 111.6408,-142.8294 97.4603,-145.1541"/>
+<polygon fill="#000000" stroke="#000000" points="96.5722,-141.7528 87.2702,-146.8246 97.7047,-148.6606 96.5722,-141.7528"/>
+</g>
+<!-- module~global&#45;&gt;assert -->
+<g id="module~~hyper~~UsesGraph_edge8" class="edge">
+<title>module~global&#45;&gt;assert</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M137.8163,-21.0766C120.7728,-26.6647 98.7238,-33.8938 80.2306,-39.9572"/>
+<polygon fill="#000000" stroke="#000000" points="79.0657,-36.6557 70.6539,-43.0971 81.2466,-43.3073 79.0657,-36.6557"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="490pt" height="32pt"
+ viewBox="0.00 0.00 489.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-28 485.5,-28 485.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="139.5,-24 72.5,-24 72.5,0 139.5,0 139.5,-24"/>
+<text text-anchor="middle" x="106" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="222,-24 158,-24 158,0 222,0 222,-24"/>
+<text text-anchor="middle" x="190" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="294,-24 240,-24 240,0 294,0 294,-24"/>
+<text text-anchor="middle" x="267" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="366,-24 312,-24 312,0 366,0 366,-24"/>
+<text text-anchor="middle" x="339" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="481.5,-24 384.5,-24 384.5,0 481.5,0 481.5,-24"/>
+<text text-anchor="middle" x="433" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+      </li>
+      
+      </ul>
+    </div>
+    
+
+    
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Used by</h3>
+      </div>
+      <ul class="list-group">
+  
+  
+  <li class="list-group-item">
+    <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~hyper~~UsedByGraph Pages: 1 -->
+<svg id="modulehyperUsedByGraph" width="429pt" height="86pt"
+ viewBox="0.00 0.00 429.00 85.90" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~hyper~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 81.8953)">
+<title>module~~hyper~~UsedByGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-81.8953 425,-81.8953 425,4 -4,4"/>
+<!-- module~hyper -->
+<g id="module~~hyper~~UsedByGraph_node1" class="node">
+<title>module~hyper</title>
+<polygon fill="none" stroke="#000000" points="54,-56.8953 0,-56.8953 0,-32.8953 54,-32.8953 54,-56.8953"/>
+<text text-anchor="middle" x="27" y="-42.4953" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">hyper</text>
+</g>
+<!-- proc~cgamma -->
+<g id="module~~hyper~~UsedByGraph_node2" class="node">
+<title>proc~cgamma</title>
+<g id="a_module~~hyper~~UsedByGraph_node2"><a xlink:href=".././proc/cgamma.html" xlink:title="CGAMMA">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="150,-77.8953 90,-77.8953 90,-53.8953 150,-53.8953 150,-77.8953"/>
+<text text-anchor="middle" x="120" y="-63.4953" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">CGAMMA</text>
+</a>
+</g>
+</g>
+<!-- proc~cgamma&#45;&gt;module~hyper -->
+<g id="module~~hyper~~UsedByGraph_edge1" class="edge">
+<title>proc~cgamma&#45;&gt;module~hyper</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M89.8056,-59.0772C81.5714,-57.2179 72.5563,-55.1822 63.9908,-53.2481"/>
+<polygon fill="#000000" stroke="#000000" points="64.7413,-49.8295 54.216,-51.0409 63.1994,-56.6576 64.7413,-49.8295"/>
+</g>
+<!-- module~funcs -->
+<g id="module~~hyper~~UsedByGraph_node3" class="node">
+<title>module~funcs</title>
+<g id="a_module~~hyper~~UsedByGraph_node3"><a xlink:href=".././module/funcs.html" xlink:title="funcs">
+<polygon fill="#337ab7" stroke="#337ab7" points="147,-35.8953 93,-35.8953 93,-11.8953 147,-11.8953 147,-35.8953"/>
+<text text-anchor="middle" x="120" y="-21.4953" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">funcs</text>
+</a>
+</g>
+</g>
+<!-- module~funcs&#45;&gt;module~hyper -->
+<g id="module~~hyper~~UsedByGraph_edge2" class="edge">
+<title>module~funcs&#45;&gt;module~hyper</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M92.5999,-30.0824C83.7074,-32.0904 73.6869,-34.3531 64.2042,-36.4944"/>
+<polygon fill="#000000" stroke="#000000" points="63.1877,-33.1357 54.2042,-38.7524 64.7296,-39.9638 63.1877,-33.1357"/>
+</g>
+<!-- program~rpn -->
+<g id="module~~hyper~~UsedByGraph_node4" class="node">
+<title>program~rpn</title>
+<g id="a_module~~hyper~~UsedByGraph_node4"><a xlink:href=".././program/rpn.html" xlink:title="RPN">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="421,-55.8953 367,-55.8953 367,-31.8953 421,-31.8953 421,-55.8953"/>
+<text text-anchor="middle" x="394" y="-41.4953" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">RPN</text>
+</a>
+</g>
+</g>
+<!-- program~rpn&#45;&gt;module~funcs -->
+<g id="module~~hyper~~UsedByGraph_edge3" class="edge">
+<title>program~rpn&#45;&gt;module~funcs</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M304,-63.8953C252.0067,-63.9258 193.5966,-48.479 156.8116,-36.7745"/>
+<polygon fill="#000000" stroke="#000000" points="157.6254,-33.3586 147.0331,-33.5885 155.4569,-40.0143 157.6254,-33.3586"/>
+</g>
+<!-- module~stackops -->
+<g id="module~~hyper~~UsedByGraph_node5" class="node">
+<title>module~stackops</title>
+<g id="a_module~~hyper~~UsedByGraph_node5"><a xlink:href=".././module/stackops.html" xlink:title="stackops">
+<polygon fill="#337ab7" stroke="#337ab7" points="241,-35.8953 186,-35.8953 186,-11.8953 241,-11.8953 241,-35.8953"/>
+<text text-anchor="middle" x="213.5" y="-21.4953" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">stackops</text>
+</a>
+</g>
+</g>
+<!-- program~rpn&#45;&gt;module~stackops -->
+<g id="module~~hyper~~UsedByGraph_edge6" class="edge">
+<title>program~rpn&#45;&gt;module~stackops</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M366.7752,-53.1842C349.1017,-58.4036 325.4482,-63.8828 304,-63.8953"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M304,-63.8953C280.156,-63.9093 255.5629,-52.1486 238.0428,-41.3778"/>
+<polygon fill="#000000" stroke="#000000" points="239.8662,-38.3889 229.5671,-35.9031 236.0682,-44.269 239.8662,-38.3889"/>
+</g>
+<!-- module~evals -->
+<g id="module~~hyper~~UsedByGraph_node6" class="node">
+<title>module~evals</title>
+<g id="a_module~~hyper~~UsedByGraph_node6"><a xlink:href=".././module/evals.html" xlink:title="evals">
+<polygon fill="#337ab7" stroke="#337ab7" points="331,-35.8953 277,-35.8953 277,-11.8953 331,-11.8953 331,-35.8953"/>
+<text text-anchor="middle" x="304" y="-21.4953" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">evals</text>
+</a>
+</g>
+</g>
+<!-- program~rpn&#45;&gt;module~evals -->
+<g id="module~~hyper~~UsedByGraph_edge8" class="edge">
+<title>program~rpn&#45;&gt;module~evals</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M366.997,-37.8947C358.8842,-36.0918 349.8369,-34.0813 341.1869,-32.1591"/>
+<polygon fill="#000000" stroke="#000000" points="341.8161,-28.7136 331.295,-29.9609 340.2976,-35.5469 341.8161,-28.7136"/>
+</g>
+<!-- module~stackops&#45;&gt;module~funcs -->
+<g id="module~~hyper~~UsedByGraph_edge4" class="edge">
+<title>module~stackops&#45;&gt;module~funcs</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M185.9526,-23.8953C176.9332,-23.8953 166.7595,-23.8953 157.1512,-23.8953"/>
+<polygon fill="#000000" stroke="#000000" points="157.0284,-20.3954 147.0284,-23.8953 157.0284,-27.3954 157.0284,-20.3954"/>
+</g>
+<!-- module~evals&#45;&gt;module~funcs -->
+<g id="module~~hyper~~UsedByGraph_edge5" class="edge">
+<title>module~evals&#45;&gt;module~funcs</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M276.8835,-12.7312C265.9376,-8.7898 253.0631,-4.8529 241,-2.8953 216.8712,1.0202 210.1551,.8549 186,-2.8953 176.4016,-4.3856 166.2889,-7.0263 156.9423,-9.9431"/>
+<polygon fill="#000000" stroke="#000000" points="155.5584,-6.7142 147.1615,-13.1752 157.7547,-13.3608 155.5584,-6.7142"/>
+</g>
+<!-- module~evals&#45;&gt;module~stackops -->
+<g id="module~~hyper~~UsedByGraph_edge7" class="edge">
+<title>module~evals&#45;&gt;module~stackops</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M276.847,-23.8953C268.8518,-23.8953 259.954,-23.8953 251.4144,-23.8953"/>
+<polygon fill="#000000" stroke="#000000" points="251.2603,-20.3954 241.2603,-23.8953 251.2603,-27.3954 251.2603,-20.3954"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="490pt" height="32pt"
+ viewBox="0.00 0.00 489.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-28 485.5,-28 485.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="139.5,-24 72.5,-24 72.5,0 139.5,0 139.5,-24"/>
+<text text-anchor="middle" x="106" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="222,-24 158,-24 158,0 222,0 222,-24"/>
+<text text-anchor="middle" x="190" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="294,-24 240,-24 240,0 294,0 294,-24"/>
+<text text-anchor="middle" x="267" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="366,-24 312,-24 312,0 366,0 366,-24"/>
+<text text-anchor="middle" x="339" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="481.5,-24 384.5,-24 384.5,0 481.5,0 481.5,-24"/>
+<text text-anchor="middle" x="433" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+  </li>
+  
+      </ul>
+    </div>
+    
+
+    <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#inters-1">Interfaces</a></h3></div>
+  <div id="inters-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/hyper.html#interface-sech">sech</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#interface-asech">asech</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#interface-csch">csch</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#interface-acsch">acsch</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#interface-coth">coth</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#interface-acoth">acoth</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#funcs-1">Functions</a></h3></div>
+  <div id="funcs-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-sech_r">SECH_r</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-sech_c">SECH_c</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-asech_r">ASECH_r</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-asech_c">ASECH_c</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-csch_r">CSCH_r</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-csch_c">CSCH_c</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-acsch_r">ACSCH_r</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-acsch_c">ACSCH_c</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-coth_r">COTH_r</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-coth_c">COTH_c</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-acoth_r">ACOTH_r</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-acoth_c">ACOTH_c</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-1">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-1" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-hasin">hasin</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-hacos">hacos</a>
+      
+      <a class="list-group-item" href="../module/hyper.html#proc-hatan">hatan</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    
+
+    
+    
+    
+    
+    
+    <section>
+   <h2>Interfaces</h2>
+   
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="interface-sech"></span><h3>public interface <a href='../interface/sech.html'>sech</a>
+    
+  </h3></div>
+  
+  <ul class="list-group">
+  
+  
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public elemental function <a href='../proc/sech_r.html'>SECH_r</a>(X) result(sech)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>real(kind=wp)
+  </small></h4>
+  
+    
+
+    </li>
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public elemental function <a href='../proc/sech_c.html'>SECH_c</a>(Z) result(sech)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Z</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>complex(kind=wp)
+  </small></h4>
+  
+    
+
+    </li>
+  
+  
+  </ul>
+</div>
+
+    
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="interface-asech"></span><h3>public interface <a href='../interface/asech.html'>asech</a>
+    
+  </h3></div>
+  
+  <ul class="list-group">
+  
+  
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public elemental function <a href='../proc/asech_r.html'>ASECH_r</a>(Y) result(asech)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Y</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>real(kind=wp)
+  </small></h4>
+  
+    
+
+    </li>
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public elemental function <a href='../proc/asech_c.html'>ASECH_c</a>(Y) result(asech)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Y</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>complex(kind=wp)
+  </small></h4>
+  
+    
+
+    </li>
+  
+  
+  </ul>
+</div>
+
+    
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="interface-csch"></span><h3>public interface <a href='../interface/csch.html'>csch</a>
+    
+  </h3></div>
+  
+  <ul class="list-group">
+  
+  
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public elemental function <a href='../proc/csch_r.html'>CSCH_r</a>(X) result(Y)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>real(kind=wp)
+  </small></h4>
+  
+    
+
+    </li>
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public elemental function <a href='../proc/csch_c.html'>CSCH_c</a>(Z) result(Y)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Z</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>complex(kind=wp)
+  </small></h4>
+  
+    
+
+    </li>
+  
+  
+  </ul>
+</div>
+
+    
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="interface-acsch"></span><h3>public interface <a href='../interface/acsch.html'>acsch</a>
+    
+  </h3></div>
+  
+  <ul class="list-group">
+  
+  
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public elemental function <a href='../proc/acsch_r.html'>ACSCH_r</a>(Y) result(X)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Y</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>real(kind=wp)
+  </small></h4>
+  
+    
+
+    </li>
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public elemental function <a href='../proc/acsch_c.html'>ACSCH_c</a>(Y) result(X)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Y</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>complex(kind=wp)
+  </small></h4>
+  
+    
+
+    </li>
+  
+  
+  </ul>
+</div>
+
+    
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="interface-coth"></span><h3>public interface <a href='../interface/coth.html'>coth</a>
+    
+  </h3></div>
+  
+  <ul class="list-group">
+  
+  
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public elemental function <a href='../proc/coth_r.html'>COTH_r</a>(X) result(coth)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>real(kind=wp)
+  </small></h4>
+  
+    
+
+    </li>
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public elemental function <a href='../proc/coth_c.html'>COTH_c</a>(Z) result(coth)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Z</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>complex(kind=wp)
+  </small></h4>
+  
+    
+
+    </li>
+  
+  
+  </ul>
+</div>
+
+    
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="interface-acoth"></span><h3>public interface <a href='../interface/acoth.html'>acoth</a>
+    
+  </h3></div>
+  
+  <ul class="list-group">
+  
+  
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public elemental function <a href='../proc/acoth_r.html'>ACOTH_r</a>(Y) result(acoth)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Y</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>real(kind=wp)
+  </small></h4>
+  
+    
+
+    </li>
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public elemental function <a href='../proc/acoth_c.html'>ACOTH_c</a>(Z) result(acoth)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Z</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>complex(kind=wp)
+  </small></h4>
+  
+    
+
+    </li>
+  
+  
+  </ul>
+</div>
+
+    
+    </section>
+  <br>
+    
+
+    
+    
+    
+    
+     
+    <section>
+    <h2>Functions</h2>
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-sech_r"></span><h3>
+public elemental function <a href='../proc/sech_r.html'>SECH_r</a>(X) result(sech)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>real(kind=wp)
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-sech_c"></span><h3>
+public elemental function <a href='../proc/sech_c.html'>SECH_c</a>(Z) result(sech)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Z</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>complex(kind=wp)
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-asech_r"></span><h3>
+public elemental function <a href='../proc/asech_r.html'>ASECH_r</a>(Y) result(asech)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Y</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>real(kind=wp)
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-asech_c"></span><h3>
+public elemental function <a href='../proc/asech_c.html'>ASECH_c</a>(Y) result(asech)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Y</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>complex(kind=wp)
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-csch_r"></span><h3>
+public elemental function <a href='../proc/csch_r.html'>CSCH_r</a>(X) result(Y)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>real(kind=wp)
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-csch_c"></span><h3>
+public elemental function <a href='../proc/csch_c.html'>CSCH_c</a>(Z) result(Y)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Z</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>complex(kind=wp)
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-acsch_r"></span><h3>
+public elemental function <a href='../proc/acsch_r.html'>ACSCH_r</a>(Y) result(X)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Y</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>real(kind=wp)
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-acsch_c"></span><h3>
+public elemental function <a href='../proc/acsch_c.html'>ACSCH_c</a>(Y) result(X)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Y</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>complex(kind=wp)
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-coth_r"></span><h3>
+public elemental function <a href='../proc/coth_r.html'>COTH_r</a>(X) result(coth)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>real(kind=wp)
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-coth_c"></span><h3>
+public elemental function <a href='../proc/coth_c.html'>COTH_c</a>(Z) result(coth)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Z</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>complex(kind=wp)
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-acoth_r"></span><h3>
+public elemental function <a href='../proc/acoth_r.html'>ACOTH_r</a>(Y) result(acoth)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Y</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>real(kind=wp)
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-acoth_c"></span><h3>
+public elemental function <a href='../proc/acoth_c.html'>ACOTH_c</a>(Z) result(acoth)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>Z</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  
+  
+  
+  
+     <h4>Return Value <small>complex(kind=wp)
+  </small></h4>
+  
+    
+
+  </div>
+  </div>
+
+    
+    </section>
+    <br>
+    
+
+    
+    <section>
+    <h2>Subroutines</h2>
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-hasin"></span><h3>
+public subroutine <a href='../proc/hasin.html'>hasin</a>(domain_mode)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>domain_mode</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-hacos"></span><h3>
+public subroutine <a href='../proc/hacos.html'>hacos</a>(domain_mode)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>domain_mode</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-hatan"></span><h3>
+public subroutine <a href='../proc/hatan.html'>hatan</a>(domain_mode)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>domain_mode</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    </section>    
+    <br>
+    
+    
+    
+    </div>
+  </div>
+
+  
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-4"><p>&copy; 2019 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a>
+                                          </p></div>
+        <div class="col-xs-6 col-md-4 col-md-push-4">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/cmacmackin/ford">FORD</a>
+            
+          </p>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-pull-4"><p class="text-center"> RPN calculator in Fortran was developed by Michael Hirsch, Ph.D.</p></div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+    
+  </body>
+</html>

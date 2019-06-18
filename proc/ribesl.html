@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+   <meta name="description" content="RPN calculator in Fortran">
+    
+    <meta name="author" content="Michael Hirsch, Ph.D." >
+    <link rel="icon" href="../favicon.png">
+
+    <title>RIBESL &ndash; RPN calculator in Fortran</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+    
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">RPN calculator in Fortran </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+        
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          
+              
+            <li><a href="../lists/files.html">Source Files</a></li>
+        
+        
+        
+            <li><a href="../lists/modules.html">Modules</a></li>
+        
+            
+                                
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+        
+               
+        
+            <li><a href="../program/rpn.html">Program</a></li>
+      
+            </ul>
+            </li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+
+                             
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../program/rpn.html">Program</a></li>
+
+          </ul>
+        
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    
+  
+  <div class="row">
+    <h1>RIBESL
+      <small>Subroutine</small>
+    
+    </h1>
+    
+<div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+     
+     
+     
+     
+    
+    
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+    data-placement="bottom" data-html="true"
+    title=" 2.8% of total for procedures.">179 statements</a>
+     </li> 
+     
+     
+     
+    <li><i class="fa fa-code"></i><a href="../src/ribesl.f"> Source File</a></li>
+     
+     
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+  
+    
+     <li><a href='../sourcefile/ribesl.f.html'>ribesl.f</a></li>
+    
+     <li><a href='../module/rji.html'>rji</a></li>
+    
+  
+     <li class="active">RIBESL</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    
+<div id="sidebar">
+  
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<em>None</em>
+
+
+</div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>
+public subroutine RIBESL(X, ALPHA, NB, IZE, B, NCALC)
+    
+    
+   
+</h2>
+    
+  
+
+
+    
+    <hr>
+<hr>
+<p>Explanation of machine-dependent constants</p>
+<p>beta   = Radix for the floating-point system
+   minexp = Smallest representable power of beta
+   maxexp = Smallest power of beta that overflows
+   it     = Number of bits in the mantissa of a working precision
+            variable
+   NSIG   = Decimal significance desired.  Should be set to
+            INT(LOG10(2)<em>it+1).  Setting NSIG lower will result
+            in decreased accuracy while setting NSIG higher will
+            increase CPU time without increasing accuracy.  The
+            truncation error is limited to a relative error of
+            T=.5</em>10<strong>(-NSIG).
+   ENTEN  = 10.0 </strong> K, where K is the largest integer such that
+            ENTEN is machine-representable in working precision
+   ENSIG  = 10.0 <strong> NSIG
+   RTNSIG = 10.0 </strong> (-K) for the smallest integer K such that
+            K .GE. NSIG/4
+   ENMTEN = Smallest ABS(X) such that X/4 does not underflow
+   XLARGE = Upper limit on the magnitude of X when IZE=2.  Bear
+            in mind that if ABS(X)=N, then at least N iterations
+            of the backward recursion will be executed.  The value
+            of 10.0 <strong> 4 is used on every machine.
+   EXPARG = Largest working precision argument that the library
+            EXP routine can handle and upper limit on the
+            magnitude of X when IZE=1; approximately
+            LOG(beta</strong>maxexp)</p>
+<div class="codehilite"><pre><span></span> <span class="nv">Approximate</span> <span class="nv">values</span> <span class="k">for</span> <span class="nv">some</span> <span class="nv">important</span> <span class="nv">machines</span> <span class="nv">are</span>:
+
+                    <span class="nv">beta</span>       <span class="nv">minexp</span>      <span class="nv">maxexp</span>       <span class="nv">it</span>
+</pre></div>
+
+
+<p>CRAY-1        (S.P.)    2        -8193        8191        48
+  Cyber 180/855
+    under NOS   (S.P.)    2         -975        1070        48
+  IEEE (IBM/XT,
+    SUN, etc.)  (S.P.)    2         -126         128        24
+  IEEE (IBM/XT,
+    SUN, etc.)  (D.P.)    2        -1022        1024        53
+  IBM 3033      (D.P.)   16          -65          63        14
+  VAX           (S.P.)    2         -128         127        24
+  VAX D-Format  (D.P.)    2         -128         127        56
+  VAX G-Format  (D.P.)    2        -1024        1023        53</p>
+<div class="codehilite"><pre><span></span>                    <span class="n">NSIG</span>       <span class="n">ENTEN</span>       <span class="n">ENSIG</span>      <span class="n">RTNSIG</span>
+</pre></div>
+
+
+<p>CRAY-1        (S.P.)    15       1.0E+2465   1.0E+15     1.0E-4
+ Cyber 180/855
+   under NOS   (S.P.)    15       1.0E+322    1.0E+15     1.0E-4
+ IEEE (IBM/XT,
+   SUN, etc.)  (S.P.)     8       1.0E+38     1.0E+8      1.0E-2
+ IEEE (IBM/XT,
+   SUN, etc.)  (D.P.)    16       1.0D+308    1.0D+16     1.0D-4
+ IBM 3033      (D.P.)     5       1.0D+75     1.0D+5      1.0D-2
+ VAX           (S.P.)     8       1.0E+38     1.0E+8      1.0E-2
+ VAX D-Format  (D.P.)    17       1.0D+38     1.0D+17     1.0D-5
+ VAX G-Format  (D.P.)    16       1.0D+307    1.0D+16     1.0D-4</p>
+<div class="codehilite"><pre><span></span>                     <span class="n">ENMTEN</span>      <span class="n">XLARGE</span>   <span class="n">EXPARG</span>
+</pre></div>
+
+
+<p>CRAY-1        (S.P.)   1.84E-2466   1.0E+4    5677
+ Cyber 180/855
+   under NOS   (S.P.)   1.25E-293    1.0E+4     741
+ IEEE (IBM/XT,
+   SUN, etc.)  (S.P.)   4.70E-38     1.0E+4      88
+ IEEE (IBM/XT,
+   SUN, etc.)  (D.P.)   8.90D-308    1.0D+4     709
+ IBM 3033      (D.P.)   2.16D-78     1.0D+4     174
+ VAX           (S.P.)   1.17E-38     1.0E+4      88
+ VAX D-Format  (D.P.)   1.17D-38     1.0D+4      88
+ VAX G-Format  (D.P.)   2.22D-308    1.0D+4     709</p>
+<hr>
+<hr>
+<p>Error returns</p>
+<p>In case of an error,  NCALC .NE. NB, and not all I's are
+  calculated to the desired accuracy.</p>
+<p>NCALC .LT. 0:  An argument is out of range. For example,
+     NB .LE. 0, IZE is not 1 or 2, or IZE=1 and ABS(X) .GE. EXPARG.
+     In this case, the B-vector is not calculated, and NCALC is
+     set to MIN0(NB,0)-1 so that NCALC .NE. NB.</p>
+<p>NB .GT. NCALC .GT. 0: Not all requested function values could
+     be calculated accurately.  This usually occurs because NB is
+     much larger than ABS(X).  In this case, B(N) is calculated
+     to the desired accuracy for N .LE. NCALC, but precision
+     is lost for NCALC .LT. N .LE. NB.  If B(N) does not vanish
+     for N .GT. NCALC (because it is too small to be represented),
+     and B(N)/B(NCALC) = 10**(-K), then only the first NSIG-K
+     significant figures of B(N) can be trusted.</p>
+<p>Intrinsic functions required are:</p>
+<div class="codehilite"><pre><span></span> <span class="n">DBLE</span><span class="p">,</span> <span class="n">EXP</span><span class="p">,</span> <span class="n">DGAMMA</span><span class="p">,</span> <span class="n">GAMMA</span><span class="p">,</span> <span class="nb">INT</span><span class="p">,</span> <span class="k">MAX</span><span class="p">,</span> <span class="k">MIN</span><span class="p">,</span> <span class="nb">REAL</span><span class="p">,</span> <span class="n">SQRT</span>
+</pre></div>
+
+
+<p>Acknowledgement</p>
+<p>This program is based on a program written by David J.
+  Sookne (2) that computes values of the Bessel functions J or
+  I of real argument and integer order.  Modifications include
+  the restriction of the computation to the I Bessel function
+  of non-negative real argument, the extension of the computation
+  to arbitrary positive order, the inclusion of optional
+  exponential scaling, and the elimination of most underflow.
+  An earlier version was published in (3).</p>
+<p>References: "A Note on Backward Recurrence Algorithms," Olver,
+              F. W. J., and Sookne, D. J., Math. Comp. 26, 1972,
+              pp 941-947.</p>
+<div class="codehilite"><pre><span></span>         <span class="ss">&quot;Bessel Functions of Real Argument and Integer Order,&quot;</span>
+          <span class="n">Sookne</span><span class="p">,</span> <span class="n">D</span><span class="p">.</span> <span class="n">J</span><span class="p">.,</span> <span class="n">NBS</span> <span class="n">Jour</span><span class="p">.</span> <span class="k">of</span> <span class="n">Res</span><span class="p">.</span> <span class="n">B</span><span class="p">.</span> <span class="mi">77</span><span class="n">B</span><span class="p">,</span> <span class="mi">1973</span><span class="p">,</span> <span class="n">pp</span>
+          <span class="mi">125</span><span class="o">-</span><span class="mi">132</span><span class="p">.</span>
+
+         <span class="ss">&quot;ALGORITHM 597, Sequence of Modified Bessel Functions</span>
+<span class="ss">          of the First Kind,&quot;</span> <span class="n">Cody</span><span class="p">,</span> <span class="n">W</span><span class="p">.</span> <span class="n">J</span><span class="p">.,</span> <span class="n">Trans</span><span class="p">.</span> <span class="n">Math</span><span class="p">.</span> <span class="n">Soft</span><span class="p">.,</span>
+          <span class="mi">1983</span><span class="p">,</span> <span class="n">pp</span><span class="p">.</span> <span class="mi">242</span><span class="o">-</span><span class="mi">245</span><span class="p">.</span>
+</pre></div>
+
+
+<p>Latest modification: May 30, 1989</p>
+<p>Modified by: W. J. Cody and L. Stoltz
+               Applied Mathematics Division
+               Argonne National Laboratory
+               Argonne, IL  60439</p>
+<hr>
+    
+
+    <h3>Arguments</h3>
+    
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-x~35"></span>double precision</td>
+  <td></td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-alpha"></span>double precision</td>
+  <td></td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ALPHA</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-nb"></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>NB</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-ize"></span>integer</td>
+  <td></td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>IZE</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-b~3"></span>double precision,</td>
+  <td>intent(out)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>B</strong>(NB)</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-ncalc"></span>integer,</td>
+  <td>intent(out)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>NCALC</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+    
+    
+    
+    
+     
+    <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<em>None</em>
+
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+
+    
+    
+    
+    
+    </div>
+  </div>
+
+
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-4"><p>&copy; 2019 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a>
+                                          </p></div>
+        <div class="col-xs-6 col-md-4 col-md-push-4">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/cmacmackin/ford">FORD</a>
+            
+          </p>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-pull-4"><p class="text-center"> RPN calculator in Fortran was developed by Michael Hirsch, Ph.D.</p></div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+    
+  </body>
+</html>

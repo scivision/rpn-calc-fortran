@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+   <meta name="description" content="RPN calculator in Fortran">
+    
+    <meta name="author" content="Michael Hirsch, Ph.D." >
+    <link rel="icon" href="../favicon.png">
+
+    <title>stackops &ndash; RPN calculator in Fortran</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+    
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">RPN calculator in Fortran </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+        
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          
+              
+            <li><a href="../lists/files.html">Source Files</a></li>
+        
+        
+        
+            <li><a href="../lists/modules.html">Modules</a></li>
+        
+            
+                                
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+        
+               
+        
+            <li><a href="../program/rpn.html">Program</a></li>
+      
+            </ul>
+            </li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+
+                             
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../program/rpn.html">Program</a></li>
+
+          </ul>
+        
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    
+  
+  <div class="row">
+    <h1>stackops 
+    <small>Module</small>
+    
+    </h1>
+    
+<div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+     
+     
+     
+     
+    
+    
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+    data-placement="bottom" data-html="true"
+    title=" 2.8% of total for modules and submodules.">187 statements</a>
+     </li> 
+     
+     
+     
+    <li><i class="fa fa-code"></i><a href="../src/ui.f90"> Source File</a></li>
+     
+     
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+  
+    
+     <li><a href='../sourcefile/ui.f90.html'>ui.f90</a></li>
+    
+  
+     <li class="active">stackops</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    
+<div id="sidebar">
+  
+<h3>Contents</h3>
+ 
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-0">Variables</a></h3></div>
+  <div id="vars-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/stackops.html#variable-c0~2">c0</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#inters-0">Interfaces</a></h3></div>
+  <div id="inters-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/stackops.html#interface-push_stack">push_stack</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#interface-printx">printx</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-0">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-0" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-push_stack_r">PUSH_STACK_r</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-cpush_stack">CPUSH_STACK</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-rpush_stack">RPUSH_STACK</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-drop_stack">DROP_STACK</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-cdrop_stack">CDROP_STACK</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-rdrop_stack">RDROP_STACK</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-printx_r">PRINTX_r</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-cprintx">CPRINTX</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-rprintx">RPRINTX</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <hr>
+<p>PUSH_STACK</p>
+<p>Push a number onto the real stack.</p>
+<hr>
+<hr>
+<p>push_stack</p>
+<p>Push a number onto the complex stack.</p>
+<hr>
+<hr>
+<p>RPUSH_STACK</p>
+<p>Push a number onto the rational stack.</p>
+<hr>
+<hr>
+<p>DROP_STACK</p>
+<p>Drop a number from the real stack.</p>
+<hr>
+<hr>
+<p>CDROP_STACK</p>
+<p>Drop a number from the complex stack.</p>
+<hr>
+<hr>
+<p>RDROP_STACK</p>
+<p>Drop a number from the rational stack.</p>
+<hr>
+<hr>
+<p>PRINTX</p>
+<p>Print a real number to a string.</p>
+<hr>
+<hr>
+<p>CPRINTX</p>
+<p>Print a complex number to a string.</p>
+<hr>
+<hr>
+<p>RPRINTX</p>
+<p>Print a rational number to a string.</p>
+<hr>
+      <br>
+    
+  
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Uses</h3>
+      </div>
+      <ul class="list-group">
+      
+      <li class="list-group-item">
+  <ul class="list-inline">
+    
+    <li><a href='../module/funcs.html'>funcs</a></li>
+    
+    <li>assert</li>
+    
+    <li><a href="http://fortranwiki.org/fortran/show/ISO_FORTRAN_ENV">iso_fortran_env</a></li>
+    
+    <li><a href='../module/global.html'>GLOBAL</a></li>
+    
+  </ul>
+      </li>
+      
+      
+      
+      <li class="list-group-item">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~stackops~~UsesGraph Pages: 1 -->
+<svg id="modulestackopsUsesGraph" width="487pt" height="596pt"
+ viewBox="0.00 0.00 487.00 596.30" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~stackops~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 592.2983)">
+<title>module~~stackops~~UsesGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-592.2983 483,-592.2983 483,4 -4,4"/>
+<!-- module~stackops -->
+<g id="module~~stackops~~UsesGraph_node1" class="node">
+<title>module~stackops</title>
+<polygon fill="none" stroke="#000000" points="479,-63.1848 424,-63.1848 424,-39.1848 479,-39.1848 479,-63.1848"/>
+<text text-anchor="middle" x="451.5" y="-48.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">stackops</text>
+</g>
+<!-- iso_fortran_env -->
+<g id="module~~stackops~~UsesGraph_node2" class="node">
+<title>iso_fortran_env</title>
+<g id="a_module~~stackops~~UsesGraph_node2"><a xlink:href="http://fortranwiki.org/fortran/show/ISO_FORTRAN_ENV" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="87,-579.1848 0,-579.1848 0,-555.1848 87,-555.1848 87,-579.1848"/>
+<text text-anchor="middle" x="43.5" y="-564.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~stackops&#45;&gt;iso_fortran_env -->
+<g id="module~~stackops~~UsesGraph_edge1" class="edge">
+<title>module~stackops&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M361,-528.1848C291.9079,-587.0369 255.8553,-578.629 165.5,-587.1848"/>
+</g>
+<!-- module~funcs -->
+<g id="module~~stackops~~UsesGraph_node3" class="node">
+<title>module~funcs</title>
+<g id="a_module~~stackops~~UsesGraph_node3"><a xlink:href=".././module/funcs.html" xlink:title="funcs">
+<polygon fill="#337ab7" stroke="#337ab7" points="388,-63.1848 334,-63.1848 334,-39.1848 388,-39.1848 388,-63.1848"/>
+<text text-anchor="middle" x="361" y="-48.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">funcs</text>
+</a>
+</g>
+</g>
+<!-- module~stackops&#45;&gt;module~funcs -->
+<g id="module~~stackops~~UsesGraph_edge4" class="edge">
+<title>module~stackops&#45;&gt;module~funcs</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M423.8553,-51.1848C415.799,-51.1848 406.8606,-51.1848 398.3124,-51.1848"/>
+<polygon fill="#000000" stroke="#000000" points="398.1645,-47.6849 388.1645,-51.1848 398.1644,-54.6849 398.1645,-47.6849"/>
+</g>
+<!-- module~global -->
+<g id="module~~stackops~~UsesGraph_node4" class="node">
+<title>module~global</title>
+<g id="a_module~~stackops~~UsesGraph_node4"><a xlink:href=".././module/global.html" xlink:title="GLOBAL">
+<polygon fill="#337ab7" stroke="#337ab7" points="193,-437.1848 138,-437.1848 138,-413.1848 193,-413.1848 193,-437.1848"/>
+<text text-anchor="middle" x="165.5" y="-422.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">GLOBAL</text>
+</a>
+</g>
+</g>
+<!-- module~stackops&#45;&gt;module~global -->
+<g id="module~~stackops~~UsesGraph_edge3" class="edge">
+<title>module~stackops&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M451.1863,-63.4773C449.1563,-132.0555 435.4953,-466.4944 361,-528.1848"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M361,-528.1848C335.4549,-549.3389 327.0306,-504.2244 298,-488.1848 266.5279,-470.7961 229.4758,-453.4283 202.5672,-441.3456"/>
+<polygon fill="#000000" stroke="#000000" points="203.7002,-438.0186 193.1416,-437.1429 200.8495,-444.4119 203.7002,-438.0186"/>
+</g>
+<!-- assert -->
+<g id="module~~stackops~~UsesGraph_node5" class="node">
+<title>assert</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="70.5,-437.1848 16.5,-437.1848 16.5,-413.1848 70.5,-413.1848 70.5,-437.1848"/>
+<text text-anchor="middle" x="43.5" y="-422.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">assert</text>
+</g>
+<!-- module~stackops&#45;&gt;assert -->
+<g id="module~~stackops~~UsesGraph_edge2" class="edge">
+<title>module~stackops&#45;&gt;assert</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M423.9582,-41.0201C412.8966,-37.2163 399.9549,-33.1127 388,-30.1848 336.8311,-17.6527 323.3666,-16.9332 271,-11.1848"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271,-11.1848C224.5909,-4.4943 207.5533,9.5539 165.5,-11.1848"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M165.5,-11.1848C146.9433,-20.336 135.9214,-14.0251 123,-30.1848 75.9421,-89.036 51.7844,-328.584 45.3107,-403.0127"/>
+<polygon fill="#000000" stroke="#000000" points="41.811,-402.8627 44.4529,-413.1229 48.7859,-403.4546 41.811,-402.8627"/>
+</g>
+<!-- module~funcs&#45;&gt;iso_fortran_env -->
+<g id="module~~stackops~~UsesGraph_edge8" class="edge">
+<title>module~funcs&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271,-549.1848C235.5871,-584.2522 215.1158,-582.4867 165.5,-587.1848"/>
+</g>
+<!-- module~funcs&#45;&gt;assert -->
+<g id="module~~stackops~~UsesGraph_edge7" class="edge">
+<title>module~funcs&#45;&gt;assert</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M343.0035,-39.1796C325.4892,-28.4949 297.6847,-14.114 271,-11.1848"/>
+</g>
+<!-- module~bessel -->
+<g id="module~~stackops~~UsesGraph_node6" class="node">
+<title>module~bessel</title>
+<g id="a_module~~stackops~~UsesGraph_node6"><a xlink:href=".././module/bessel.html" xlink:title="bessel">
+<polygon fill="#337ab7" stroke="#337ab7" points="298,-210.1848 244,-210.1848 244,-186.1848 298,-186.1848 298,-210.1848"/>
+<text text-anchor="middle" x="271" y="-195.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">bessel</text>
+</a>
+</g>
+</g>
+<!-- module~funcs&#45;&gt;module~bessel -->
+<g id="module~~stackops~~UsesGraph_edge5" class="edge">
+<title>module~funcs&#45;&gt;module~bessel</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M353.6349,-63.2144C338.3405,-88.1953 302.9734,-145.9616 283.8425,-177.2086"/>
+<polygon fill="#000000" stroke="#000000" points="280.7034,-175.6328 278.4668,-185.9889 286.6734,-179.2879 280.7034,-175.6328"/>
+</g>
+<!-- module~stats -->
+<g id="module~~stackops~~UsesGraph_node7" class="node">
+<title>module~stats</title>
+<g id="a_module~~stackops~~UsesGraph_node7"><a xlink:href=".././module/stats.html" xlink:title="stats">
+<polygon fill="#337ab7" stroke="#337ab7" points="298,-397.1848 244,-397.1848 244,-373.1848 298,-373.1848 298,-397.1848"/>
+<text text-anchor="middle" x="271" y="-382.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">stats</text>
+</a>
+</g>
+</g>
+<!-- module~funcs&#45;&gt;module~stats -->
+<g id="module~~stackops~~UsesGraph_edge6" class="edge">
+<title>module~funcs&#45;&gt;module~stats</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M357.6901,-63.4681C344.3195,-113.0879 294.1863,-299.1378 276.9016,-363.2832"/>
+<polygon fill="#000000" stroke="#000000" points="273.4675,-362.5757 274.2451,-373.142 280.2264,-364.397 273.4675,-362.5757"/>
+</g>
+<!-- module~fgamma -->
+<g id="module~~stackops~~UsesGraph_node8" class="node">
+<title>module~fgamma</title>
+<g id="a_module~~stackops~~UsesGraph_node8"><a xlink:href=".././module/fgamma.html" xlink:title="fgamma">
+<polygon fill="#337ab7" stroke="#337ab7" points="298,-105.1848 244,-105.1848 244,-81.1848 298,-81.1848 298,-105.1848"/>
+<text text-anchor="middle" x="271" y="-90.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">fgamma</text>
+</a>
+</g>
+</g>
+<!-- module~funcs&#45;&gt;module~fgamma -->
+<g id="module~~stackops~~UsesGraph_edge10" class="edge">
+<title>module~funcs&#45;&gt;module~fgamma</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M334.9683,-63.3329C326.013,-67.5121 315.8309,-72.2637 306.2652,-76.7277"/>
+<polygon fill="#000000" stroke="#000000" points="304.5549,-73.6634 296.9732,-81.0639 307.5152,-80.0067 304.5549,-73.6634"/>
+</g>
+<!-- module~hyper -->
+<g id="module~~stackops~~UsesGraph_node9" class="node">
+<title>module~hyper</title>
+<g id="a_module~~stackops~~UsesGraph_node9"><a xlink:href=".././module/hyper.html" xlink:title="hyper">
+<polygon fill="#337ab7" stroke="#337ab7" points="298,-521.1848 244,-521.1848 244,-497.1848 298,-497.1848 298,-521.1848"/>
+<text text-anchor="middle" x="271" y="-506.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">hyper</text>
+</a>
+</g>
+</g>
+<!-- module~funcs&#45;&gt;module~hyper -->
+<g id="module~~stackops~~UsesGraph_edge9" class="edge">
+<title>module~funcs&#45;&gt;module~hyper</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M359.2275,-63.2058C352.4827,-108.433 327.3134,-272.5931 298,-406.1848 291.8257,-434.3233 283.1634,-466.3715 277.33,-487.1425"/>
+<polygon fill="#000000" stroke="#000000" points="273.9252,-486.3205 274.5656,-496.896 280.6599,-488.2294 273.9252,-486.3205"/>
+</g>
+<!-- module~trig -->
+<g id="module~~stackops~~UsesGraph_node10" class="node">
+<title>module~trig</title>
+<g id="a_module~~stackops~~UsesGraph_node10"><a xlink:href=".././module/trig.html" xlink:title="trig">
+<polygon fill="#337ab7" stroke="#337ab7" points="298,-63.1848 244,-63.1848 244,-39.1848 298,-39.1848 298,-63.1848"/>
+<text text-anchor="middle" x="271" y="-48.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">trig</text>
+</a>
+</g>
+</g>
+<!-- module~funcs&#45;&gt;module~trig -->
+<g id="module~~stackops~~UsesGraph_edge11" class="edge">
+<title>module~funcs&#45;&gt;module~trig</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M333.997,-51.1848C325.9723,-51.1848 317.0335,-51.1848 308.4691,-51.1848"/>
+<polygon fill="#000000" stroke="#000000" points="308.295,-47.6849 298.295,-51.1848 308.2949,-54.6849 308.295,-47.6849"/>
+</g>
+<!-- module~rat -->
+<g id="module~~stackops~~UsesGraph_node11" class="node">
+<title>module~rat</title>
+<g id="a_module~~stackops~~UsesGraph_node11"><a xlink:href=".././module/rat.html" xlink:title="rat">
+<polygon fill="#337ab7" stroke="#337ab7" points="192.5,-559.1848 138.5,-559.1848 138.5,-535.1848 192.5,-535.1848 192.5,-559.1848"/>
+<text text-anchor="middle" x="165.5" y="-544.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">rat</text>
+</a>
+</g>
+</g>
+<!-- module~funcs&#45;&gt;module~rat -->
+<g id="module~~stackops~~UsesGraph_edge12" class="edge">
+<title>module~funcs&#45;&gt;module~rat</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M360.7047,-63.3036C358.8997,-129.5638 347.7205,-448.0194 298,-530.1848 290.4033,-542.7386 281.4264,-538.8601 271,-549.1848"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271,-549.1848C253.5379,-566.4765 225.407,-565.0967 202.5835,-559.8656"/>
+<polygon fill="#000000" stroke="#000000" points="203.4103,-556.4643 192.8516,-557.3383 201.6508,-563.2396 203.4103,-556.4643"/>
+</g>
+<!-- module~global&#45;&gt;assert -->
+<g id="module~~stackops~~UsesGraph_edge13" class="edge">
+<title>module~global&#45;&gt;assert</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M137.8163,-425.1848C120.9299,-425.1848 99.1298,-425.1848 80.7428,-425.1848"/>
+<polygon fill="#000000" stroke="#000000" points="80.6539,-421.6849 70.6539,-425.1848 80.6538,-428.6849 80.6539,-421.6849"/>
+</g>
+<!-- module~bessel&#45;&gt;assert -->
+<g id="module~~stackops~~UsesGraph_edge16" class="edge">
+<title>module~bessel&#45;&gt;assert</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M269.6458,-210.4331C265.6889,-240.695 251.528,-319.8878 208,-366.1848 193.8273,-381.259 183.4454,-374.8861 165.5,-385.1848"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M165.5,-385.1848C150.8231,-393.6076 110.6392,-406.1103 80.3683,-414.8902"/>
+<polygon fill="#000000" stroke="#000000" points="79.1795,-411.59 70.5336,-417.7138 81.1112,-418.3182 79.1795,-411.59"/>
+</g>
+<!-- module~rjk -->
+<g id="module~~stackops~~UsesGraph_node12" class="node">
+<title>module~rjk</title>
+<g id="a_module~~stackops~~UsesGraph_node12"><a xlink:href=".././module/rjk.html" xlink:title="rjk">
+<polygon fill="#337ab7" stroke="#337ab7" points="192.5,-105.1848 138.5,-105.1848 138.5,-81.1848 192.5,-81.1848 192.5,-105.1848"/>
+<text text-anchor="middle" x="165.5" y="-90.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">rjk</text>
+</a>
+</g>
+</g>
+<!-- module~bessel&#45;&gt;module~rjk -->
+<g id="module~~stackops~~UsesGraph_edge22" class="edge">
+<title>module~bessel&#45;&gt;module~rjk</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M264.3132,-185.9138C254.1333,-168.1611 233.2414,-135.1498 208,-114.1848 206.0057,-112.5283 203.8587,-110.9616 201.6268,-109.4876"/>
+<polygon fill="#000000" stroke="#000000" points="203.1362,-106.315 192.741,-104.268 199.5908,-112.3508 203.1362,-106.315"/>
+</g>
+<!-- module~i1 -->
+<g id="module~~stackops~~UsesGraph_node13" class="node">
+<title>module~i1</title>
+<g id="a_module~~stackops~~UsesGraph_node13"><a xlink:href=".././module/i1.html" xlink:title="i1">
+<polygon fill="#337ab7" stroke="#337ab7" points="192.5,-63.1848 138.5,-63.1848 138.5,-39.1848 192.5,-39.1848 192.5,-63.1848"/>
+<text text-anchor="middle" x="165.5" y="-48.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">i1</text>
+</a>
+</g>
+</g>
+<!-- module~bessel&#45;&gt;module~i1 -->
+<g id="module~~stackops~~UsesGraph_edge14" class="edge">
+<title>module~bessel&#45;&gt;module~i1</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M267.7313,-185.8626C260.6624,-161.325 241.8022,-105.8279 208,-72.1848 206.1115,-70.3051 204.0209,-68.5651 201.8096,-66.9593"/>
+<polygon fill="#000000" stroke="#000000" points="203.2001,-63.704 192.8542,-61.4207 199.5181,-69.6574 203.2001,-63.704"/>
+</g>
+<!-- module~k0 -->
+<g id="module~~stackops~~UsesGraph_node14" class="node">
+<title>module~k0</title>
+<g id="a_module~~stackops~~UsesGraph_node14"><a xlink:href=".././module/k0.html" xlink:title="k0">
+<polygon fill="#337ab7" stroke="#337ab7" points="192.5,-357.1848 138.5,-357.1848 138.5,-333.1848 192.5,-333.1848 192.5,-357.1848"/>
+<text text-anchor="middle" x="165.5" y="-342.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">k0</text>
+</a>
+</g>
+</g>
+<!-- module~bessel&#45;&gt;module~k0 -->
+<g id="module~~stackops~~UsesGraph_edge15" class="edge">
+<title>module~bessel&#45;&gt;module~k0</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M267.7313,-210.5069C260.6624,-235.0446 241.8022,-290.5417 208,-324.1848 206.1115,-326.0644 204.0209,-327.8045 201.8096,-329.4102"/>
+<polygon fill="#000000" stroke="#000000" points="199.5181,-326.7121 192.8542,-334.9489 203.2001,-332.6655 199.5181,-326.7121"/>
+</g>
+<!-- module~rjb -->
+<g id="module~~stackops~~UsesGraph_node15" class="node">
+<title>module~rjb</title>
+<g id="a_module~~stackops~~UsesGraph_node15"><a xlink:href=".././module/rjb.html" xlink:title="rjb">
+<polygon fill="#337ab7" stroke="#337ab7" points="192.5,-315.1848 138.5,-315.1848 138.5,-291.1848 192.5,-291.1848 192.5,-315.1848"/>
+<text text-anchor="middle" x="165.5" y="-300.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">rjb</text>
+</a>
+</g>
+</g>
+<!-- module~bessel&#45;&gt;module~rjb -->
+<g id="module~~stackops~~UsesGraph_edge17" class="edge">
+<title>module~bessel&#45;&gt;module~rjb</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M264.3132,-210.4558C254.1333,-228.2084 233.2414,-261.2197 208,-282.1848 206.0057,-283.8412 203.8587,-285.4079 201.6268,-286.882"/>
+<polygon fill="#000000" stroke="#000000" points="199.5908,-284.0187 192.741,-292.1015 203.1362,-290.0545 199.5908,-284.0187"/>
+</g>
+<!-- module~i0 -->
+<g id="module~~stackops~~UsesGraph_node17" class="node">
+<title>module~i0</title>
+<g id="a_module~~stackops~~UsesGraph_node17"><a xlink:href=".././module/i0.html" xlink:title="i0">
+<polygon fill="#337ab7" stroke="#337ab7" points="192.5,-273.1848 138.5,-273.1848 138.5,-249.1848 192.5,-249.1848 192.5,-273.1848"/>
+<text text-anchor="middle" x="165.5" y="-258.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">i0</text>
+</a>
+</g>
+</g>
+<!-- module~bessel&#45;&gt;module~i0 -->
+<g id="module~~stackops~~UsesGraph_edge18" class="edge">
+<title>module~bessel&#45;&gt;module~i0</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M254.2651,-210.2021C241.7822,-218.9519 224.1667,-230.8538 208,-240.1848 205.5275,-241.6118 202.9447,-243.0377 200.327,-244.4366"/>
+<polygon fill="#000000" stroke="#000000" points="198.6774,-241.3493 191.4015,-249.0507 201.892,-247.5675 198.6774,-241.3493"/>
+</g>
+<!-- module~k1 -->
+<g id="module~~stackops~~UsesGraph_node18" class="node">
+<title>module~k1</title>
+<g id="a_module~~stackops~~UsesGraph_node18"><a xlink:href=".././module/k1.html" xlink:title="k1">
+<polygon fill="#337ab7" stroke="#337ab7" points="192.5,-231.1848 138.5,-231.1848 138.5,-207.1848 192.5,-207.1848 192.5,-231.1848"/>
+<text text-anchor="middle" x="165.5" y="-216.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">k1</text>
+</a>
+</g>
+</g>
+<!-- module~bessel&#45;&gt;module~k1 -->
+<g id="module~~stackops~~UsesGraph_edge20" class="edge">
+<title>module~bessel&#45;&gt;module~k1</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M243.8311,-203.5928C231.2791,-206.0913 216.1773,-209.0973 202.5974,-211.8005"/>
+<polygon fill="#000000" stroke="#000000" points="201.7011,-208.4101 192.5768,-213.7951 203.0677,-215.2754 201.7011,-208.4101"/>
+</g>
+<!-- module~rjy -->
+<g id="module~~stackops~~UsesGraph_node19" class="node">
+<title>module~rjy</title>
+<g id="a_module~~stackops~~UsesGraph_node19"><a xlink:href=".././module/rjy.html" xlink:title="rjy">
+<polygon fill="#337ab7" stroke="#337ab7" points="192.5,-189.1848 138.5,-189.1848 138.5,-165.1848 192.5,-165.1848 192.5,-189.1848"/>
+<text text-anchor="middle" x="165.5" y="-174.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">rjy</text>
+</a>
+</g>
+</g>
+<!-- module~bessel&#45;&gt;module~rjy -->
+<g id="module~~stackops~~UsesGraph_edge21" class="edge">
+<title>module~bessel&#45;&gt;module~rjy</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M243.8311,-192.7767C231.2791,-190.2782 216.1773,-187.2722 202.5974,-184.5691"/>
+<polygon fill="#000000" stroke="#000000" points="203.0677,-181.0941 192.5768,-182.5745 201.7011,-187.9594 203.0677,-181.0941"/>
+</g>
+<!-- module~rji -->
+<g id="module~~stackops~~UsesGraph_node20" class="node">
+<title>module~rji</title>
+<g id="a_module~~stackops~~UsesGraph_node20"><a xlink:href=".././module/rji.html" xlink:title="rji">
+<polygon fill="#337ab7" stroke="#337ab7" points="192.5,-147.1848 138.5,-147.1848 138.5,-123.1848 192.5,-123.1848 192.5,-147.1848"/>
+<text text-anchor="middle" x="165.5" y="-132.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">rji</text>
+</a>
+</g>
+</g>
+<!-- module~bessel&#45;&gt;module~rji -->
+<g id="module~~stackops~~UsesGraph_edge19" class="edge">
+<title>module~bessel&#45;&gt;module~rji</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M254.2651,-186.1674C241.7822,-177.4177 224.1667,-165.5157 208,-156.1848 205.5275,-154.7577 202.9447,-153.3318 200.327,-151.933"/>
+<polygon fill="#000000" stroke="#000000" points="201.892,-148.802 191.4015,-147.3188 198.6774,-155.0203 201.892,-148.802"/>
+</g>
+<!-- module~stats&#45;&gt;assert -->
+<g id="module~~stackops~~UsesGraph_edge23" class="edge">
+<title>module~stats&#45;&gt;assert</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M243.9719,-378.1511C221.4538,-373.8601 189.3288,-371.5097 165.5,-385.1848"/>
+</g>
+<!-- module~fgamma&#45;&gt;assert -->
+<g id="module~~stackops~~UsesGraph_edge24" class="edge">
+<title>module~fgamma&#45;&gt;assert</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M254.2862,-81.0326C250.7781,-78.2513 247.1804,-75.2173 244,-72.1848 212.0226,-41.6939 205.1275,8.3576 165.5,-11.1848"/>
+</g>
+<!-- module~hyper&#45;&gt;iso_fortran_env -->
+<g id="module~~stackops~~UsesGraph_edge26" class="edge">
+<title>module~hyper&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M258.3818,-521.2038C240.8136,-537.9081 210.8081,-566.3187 208,-568.1848 190.7674,-579.6362 186.0984,-585.2343 165.5,-587.1848"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M165.5,-587.1848C141.9809,-589.4118 116.1331,-586.0265 94.3068,-581.4434"/>
+<polygon fill="#000000" stroke="#000000" points="94.7879,-577.9645 84.2646,-579.1933 93.2574,-584.7951 94.7879,-577.9645"/>
+</g>
+<!-- module~hyper&#45;&gt;module~global -->
+<g id="module~~stackops~~UsesGraph_edge29" class="edge">
+<title>module~hyper&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M258.3986,-497.0368C243.1361,-482.4217 218.2048,-458.8873 208,-451.1848 204.1468,-448.2764 199.9536,-445.4004 195.7519,-442.6808"/>
+<polygon fill="#000000" stroke="#000000" points="197.5581,-439.6824 187.2214,-437.358 193.8525,-445.6211 197.5581,-439.6824"/>
+</g>
+<!-- module~hyper&#45;&gt;assert -->
+<g id="module~~stackops~~UsesGraph_edge25" class="edge">
+<title>module~hyper&#45;&gt;assert</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M243.7884,-498.1567C232.7175,-493.73 219.779,-488.6328 208,-484.1848 164.3995,-467.7202 113.8956,-449.7717 80.4709,-438.0481"/>
+<polygon fill="#000000" stroke="#000000" points="81.2675,-434.6187 70.6726,-434.6181 78.9546,-441.2256 81.2675,-434.6187"/>
+</g>
+<!-- module~hyper&#45;&gt;module~rat -->
+<g id="module~~stackops~~UsesGraph_edge28" class="edge">
+<title>module~hyper&#45;&gt;module~rat</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M243.8311,-518.9707C231.156,-523.5361 215.8809,-529.0381 202.1984,-533.9664"/>
+<polygon fill="#000000" stroke="#000000" points="200.799,-530.7502 192.5768,-537.432 203.1712,-537.3361 200.799,-530.7502"/>
+</g>
+<!-- ieee_arithmetic -->
+<g id="module~~stackops~~UsesGraph_node16" class="node">
+<title>ieee_arithmetic</title>
+<g id="a_module~~stackops~~UsesGraph_node16"><a xlink:href="http://fortranwiki.org/fortran/show/IEEE_ARITHMETIC" xlink:title="ieee_arithmetic">
+<polygon fill="#337ab7" stroke="#337ab7" points="208,-517.1848 123,-517.1848 123,-493.1848 208,-493.1848 208,-517.1848"/>
+<text text-anchor="middle" x="165.5" y="-502.7848" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ieee_arithmetic</text>
+</a>
+</g>
+</g>
+<!-- module~hyper&#45;&gt;ieee_arithmetic -->
+<g id="module~~stackops~~UsesGraph_edge27" class="edge">
+<title>module~hyper&#45;&gt;ieee_arithmetic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M243.8311,-508.1547C236.0202,-507.8585 227.2219,-507.5249 218.4174,-507.1911"/>
+<polygon fill="#000000" stroke="#000000" points="218.2631,-503.6828 208.1377,-506.8014 217.9978,-510.6778 218.2631,-503.6828"/>
+</g>
+<!-- module~trig&#45;&gt;assert -->
+<g id="module~~stackops~~UsesGraph_edge30" class="edge">
+<title>module~trig&#45;&gt;assert</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M257.6655,-39.1376C237.3081,-22.2862 197.474,4.5833 165.5,-11.1848"/>
+</g>
+<!-- module~rat&#45;&gt;iso_fortran_env -->
+<g id="module~~stackops~~UsesGraph_edge31" class="edge">
+<title>module~rat&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M138.4242,-551.6234C126.3357,-553.6052 111.6408,-556.0141 97.4603,-558.3388"/>
+<polygon fill="#000000" stroke="#000000" points="96.5722,-554.9376 87.2702,-560.0093 97.7047,-561.8454 96.5722,-554.9376"/>
+</g>
+<!-- module~rat&#45;&gt;assert -->
+<g id="module~~stackops~~UsesGraph_edge32" class="edge">
+<title>module~rat&#45;&gt;assert</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M138.327,-536.0186C132.9775,-533.2116 127.6022,-529.9174 123,-526.1848 94.6415,-503.1847 70.0565,-468.325 56.0064,-446.1622"/>
+<polygon fill="#000000" stroke="#000000" points="58.8905,-444.1715 50.6496,-437.5128 52.9393,-447.8572 58.8905,-444.1715"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="490pt" height="32pt"
+ viewBox="0.00 0.00 489.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-28 485.5,-28 485.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="139.5,-24 72.5,-24 72.5,0 139.5,0 139.5,-24"/>
+<text text-anchor="middle" x="106" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="222,-24 158,-24 158,0 222,0 222,-24"/>
+<text text-anchor="middle" x="190" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="294,-24 240,-24 240,0 294,0 294,-24"/>
+<text text-anchor="middle" x="267" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="366,-24 312,-24 312,0 366,0 366,-24"/>
+<text text-anchor="middle" x="339" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="481.5,-24 384.5,-24 384.5,0 481.5,0 481.5,-24"/>
+<text text-anchor="middle" x="433" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+      </li>
+      
+      </ul>
+    </div>
+    
+
+    
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Used by</h3>
+      </div>
+      <ul class="list-group">
+  
+  
+  <li class="list-group-item">
+    <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~stackops~~UsedByGraph Pages: 1 -->
+<svg id="modulestackopsUsedByGraph" width="243pt" height="52pt"
+ viewBox="0.00 0.00 243.00 52.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~stackops~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 48)">
+<title>module~~stackops~~UsedByGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-48 239,-48 239,4 -4,4"/>
+<!-- module~stackops -->
+<g id="module~~stackops~~UsedByGraph_node1" class="node">
+<title>module~stackops</title>
+<polygon fill="none" stroke="#000000" points="55,-44 0,-44 0,-20 55,-20 55,-44"/>
+<text text-anchor="middle" x="27.5" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">stackops</text>
+</g>
+<!-- program~rpn -->
+<g id="module~~stackops~~UsedByGraph_node2" class="node">
+<title>program~rpn</title>
+<g id="a_module~~stackops~~UsedByGraph_node2"><a xlink:href=".././program/rpn.html" xlink:title="RPN">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="235,-44 181,-44 181,-20 235,-20 235,-44"/>
+<text text-anchor="middle" x="208" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">RPN</text>
+</a>
+</g>
+</g>
+<!-- program~rpn&#45;&gt;module~stackops -->
+<g id="module~~stackops~~UsedByGraph_edge1" class="edge">
+<title>program~rpn&#45;&gt;module~stackops</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M180.7124,-32.5275C169.6304,-32.7172 156.7042,-32.9071 145,-33 121.0008,-33.1905 114.9993,-33.189 91,-33 82.613,-32.934 73.6035,-32.8189 65.0819,-32.6897"/>
+<polygon fill="#000000" stroke="#000000" points="65.0593,-29.189 55.0042,-32.5275 64.9466,-36.1881 65.0593,-29.189"/>
+</g>
+<!-- module~evals -->
+<g id="module~~stackops~~UsedByGraph_node3" class="node">
+<title>module~evals</title>
+<g id="a_module~~stackops~~UsedByGraph_node3"><a xlink:href=".././module/evals.html" xlink:title="evals">
+<polygon fill="#337ab7" stroke="#337ab7" points="145,-24 91,-24 91,0 145,0 145,-24"/>
+<text text-anchor="middle" x="118" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">evals</text>
+</a>
+</g>
+</g>
+<!-- program~rpn&#45;&gt;module~evals -->
+<g id="module~~stackops~~UsedByGraph_edge3" class="edge">
+<title>program~rpn&#45;&gt;module~evals</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M180.997,-25.9993C172.8842,-24.1965 163.8369,-22.186 155.1869,-20.2638"/>
+<polygon fill="#000000" stroke="#000000" points="155.8161,-16.8183 145.295,-18.0655 154.2976,-23.6516 155.8161,-16.8183"/>
+</g>
+<!-- module~evals&#45;&gt;module~stackops -->
+<g id="module~~stackops~~UsedByGraph_edge2" class="edge">
+<title>module~evals&#45;&gt;module~stackops</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M90.847,-18.0007C82.7639,-19.787 73.7584,-21.7772 65.133,-23.6833"/>
+<polygon fill="#000000" stroke="#000000" points="64.2694,-20.2896 55.2603,-25.8651 65.78,-27.1247 64.2694,-20.2896"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="490pt" height="32pt"
+ viewBox="0.00 0.00 489.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-28 485.5,-28 485.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="139.5,-24 72.5,-24 72.5,0 139.5,0 139.5,-24"/>
+<text text-anchor="middle" x="106" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="222,-24 158,-24 158,0 222,0 222,-24"/>
+<text text-anchor="middle" x="190" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="294,-24 240,-24 240,0 294,0 294,-24"/>
+<text text-anchor="middle" x="267" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="366,-24 312,-24 312,0 366,0 366,-24"/>
+<text text-anchor="middle" x="339" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="481.5,-24 384.5,-24 384.5,0 481.5,0 481.5,-24"/>
+<text text-anchor="middle" x="433" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+  </li>
+  
+      </ul>
+    </div>
+    
+
+    <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      
+<h3>Contents</h3>
+ 
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-1">Variables</a></h3></div>
+  <div id="vars-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/stackops.html#variable-c0~2">c0</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#inters-1">Interfaces</a></h3></div>
+  <div id="inters-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/stackops.html#interface-push_stack">push_stack</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#interface-printx">printx</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-1">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-1" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-push_stack_r">PUSH_STACK_r</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-cpush_stack">CPUSH_STACK</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-rpush_stack">RPUSH_STACK</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-drop_stack">DROP_STACK</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-cdrop_stack">CDROP_STACK</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-rdrop_stack">RDROP_STACK</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-printx_r">PRINTX_r</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-cprintx">CPRINTX</a>
+      
+      <a class="list-group-item" href="../module/stackops.html#proc-rprintx">RPRINTX</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    
+
+    
+    <section>
+    <h2>Variables</h2>
+    
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th>
+
+<th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-c0~2"></span>complex(kind=wp),</td>
+  
+  <td>private,</td>
+  <td>parameter</td><td>::</td>
+  <td><strong>c0</strong></td><td> =</td><td>(0._wp, 0._wp)</td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+    </section>
+    <br>
+    
+    
+    
+    
+    
+    <section>
+   <h2>Interfaces</h2>
+   
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="interface-push_stack"></span><h3>public interface <a href='../interface/push_stack.html'>push_stack</a>
+    
+  </h3></div>
+  
+  <ul class="list-group">
+  
+  
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public subroutine <a href='../proc/push_stack_r.html'>PUSH_STACK_r</a>(X)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+    </li>
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public subroutine <a href='../proc/cpush_stack.html'>CPUSH_STACK</a>(X)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+    </li>
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public subroutine <a href='../proc/rpush_stack.html'>RPUSH_STACK</a>(RN, RD)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>RN</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>RD</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+    </li>
+  
+  
+  </ul>
+</div>
+
+    
+     
+<div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="interface-printx"></span><h3>public interface <a href='../interface/printx.html'>printx</a>
+    
+  </h3></div>
+  
+  <ul class="list-group">
+  
+  
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public subroutine <a href='../proc/printx_r.html'>PRINTX_r</a>(X, NUMSTR)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>character(len=100),</td>
+  <td>intent(out)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>NUMSTR</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+    </li>
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public subroutine <a href='../proc/cprintx.html'>CPRINTX</a>(X, NUMSTR)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>character(len=100),</td>
+  <td>intent(out)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>NUMSTR</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+    </li>
+  
+    <li class="list-group-item">
+    
+    
+    <h3>
+public subroutine <a href='../proc/rprintx.html'>RPRINTX</a>(RN, RD, NUMSTR)
+    
+    
+   
+</h3>
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>RN</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>RD</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>character(len=100),</td>
+  <td>intent(out)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>NUMSTR</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+    </li>
+  
+  
+  </ul>
+</div>
+
+    
+    </section>
+  <br>
+    
+
+    
+    
+    
+    
+    
+
+    
+    <section>
+    <h2>Subroutines</h2>
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-push_stack_r"></span><h3>
+public subroutine <a href='../proc/push_stack_r.html'>PUSH_STACK_r</a>(X)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-cpush_stack"></span><h3>
+public subroutine <a href='../proc/cpush_stack.html'>CPUSH_STACK</a>(X)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-rpush_stack"></span><h3>
+public subroutine <a href='../proc/rpush_stack.html'>RPUSH_STACK</a>(RN, RD)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>RN</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>RD</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-drop_stack"></span><h3>
+public subroutine <a href='../proc/drop_stack.html'>DROP_STACK</a>(N)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>N</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-cdrop_stack"></span><h3>
+public subroutine <a href='../proc/cdrop_stack.html'>CDROP_STACK</a>(N)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>N</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-rdrop_stack"></span><h3>
+public subroutine <a href='../proc/rdrop_stack.html'>RDROP_STACK</a>(N)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>N</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-printx_r"></span><h3>
+public subroutine <a href='../proc/printx_r.html'>PRINTX_r</a>(X, NUMSTR)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>real(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>character(len=100),</td>
+  <td>intent(out)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>NUMSTR</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-cprintx"></span><h3>
+public subroutine <a href='../proc/cprintx.html'>CPRINTX</a>(X, NUMSTR)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>complex(kind=wp),</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>character(len=100),</td>
+  <td>intent(out)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>NUMSTR</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-rprintx"></span><h3>
+public subroutine <a href='../proc/rprintx.html'>RPRINTX</a>(RN, RD, NUMSTR)
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>RN</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>integer,</td>
+  <td>intent(in)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>RD</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" ></span>character(len=100),</td>
+  <td>intent(out)</td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>NUMSTR</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+      
+    
+    
+
+  </div>
+  </div>
+
+    
+    </section>    
+    <br>
+    
+    
+    
+    </div>
+  </div>
+
+  
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-4"><p>&copy; 2019 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a>
+                                          </p></div>
+        <div class="col-xs-6 col-md-4 col-md-push-4">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/cmacmackin/ford">FORD</a>
+            
+          </p>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-pull-4"><p class="text-center"> RPN calculator in Fortran was developed by Michael Hirsch, Ph.D.</p></div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+    
+  </body>
+</html>

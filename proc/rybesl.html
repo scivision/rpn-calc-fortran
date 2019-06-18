@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+   <meta name="description" content="RPN calculator in Fortran">
+    
+    <meta name="author" content="Michael Hirsch, Ph.D." >
+    <link rel="icon" href="../favicon.png">
+
+    <title>RYBESL &ndash; RPN calculator in Fortran</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+    
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">RPN calculator in Fortran </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+        
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          
+              
+            <li><a href="../lists/files.html">Source Files</a></li>
+        
+        
+        
+            <li><a href="../lists/modules.html">Modules</a></li>
+        
+            
+                                
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+        
+               
+        
+            <li><a href="../program/rpn.html">Program</a></li>
+      
+            </ul>
+            </li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+
+                             
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../program/rpn.html">Program</a></li>
+
+          </ul>
+        
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    
+  
+  <div class="row">
+    <h1>RYBESL
+      <small>Subroutine</small>
+    
+    </h1>
+    
+<div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+     
+     
+     
+     
+    
+    
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+    data-placement="bottom" data-html="true"
+    title=" 3.4% of total for procedures.">222 statements</a>
+     </li> 
+     
+     
+     
+    <li><i class="fa fa-code"></i><a href="../src/rybesl.f"> Source File</a></li>
+     
+     
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+  
+    
+     <li><a href='../sourcefile/rybesl.f.html'>rybesl.f</a></li>
+    
+     <li><a href='../module/rjy.html'>rjy</a></li>
+    
+  
+     <li class="active">RYBESL</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    
+<div id="sidebar">
+  
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<em>None</em>
+
+
+</div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>
+public subroutine RYBESL(X, ALPHA, NB, BY, NCALC)
+    
+    
+   
+</h2>
+    
+  
+
+
+    
+    <hr>
+<hr>
+<p>Explanation of machine-dependent constants</p>
+<p>beta   = Radix for the floating-point system
+   p      = Number of significant base-beta digits in the
+            significand of a floating-point number
+   minexp = Smallest representable power of beta
+   maxexp = Smallest power of beta that overflows
+   EPS    = beta <strong> (-p)
+   DEL    = Machine number below which sin(x)/x = 1; approximately
+            SQRT(EPS).
+   XMIN   = Smallest acceptable argument for RBESY; approximately
+            max(2*beta</strong>minexp,2/XINF), rounded up
+   XINF   = Largest positive machine number; approximately
+            beta**maxexp
+   THRESH = Lower bound for use of the asymptotic form; approximately
+            AINT(-LOG10(EPS/2.0))+1.0
+   XLARGE = Upper bound on X; approximately 1/DEL, because the sine
+            and cosine functions have lost about half of their 
+            precision at that point.</p>
+<div class="codehilite"><pre><span></span> <span class="nv">Approximate</span> <span class="nv">values</span> <span class="k">for</span> <span class="nv">some</span> <span class="nv">important</span> <span class="nv">machines</span> <span class="nv">are</span>:
+
+                    <span class="nv">beta</span>    <span class="nv">p</span>     <span class="nv">minexp</span>      <span class="nv">maxexp</span>      <span class="nv">EPS</span>
+</pre></div>
+
+
+<p>CRAY-1        (S.P.)    2    48     -8193        8191    3.55E-15
+  Cyber 180/185 
+    under NOS   (S.P.)    2    48      -975        1070    3.55E-15
+  IEEE (IBM/XT,
+    SUN, etc.)  (S.P.)    2    24      -126         128    5.96E-8
+  IEEE (IBM/XT,
+    SUN, etc.)  (D.P.)    2    53     -1022        1024    1.11D-16
+  IBM 3033      (D.P.)   16    14       -65          63    1.39D-17
+  VAX           (S.P.)    2    24      -128         127    5.96E-8
+  VAX D-Format  (D.P.)    2    56      -128         127    1.39D-17
+  VAX G-Format  (D.P.)    2    53     -1024        1023    1.11D-16</p>
+<div class="codehilite"><pre><span></span>                     <span class="n">DEL</span>      <span class="n">XMIN</span>      <span class="n">XINF</span>     <span class="n">THRESH</span>  <span class="n">XLARGE</span>
+</pre></div>
+
+
+<p>CRAY-1        (S.P.)  5.0E-8  3.67E-2466 5.45E+2465  15.0E0  2.0E7
+ Cyber 180/855
+   under NOS   (S.P.)  5.0E-8  6.28E-294  1.26E+322   15.0E0  2.0E7
+ IEEE (IBM/XT,
+   SUN, etc.)  (S.P.)  1.0E-4  2.36E-38   3.40E+38     8.0E0  1.0E4
+ IEEE (IBM/XT,
+   SUN, etc.)  (D.P.)  1.0D-8  4.46D-308  1.79D+308   16.0D0  1.0D8
+ IBM 3033      (D.P.)  1.0D-8  2.77D-76   7.23D+75    17.0D0  1.0D8
+ VAX           (S.P.)  1.0E-4  1.18E-38   1.70E+38     8.0E0  1.0E4
+ VAX D-Format  (D.P.)  1.0D-9  1.18D-38   1.70D+38    17.0D0  1.0D9
+ VAX G-Format  (D.P.)  1.0D-8  2.23D-308  8.98D+307   16.0D0  1.0D8</p>
+<hr>
+<hr>
+<p>Error returns</p>
+<p>In case of an error, NCALC .NE. NB, and not all Y's are
+  calculated to the desired accuracy.</p>
+<p>NCALC .LT. -1:  An argument is out of range. For example,
+       NB .LE. 0, IZE is not 1 or 2, or IZE=1 and ABS(X) .GE.
+       XMAX.  In this case, BY(1) = 0.0, the remainder of the
+       BY-vector is not calculated, and NCALC is set to
+       MIN0(NB,0)-2  so that NCALC .NE. NB.
+  NCALC = -1:  Y(ALPHA,X) .GE. XINF.  The requested function
+       values are set to 0.0.
+  1 .LT. NCALC .LT. NB: Not all requested function values could
+       be calculated accurately.  BY(I) contains correct function
+       values for I .LE. NCALC, and and the remaining NB-NCALC
+       array elements contain 0.0.</p>
+<p>Intrinsic functions required are:</p>
+<div class="codehilite"><pre><span></span> <span class="n">DBLE</span><span class="p">,</span> <span class="n">EXP</span><span class="p">,</span> <span class="nb">INT</span><span class="p">,</span> <span class="k">MAX</span><span class="p">,</span> <span class="k">MIN</span><span class="p">,</span> <span class="nb">REAL</span><span class="p">,</span> <span class="n">SQRT</span>
+</pre></div>
+
+
+<p>Acknowledgement</p>
+<p>This program draws heavily on Temme's Algol program for Y(a,x)
+  and Y(a+1,x) and on Campbell's programs for Y_nu(x).  Temme's
+  scheme is used for  x &lt; THRESH, and Campbell's scheme is used
+  in the asymptotic region.  Segments of code from both sources
+  have been translated into Fortran 77, merged, and heavily modified.
+  Modifications include parameterization of machine dependencies,
+  use of a new approximation for ln(gamma(x)), and built-in
+  protection against over/underflow.</p>
+<p>References: "Bessel functions J_nu(x) and Y_nu(x) of real
+              order and real argument," Campbell, J. B.,
+              Comp. Phy. Comm. 18, 1979, pp. 133-142.</p>
+<div class="codehilite"><pre><span></span>         <span class="ss">&quot;On the numerical evaluation of the ordinary</span>
+<span class="ss">          Bessel function of the second kind,&quot;</span> <span class="n">Temme</span><span class="p">,</span>
+          <span class="n">N</span><span class="p">.</span> <span class="n">M</span><span class="p">.,</span> <span class="n">J</span><span class="p">.</span> <span class="n">Comput</span><span class="p">.</span> <span class="n">Phys</span><span class="p">.</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">1976</span><span class="p">,</span> <span class="n">pp</span><span class="p">.</span> <span class="mi">343</span><span class="o">-</span><span class="mi">350</span><span class="p">.</span>
+</pre></div>
+
+
+<p>Latest modification: March 19, 1990</p>
+<p>Modified by: W. J. Cody
+               Applied Mathematics Division
+               Argonne National Laboratory
+               Argonne, IL  60439</p>
+<hr>
+    
+
+    <h3>Arguments</h3>
+    
+      
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th>
+<th>Intent</th><th>Optional</th>
+<th>Attributes</th><th></th><th>Name</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-x~38"></span>double precision</td>
+  <td></td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>X</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-alpha~4"></span>double precision</td>
+  <td></td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>ALPHA</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-nb~4"></span>integer</td>
+  <td></td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>NB</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-by"></span>double precision</td>
+  <td></td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>BY</strong></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-ncalc~4"></span>integer</td>
+  <td></td>
+  <td></td>
+  
+  <td></td><td>::</td>
+  <td><strong>NCALC</strong></td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+    
+    
+    
+    
+     
+    <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      
+<h3>Contents</h3>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<em>None</em>
+
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+
+    
+    
+    
+    
+    </div>
+  </div>
+
+
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-4"><p>&copy; 2019 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a>
+                                          </p></div>
+        <div class="col-xs-6 col-md-4 col-md-push-4">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/cmacmackin/ford">FORD</a>
+            
+          </p>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-pull-4"><p class="text-center"> RPN calculator in Fortran was developed by Michael Hirsch, Ph.D.</p></div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+    
+  </body>
+</html>

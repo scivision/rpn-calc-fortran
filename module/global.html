@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+   <meta name="description" content="RPN calculator in Fortran">
+    
+    <meta name="author" content="Michael Hirsch, Ph.D." >
+    <link rel="icon" href="../favicon.png">
+
+    <title>GLOBAL &ndash; RPN calculator in Fortran</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+    
+    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+    
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">RPN calculator in Fortran </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+        
+            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
+              <a href="#" class="dropdown-toggle"
+              data-toggle="dropdown" role="button"
+              aria-haspopup="true"
+     aria-expanded="false">Contents <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          
+              
+            <li><a href="../lists/files.html">Source Files</a></li>
+        
+        
+        
+            <li><a href="../lists/modules.html">Modules</a></li>
+        
+            
+                                
+            <li><a href="../lists/procedures.html">Procedures</a></li>
+        
+               
+        
+            <li><a href="../program/rpn.html">Program</a></li>
+      
+            </ul>
+            </li>
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
+
+
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
+
+                             
+
+<li class="visible-xs hidden-sm visible-lg"><a href="../program/rpn.html">Program</a></li>
+
+          </ul>
+        
+        <form action="../search.html" class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+        </div>
+<!--
+        <button type="submit" class="btn btn-default">Submit</button>
+-->
+        </form>
+        
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    
+  
+  <div class="row">
+    <h1>GLOBAL 
+    <small>Module</small>
+    
+    </h1>
+    
+<div class="row">
+  <div class="col-lg-12">
+<div class="well well-sm">
+  <ul class="list-inline" style="margin-bottom:0px;display:inline">
+     
+     
+     
+     
+    
+    
+     <li><i class="fa fa-list-ol"></i>
+       <a data-toggle="tooltip"
+    data-placement="bottom" data-html="true"
+    title=" 0.6% of total for modules and submodules.">39 statements</a>
+     </li> 
+     
+     
+     
+    <li><i class="fa fa-code"></i><a href="../src/reg.f90"> Source File</a></li>
+     
+     
+  </ul>
+  <ol class="breadcrumb in-well text-right">
+  
+    
+     <li><a href='../sourcefile/reg.f90.html'>reg.f90</a></li>
+    
+  
+     <li class="active">GLOBAL</li>
+  </ol>
+</div>
+</div>
+</div>
+<script>
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    
+<div id="sidebar">
+  
+<h3>Contents</h3>
+ 
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-0">Variables</a></h3></div>
+  <div id="vars-0" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/global.html#variable-version">VERSION</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-stack_size">STACK_SIZE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-reg_size">REG_SIZE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-stack">STACK</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-reg">REG</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-cstack">CSTACK</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-creg">CREG</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnstack">RNSTACK</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdstack">RDSTACK</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnreg">RNREG</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdreg">RDREG</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-lastx">LASTX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-clastx">CLASTX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnlastx">RNLASTX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdlastx">RDLASTX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-nn">NN</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-sumx">SUMX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-sumx2">SUMX2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-sumy">SUMY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-sumy2">SUMY2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-sumxy">SUMXY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-cnn">CNN</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-csumx">CSUMX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-csumx2">CSUMX2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-csumy">CSUMY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-csumy2">CSUMY2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-csumxy">CSUMXY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnnn">RNNN</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnsumx">RNSUMX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnsumx2">RNSUMX2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnsumy">RNSUMY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnsumy2">RNSUMY2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnsumxy">RNSUMXY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdnn">RDNN</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdsumx">RDSUMX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdsumx2">RDSUMX2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdsumy">RDSUMY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdsumy2">RDSUMY2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdsumxy">RDSUMXY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-angle_factor">ANGLE_FACTOR</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-fractol">FRACTOL</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-angle_mode">ANGLE_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-disp_mode">DISP_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-disp_digits">DISP_DIGITS</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-base_mode">BASE_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-domain_mode">DOMAIN_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-fraction_mode">FRACTION_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_angle_mode">INITIAL_ANGLE_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_disp_mode">INITIAL_DISP_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_disp_digits">INITIAL_DISP_DIGITS</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_domain_mode">INITIAL_DOMAIN_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_base_mode">INITIAL_BASE_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_fraction_mode">INITIAL_FRACTION_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_fractol">INITIAL_FRACTOL</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-0">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-0" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/global.html#proc-init_stack">init_stack</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    
+      <br>
+    
+  
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Uses</h3>
+      </div>
+      <ul class="list-group">
+      
+      <li class="list-group-item">
+  <ul class="list-inline">
+    
+    <li>assert</li>
+    
+  </ul>
+      </li>
+      
+      
+      
+      <li class="list-group-item">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~global~~UsesGraph Pages: 1 -->
+<svg id="moduleglobalUsesGraph" width="153pt" height="32pt"
+ viewBox="0.00 0.00 153.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~global~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>module~~global~~UsesGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-28 149,-28 149,4 -4,4"/>
+<!-- module~global -->
+<g id="module~~global~~UsesGraph_node1" class="node">
+<title>module~global</title>
+<polygon fill="none" stroke="#000000" points="145,-24 90,-24 90,0 145,0 145,-24"/>
+<text text-anchor="middle" x="117.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">GLOBAL</text>
+</g>
+<!-- assert -->
+<g id="module~~global~~UsesGraph_node2" class="node">
+<title>assert</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">assert</text>
+</g>
+<!-- module~global&#45;&gt;assert -->
+<g id="module~~global~~UsesGraph_edge1" class="edge">
+<title>module~global&#45;&gt;assert</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M89.8553,-12C81.799,-12 72.8606,-12 64.3124,-12"/>
+<polygon fill="#000000" stroke="#000000" points="64.1645,-8.5001 54.1645,-12 64.1644,-15.5001 64.1645,-8.5001"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="490pt" height="32pt"
+ viewBox="0.00 0.00 489.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-28 485.5,-28 485.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="139.5,-24 72.5,-24 72.5,0 139.5,0 139.5,-24"/>
+<text text-anchor="middle" x="106" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="222,-24 158,-24 158,0 222,0 222,-24"/>
+<text text-anchor="middle" x="190" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="294,-24 240,-24 240,0 294,0 294,-24"/>
+<text text-anchor="middle" x="267" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="366,-24 312,-24 312,0 366,0 366,-24"/>
+<text text-anchor="middle" x="339" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="481.5,-24 384.5,-24 384.5,0 481.5,0 481.5,-24"/>
+<text text-anchor="middle" x="433" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+      </li>
+      
+      </ul>
+    </div>
+    
+
+    
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+  <h3 class="panel-title">Used by</h3>
+      </div>
+      <ul class="list-group">
+  
+  
+  <li class="list-group-item">
+    <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: module~~global~~UsedByGraph Pages: 1 -->
+<svg id="moduleglobalUsedByGraph" width="601pt" height="433pt"
+ viewBox="0.00 0.00 601.00 432.60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~global~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 428.5962)">
+<title>module~~global~~UsedByGraph</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-428.5962 597,-428.5962 597,4 -4,4"/>
+<!-- module~global -->
+<g id="module~~global~~UsedByGraph_node1" class="node">
+<title>module~global</title>
+<polygon fill="none" stroke="#000000" points="55,-239.5962 0,-239.5962 0,-215.5962 55,-215.5962 55,-239.5962"/>
+<text text-anchor="middle" x="27.5" y="-225.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">GLOBAL</text>
+</g>
+<!-- module~stackops -->
+<g id="module~~global~~UsedByGraph_node2" class="node">
+<title>module~stackops</title>
+<g id="a_module~~global~~UsedByGraph_node2"><a xlink:href=".././module/stackops.html" xlink:title="stackops">
+<polygon fill="#337ab7" stroke="#337ab7" points="413,-92.5962 358,-92.5962 358,-68.5962 413,-68.5962 413,-92.5962"/>
+<text text-anchor="middle" x="385.5" y="-78.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">stackops</text>
+</a>
+</g>
+</g>
+<!-- module~stackops&#45;&gt;module~global -->
+<g id="module~~global~~UsedByGraph_edge1" class="edge">
+<title>module~stackops&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M371.4219,-92.6818C366.9026,-96.873 362.0283,-101.7426 358,-106.5962 288.7918,-189.9822 321.1326,-259.704 226,-311.5962 173.3266,-340.328 144.7165,-338.327 91,-311.5962 64.8386,-298.5775 46.5907,-269.0679 36.5735,-248.7363"/>
+<polygon fill="#000000" stroke="#000000" points="39.7148,-247.191 32.3185,-239.6051 33.3699,-250.1477 39.7148,-247.191"/>
+</g>
+<!-- module~funcs -->
+<g id="module~~global~~UsedByGraph_node14" class="node">
+<title>module~funcs</title>
+<g id="a_module~~global~~UsedByGraph_node14"><a xlink:href=".././module/funcs.html" xlink:title="funcs">
+<polygon fill="#337ab7" stroke="#337ab7" points="319,-382.5962 265,-382.5962 265,-358.5962 319,-358.5962 319,-382.5962"/>
+<text text-anchor="middle" x="292" y="-368.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">funcs</text>
+</a>
+</g>
+</g>
+<!-- module~stackops&#45;&gt;module~funcs -->
+<g id="module~~global~~UsedByGraph_edge18" class="edge">
+<title>module~stackops&#45;&gt;module~funcs</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M369.263,-92.6051C364.9523,-96.5868 360.7399,-101.356 358,-106.5962 308.43,-201.4 373.6097,-250.8872 322,-344.5962 320.7199,-346.9205 319.1463,-349.1337 317.3965,-351.2167"/>
+<polygon fill="#000000" stroke="#000000" points="314.6354,-349.027 310.0221,-358.5647 319.5763,-353.9856 314.6354,-349.027"/>
+</g>
+<!-- proc~isrational -->
+<g id="module~~global~~UsedByGraph_node3" class="node">
+<title>proc~isrational</title>
+<g id="a_module~~global~~UsedByGraph_node3"><a xlink:href=".././proc/isrational.html" xlink:title="ISRATIONAL">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="196,-382.5962 121,-382.5962 121,-358.5962 196,-358.5962 196,-382.5962"/>
+<text text-anchor="middle" x="158.5" y="-368.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ISRATIONAL</text>
+</a>
+</g>
+</g>
+<!-- proc~isrational&#45;&gt;module~global -->
+<g id="module~~global~~UsedByGraph_edge2" class="edge">
+<title>proc~isrational&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M120.8748,-361.3844C110.3565,-357.4814 99.4925,-352.0539 91,-344.5962 61.3897,-318.594 43.0534,-275.3259 34.1087,-249.3267"/>
+<polygon fill="#000000" stroke="#000000" points="37.3796,-248.0684 30.9414,-239.6541 30.7271,-250.2468 37.3796,-248.0684"/>
+</g>
+<!-- module~hyper -->
+<g id="module~~global~~UsedByGraph_node4" class="node">
+<title>module~hyper</title>
+<g id="a_module~~global~~UsedByGraph_node4"><a xlink:href=".././module/hyper.html" xlink:title="hyper">
+<polygon fill="#337ab7" stroke="#337ab7" points="185.5,-424.5962 131.5,-424.5962 131.5,-400.5962 185.5,-400.5962 185.5,-424.5962"/>
+<text text-anchor="middle" x="158.5" y="-410.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">hyper</text>
+</a>
+</g>
+</g>
+<!-- module~hyper&#45;&gt;module~global -->
+<g id="module~~global~~UsedByGraph_edge5" class="edge">
+<title>module~hyper&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M131.371,-409.7609C117.783,-407.0672 101.9401,-401.8186 91,-391.5962 49.9345,-353.2247 35.0937,-285.241 29.9961,-250.0704"/>
+<polygon fill="#000000" stroke="#000000" points="33.431,-249.3445 28.6624,-239.8834 26.4902,-250.2532 33.431,-249.3445"/>
+</g>
+<!-- proc~switch_rat_to_real -->
+<g id="module~~global~~UsedByGraph_node5" class="node">
+<title>proc~switch_rat_to_real</title>
+<g id="a_module~~global~~UsedByGraph_node5"><a xlink:href=".././proc/switch_rat_to_real.html" xlink:title="SWITCH_RAT_TO_REAL">
+<polygon fill="#d9534f" stroke="#d9534f" points="226,-302.5962 91,-302.5962 91,-278.5962 226,-278.5962 226,-302.5962"/>
+<text text-anchor="middle" x="158.5" y="-288.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">SWITCH_RAT_TO_REAL</text>
+</a>
+</g>
+</g>
+<!-- proc~switch_rat_to_real&#45;&gt;module~global -->
+<g id="module~~global~~UsedByGraph_edge4" class="edge">
+<title>proc~switch_rat_to_real&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M113.5221,-278.5589C105.8634,-275.9589 98.0964,-272.963 91,-269.5962 77.1066,-263.0046 62.726,-253.7296 51.1707,-245.5717"/>
+<polygon fill="#000000" stroke="#000000" points="53.0926,-242.6423 42.9398,-239.614 48.9882,-248.3127 53.0926,-242.6423"/>
+</g>
+<!-- proc~iscomplex -->
+<g id="module~~global~~UsedByGraph_node6" class="node">
+<title>proc~iscomplex</title>
+<g id="a_module~~global~~UsedByGraph_node6"><a xlink:href=".././proc/iscomplex.html" xlink:title="ISCOMPLEX">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="195,-260.5962 122,-260.5962 122,-236.5962 195,-236.5962 195,-260.5962"/>
+<text text-anchor="middle" x="158.5" y="-246.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ISCOMPLEX</text>
+</a>
+</g>
+</g>
+<!-- proc~iscomplex&#45;&gt;module~global -->
+<g id="module~~global~~UsedByGraph_edge3" class="edge">
+<title>proc~iscomplex&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M121.6606,-242.6906C104.074,-239.8714 83.0537,-236.5017 65.3397,-233.6621"/>
+<polygon fill="#000000" stroke="#000000" points="65.7711,-230.1866 55.3431,-232.0596 64.663,-237.0984 65.7711,-230.1866"/>
+</g>
+<!-- proc~isreal -->
+<g id="module~~global~~UsedByGraph_node7" class="node">
+<title>proc~isreal</title>
+<g id="a_module~~global~~UsedByGraph_node7"><a xlink:href=".././proc/isreal.html" xlink:title="ISREAL">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="185.5,-218.5962 131.5,-218.5962 131.5,-194.5962 185.5,-194.5962 185.5,-218.5962"/>
+<text text-anchor="middle" x="158.5" y="-204.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">ISREAL</text>
+</a>
+</g>
+</g>
+<!-- proc~isreal&#45;&gt;module~global -->
+<g id="module~~global~~UsedByGraph_edge6" class="edge">
+<title>proc~isreal&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M131.3567,-210.9474C112.1643,-214.024 86.1882,-218.1882 65.0161,-221.5822"/>
+<polygon fill="#000000" stroke="#000000" points="64.3791,-218.1395 55.0592,-223.1783 65.4872,-225.0512 64.3791,-218.1395"/>
+</g>
+<!-- proc~linreg -->
+<g id="module~~global~~UsedByGraph_node8" class="node">
+<title>proc~linreg</title>
+<g id="a_module~~global~~UsedByGraph_node8"><a xlink:href=".././proc/linreg.html" xlink:title="LINREG">
+<polygon fill="#d9534f" stroke="#d9534f" points="185.5,-176.5962 131.5,-176.5962 131.5,-152.5962 185.5,-152.5962 185.5,-176.5962"/>
+<text text-anchor="middle" x="158.5" y="-162.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">LINREG</text>
+</a>
+</g>
+</g>
+<!-- proc~linreg&#45;&gt;module~global -->
+<g id="module~~global~~UsedByGraph_edge7" class="edge">
+<title>proc~linreg&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M131.2308,-171.1846C118.6678,-174.6943 103.7514,-179.5465 91,-185.5962 77.1066,-192.1878 62.726,-201.4627 51.1707,-209.6206"/>
+<polygon fill="#000000" stroke="#000000" points="48.9882,-206.8797 42.9398,-215.5784 53.0926,-212.5501 48.9882,-206.8797"/>
+</g>
+<!-- proc~clinreg -->
+<g id="module~~global~~UsedByGraph_node9" class="node">
+<title>proc~clinreg</title>
+<g id="a_module~~global~~UsedByGraph_node9"><a xlink:href=".././proc/clinreg.html" xlink:title="CLINREG">
+<polygon fill="#d9534f" stroke="#d9534f" points="188,-134.5962 129,-134.5962 129,-110.5962 188,-110.5962 188,-134.5962"/>
+<text text-anchor="middle" x="158.5" y="-120.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">CLINREG</text>
+</a>
+</g>
+</g>
+<!-- proc~clinreg&#45;&gt;module~global -->
+<g id="module~~global~~UsedByGraph_edge8" class="edge">
+<title>proc~clinreg&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M128.7932,-127.6372C116.3164,-130.7753 102.1459,-135.7636 91,-143.5962 67.7119,-159.9615 49.2628,-187.4912 38.3807,-206.5519"/>
+<polygon fill="#000000" stroke="#000000" points="35.2714,-204.9428 33.5263,-215.3929 41.4073,-208.3119 35.2714,-204.9428"/>
+</g>
+<!-- proc~rlinreg -->
+<g id="module~~global~~UsedByGraph_node10" class="node">
+<title>proc~rlinreg</title>
+<g id="a_module~~global~~UsedByGraph_node10"><a xlink:href=".././proc/rlinreg.html" xlink:title="RLINREG">
+<polygon fill="#d9534f" stroke="#d9534f" points="188,-92.5962 129,-92.5962 129,-68.5962 188,-68.5962 188,-92.5962"/>
+<text text-anchor="middle" x="158.5" y="-78.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">RLINREG</text>
+</a>
+</g>
+</g>
+<!-- proc~rlinreg&#45;&gt;module~global -->
+<g id="module~~global~~UsedByGraph_edge9" class="edge">
+<title>proc~rlinreg&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M128.7501,-84.5426C115.9737,-87.4903 101.582,-92.6324 91,-101.5962 58.3494,-129.254 40.6912,-177.8339 32.7676,-205.9054"/>
+<polygon fill="#000000" stroke="#000000" points="29.3841,-205.0099 30.1964,-215.5735 36.149,-206.809 29.3841,-205.0099"/>
+</g>
+<!-- module~evals -->
+<g id="module~~global~~UsedByGraph_node11" class="node">
+<title>module~evals</title>
+<g id="a_module~~global~~UsedByGraph_node11"><a xlink:href=".././module/evals.html" xlink:title="evals">
+<polygon fill="#337ab7" stroke="#337ab7" points="503,-52.5962 449,-52.5962 449,-28.5962 503,-28.5962 503,-52.5962"/>
+<text text-anchor="middle" x="476" y="-38.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">evals</text>
+</a>
+</g>
+</g>
+<!-- module~evals&#45;&gt;module~global -->
+<g id="module~~global~~UsedByGraph_edge10" class="edge">
+<title>module~evals&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M448.9888,-39.0674C430.9557,-38.422 406.7418,-38.277 385.5,-40.5962"/>
+</g>
+<!-- module~evals&#45;&gt;module~stackops -->
+<g id="module~~global~~UsedByGraph_edge13" class="edge">
+<title>module~evals&#45;&gt;module~stackops</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M448.847,-52.5975C440.5117,-56.2816 431.1955,-60.3993 422.3269,-64.3191"/>
+<polygon fill="#000000" stroke="#000000" points="420.6781,-61.2212 412.9466,-68.4651 423.508,-67.6237 420.6781,-61.2212"/>
+</g>
+<!-- module~evals&#45;&gt;module~funcs -->
+<g id="module~~global~~UsedByGraph_edge19" class="edge">
+<title>module~evals&#45;&gt;module~funcs</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M464.4689,-52.9032C452.2328,-65.6824 432.0697,-85.9553 413,-101.5962 401.5137,-111.0172 395.694,-109.79 385.5,-120.5962"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M385.5,-120.5962C314.4925,-195.8673 377.5325,-257.281 322,-344.5962 320.4396,-347.0496 318.5788,-349.4006 316.5589,-351.6161"/>
+<polygon fill="#000000" stroke="#000000" points="314.088,-349.1362 309.2844,-358.5795 318.9285,-354.1929 314.088,-349.1362"/>
+</g>
+<!-- program~rpn -->
+<g id="module~~global~~UsedByGraph_node12" class="node">
+<title>program~rpn</title>
+<g id="a_module~~global~~UsedByGraph_node12"><a xlink:href=".././program/rpn.html" xlink:title="RPN">
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="593,-52.5962 539,-52.5962 539,-28.5962 593,-28.5962 593,-52.5962"/>
+<text text-anchor="middle" x="566" y="-38.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">RPN</text>
+</a>
+</g>
+</g>
+<!-- program~rpn&#45;&gt;module~global -->
+<g id="module~~global~~UsedByGraph_edge11" class="edge">
+<title>program~rpn&#45;&gt;module~global</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M551.2476,-28.5893C534.0849,-15.9601 504.4551,1.7886 476,-.5962"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M476,-.5962C432.1778,-4.2688 429.2161,-35.8233 385.5,-40.5962"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M385.5,-40.5962C255.1138,-54.8318 196.4442,18.4085 91,-59.5962 66.7812,-77.5126 42.945,-164.0989 32.7124,-205.4814"/>
+<polygon fill="#000000" stroke="#000000" points="29.2597,-204.868 30.3045,-215.4112 36.0626,-206.5177 29.2597,-204.868"/>
+</g>
+<!-- program~rpn&#45;&gt;module~stackops -->
+<g id="module~~global~~UsedByGraph_edge12" class="edge">
+<title>program~rpn&#45;&gt;module~stackops</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M476,-.5962C439.2507,-3.6761 439.6201,-29.0742 413,-54.5962 410.7769,-56.7276 408.4458,-58.9502 406.121,-61.1591"/>
+<polygon fill="#000000" stroke="#000000" points="403.2611,-59.047 398.4063,-68.4641 408.0741,-64.1299 403.2611,-59.047"/>
+</g>
+<!-- program~rpn&#45;&gt;module~evals -->
+<g id="module~~global~~UsedByGraph_edge16" class="edge">
+<title>program~rpn&#45;&gt;module~evals</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M538.997,-40.5962C530.9723,-40.5962 522.0335,-40.5962 513.4691,-40.5962"/>
+<polygon fill="#000000" stroke="#000000" points="513.295,-37.0963 503.295,-40.5962 513.2949,-44.0963 513.295,-37.0963"/>
+</g>
+<!-- program~rpn&#45;&gt;module~funcs -->
+<g id="module~~global~~UsedByGraph_edge17" class="edge">
+<title>program~rpn&#45;&gt;module~funcs</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M538.7978,-51.2956C491.1832,-70.2202 396.7018,-108.7218 385.5,-120.5962"/>
+</g>
+<!-- proc~cgamma -->
+<g id="module~~global~~UsedByGraph_node13" class="node">
+<title>proc~cgamma</title>
+<g id="a_module~~global~~UsedByGraph_node13"><a xlink:href=".././proc/cgamma.html" xlink:title="CGAMMA">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="322,-424.5962 262,-424.5962 262,-400.5962 322,-400.5962 322,-424.5962"/>
+<text text-anchor="middle" x="292" y="-410.1962" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">CGAMMA</text>
+</a>
+</g>
+</g>
+<!-- proc~cgamma&#45;&gt;module~hyper -->
+<g id="module~~global~~UsedByGraph_edge14" class="edge">
+<title>proc~cgamma&#45;&gt;module~hyper</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M261.7068,-412.5962C242.0951,-412.5962 216.4267,-412.5962 195.595,-412.5962"/>
+<polygon fill="#000000" stroke="#000000" points="195.5032,-409.0963 185.5032,-412.5962 195.5031,-416.0963 195.5032,-409.0963"/>
+</g>
+<!-- module~funcs&#45;&gt;module~hyper -->
+<g id="module~~global~~UsedByGraph_edge15" class="edge">
+<title>module~funcs&#45;&gt;module~hyper</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M264.718,-379.3202C252.8309,-383.1101 238.7317,-387.5902 226,-391.5962 216.0784,-394.718 205.3281,-398.0743 195.3853,-401.1678"/>
+<polygon fill="#000000" stroke="#000000" points="194.283,-397.8452 185.7722,-404.1552 196.3604,-404.5298 194.283,-397.8452"/>
+</g>
+</g>
+</svg>
+</div><div><a type="button" class="graph-help" data-toggle="modal" href="#graph-help-text">Help</a></div><div class="modal fade" id="graph-help-text" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="-graph-help-label">Graph Key</h4></div><div class="modal-body">
+    <p>Nodes of different colours represent the following: </p>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="490pt" height="32pt"
+ viewBox="0.00 0.00 489.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-28 485.5,-28 485.5,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
+<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="139.5,-24 72.5,-24 72.5,0 139.5,0 139.5,-24"/>
+<text text-anchor="middle" x="106" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="222,-24 158,-24 158,0 222,0 222,-24"/>
+<text text-anchor="middle" x="190" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="294,-24 240,-24 240,0 294,0 294,-24"/>
+<text text-anchor="middle" x="267" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="366,-24 312,-24 312,0 366,0 366,-24"/>
+<text text-anchor="middle" x="339" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#ffffff">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="#000000" points="481.5,-24 384.5,-24 384.5,0 481.5,0 481.5,-24"/>
+<text text-anchor="middle" x="433" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="#000000">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+    
+    <p>Solid arrows point from a submodule to the (sub)module which it is
+    descended from. Dashed arrows point from a module or program unit to 
+    modules which it uses.
+    </p>
+    </div></div></div></div>
+  </li>
+  
+      </ul>
+    </div>
+    
+
+    <br>
+
+    <section class="visible-xs visible-sm hidden-md">
+      
+<h3>Contents</h3>
+ 
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#vars-1">Variables</a></h3></div>
+  <div id="vars-1" class="panel-collapse collapse">
+    <div class="list-group">
+      
+      <a class="list-group-item" href="../module/global.html#variable-version">VERSION</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-stack_size">STACK_SIZE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-reg_size">REG_SIZE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-stack">STACK</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-reg">REG</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-cstack">CSTACK</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-creg">CREG</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnstack">RNSTACK</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdstack">RDSTACK</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnreg">RNREG</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdreg">RDREG</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-lastx">LASTX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-clastx">CLASTX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnlastx">RNLASTX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdlastx">RDLASTX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-nn">NN</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-sumx">SUMX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-sumx2">SUMX2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-sumy">SUMY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-sumy2">SUMY2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-sumxy">SUMXY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-cnn">CNN</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-csumx">CSUMX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-csumx2">CSUMX2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-csumy">CSUMY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-csumy2">CSUMY2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-csumxy">CSUMXY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnnn">RNNN</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnsumx">RNSUMX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnsumx2">RNSUMX2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnsumy">RNSUMY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnsumy2">RNSUMY2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rnsumxy">RNSUMXY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdnn">RDNN</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdsumx">RDSUMX</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdsumx2">RDSUMX2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdsumy">RDSUMY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdsumy2">RDSUMY2</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-rdsumxy">RDSUMXY</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-angle_factor">ANGLE_FACTOR</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-fractol">FRACTOL</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-angle_mode">ANGLE_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-disp_mode">DISP_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-disp_digits">DISP_DIGITS</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-base_mode">BASE_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-domain_mode">DOMAIN_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-fraction_mode">FRACTION_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_angle_mode">INITIAL_ANGLE_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_disp_mode">INITIAL_DISP_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_disp_digits">INITIAL_DISP_DIGITS</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_domain_mode">INITIAL_DOMAIN_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_base_mode">INITIAL_BASE_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_fraction_mode">INITIAL_FRACTION_MODE</a>
+      
+      <a class="list-group-item" href="../module/global.html#variable-initial_fractol">INITIAL_FRACTOL</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+  <div class="panel-heading text-left"><h3 class="panel-title"><a data-toggle="collapse" href="#subs-1">Subroutines</a></h3></div>
+  <div class="list-group">
+    <div id="subs-1" class="panel-collapse collapse">
+      
+      <a class="list-group-item" href="../module/global.html#proc-init_stack">init_stack</a>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    </section>
+    <br class="visible-xs visible-sm hidden-md">
+
+    
+
+    
+    <section>
+    <h2>Variables</h2>
+    
+<table class="table table-striped varlist">
+<thead><tr><th>Type</th><th>Visibility</th>
+
+<th>Attributes</th><th></th><th>Name</th><th></th><th>Initial</th><th></th></thead>
+
+
+
+<tbody>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-version"></span>character(len=*),</td>
+  
+  <td>public,</td>
+  <td>parameter</td><td>::</td>
+  <td><strong>VERSION</strong></td><td> =</td><td>'1.1.7'</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-stack_size"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>STACK_SIZE</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-reg_size"></span>integer,</td>
+  
+  <td>public,</td>
+  <td>parameter</td><td>::</td>
+  <td><strong>REG_SIZE</strong></td><td> =</td><td>10</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-stack"></span>real(kind=wp),</td>
+  
+  <td>public,</td>
+  <td>allocatable</td><td>::</td>
+  <td><strong>STACK</strong>(:)</td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-reg"></span>real(kind=wp),</td>
+  
+  <td>public,</td>
+  <td>DIMENSION (0:REG_SIZE-1)</td><td>::</td>
+  <td><strong>REG</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-cstack"></span>complex(kind=wp),</td>
+  
+  <td>public,</td>
+  <td>allocatable</td><td>::</td>
+  <td><strong>CSTACK</strong>(:)</td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-creg"></span>complex(kind=wp),</td>
+  
+  <td>public,</td>
+  <td>DIMENSION (0:REG_SIZE-1)</td><td>::</td>
+  <td><strong>CREG</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rnstack"></span>integer,</td>
+  
+  <td>public,</td>
+  <td>allocatable</td><td>::</td>
+  <td><strong>RNSTACK</strong>(:)</td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rdstack"></span>integer,</td>
+  
+  <td>public,</td>
+  <td>allocatable</td><td>::</td>
+  <td><strong>RDSTACK</strong>(:)</td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rnreg"></span>integer,</td>
+  
+  <td>public,</td>
+  <td>DIMENSION (0:REG_SIZE-1)</td><td>::</td>
+  <td><strong>RNREG</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rdreg"></span>integer,</td>
+  
+  <td>public,</td>
+  <td>DIMENSION (0:REG_SIZE-1)</td><td>::</td>
+  <td><strong>RDREG</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-lastx"></span>real(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>LASTX</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-clastx"></span>complex(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>CLASTX</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rnlastx"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RNLASTX</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rdlastx"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RDLASTX</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-nn"></span>real(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>NN</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-sumx"></span>real(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>SUMX</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-sumx2"></span>real(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>SUMX2</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-sumy"></span>real(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>SUMY</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-sumy2"></span>real(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>SUMY2</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-sumxy"></span>real(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>SUMXY</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-cnn"></span>complex(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>CNN</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-csumx"></span>complex(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>CSUMX</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-csumx2"></span>complex(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>CSUMX2</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-csumy"></span>complex(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>CSUMY</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-csumy2"></span>complex(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>CSUMY2</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-csumxy"></span>complex(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>CSUMXY</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rnnn"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RNNN</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rnsumx"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RNSUMX</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rnsumx2"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RNSUMX2</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rnsumy"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RNSUMY</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rnsumy2"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RNSUMY2</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rnsumxy"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RNSUMXY</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rdnn"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RDNN</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rdsumx"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RDSUMX</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rdsumx2"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RDSUMX2</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rdsumy"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RDSUMY</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rdsumy2"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RDSUMY2</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-rdsumxy"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>RDSUMXY</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-angle_factor"></span>real(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>ANGLE_FACTOR</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-fractol"></span>real(kind=wp),</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>FRACTOL</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-angle_mode"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>ANGLE_MODE</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-disp_mode"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>DISP_MODE</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-disp_digits"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>DISP_DIGITS</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-base_mode"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>BASE_MODE</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-domain_mode"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>DOMAIN_MODE</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-fraction_mode"></span>integer,</td>
+  
+  <td>public</td>
+  <td></td><td>::</td>
+  <td><strong>FRACTION_MODE</strong></td><td></td><td></td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-initial_angle_mode"></span>integer,</td>
+  
+  <td>public,</td>
+  <td>parameter</td><td>::</td>
+  <td><strong>INITIAL_ANGLE_MODE</strong></td><td> =</td><td>1</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-initial_disp_mode"></span>integer,</td>
+  
+  <td>public,</td>
+  <td>parameter</td><td>::</td>
+  <td><strong>INITIAL_DISP_MODE</strong></td><td> =</td><td>4</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-initial_disp_digits"></span>integer,</td>
+  
+  <td>public,</td>
+  <td>parameter</td><td>::</td>
+  <td><strong>INITIAL_DISP_DIGITS</strong></td><td> =</td><td>4</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-initial_domain_mode"></span>integer,</td>
+  
+  <td>public,</td>
+  <td>parameter</td><td>::</td>
+  <td><strong>INITIAL_DOMAIN_MODE</strong></td><td> =</td><td>1</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-initial_base_mode"></span>integer,</td>
+  
+  <td>public,</td>
+  <td>parameter</td><td>::</td>
+  <td><strong>INITIAL_BASE_MODE</strong></td><td> =</td><td>10</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-initial_fraction_mode"></span>integer,</td>
+  
+  <td>public,</td>
+  <td>parameter</td><td>::</td>
+  <td><strong>INITIAL_FRACTION_MODE</strong></td><td> =</td><td>1</td><td></td>
+  
+</tr>
+
+  
+  
+  
+  
+<tr>
+  
+  <td><span class="anchor" id="variable-initial_fractol"></span>real(kind=wp),</td>
+  
+  <td>public,</td>
+  <td>parameter</td><td>::</td>
+  <td><strong>INITIAL_FRACTOL</strong></td><td> =</td><td>1.0D-4</td><td></td>
+  
+</tr>
+
+</tbody>
+</table>
+
+    </section>
+    <br>
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    <section>
+    <h2>Subroutines</h2>
+    
+    
+  <div class="panel panel-default">
+  <div class="panel-heading codesum"><span class="anchor" id="proc-init_stack"></span><h3>
+public subroutine <a href='../proc/init_stack.html'>init_stack</a>()
+    
+    
+   
+</h3></div>
+  <div class="panel-body">
+       
+    
+    
+    <h4>Arguments</h4>
+    
+      <em>None</em>
+    
+    
+
+  </div>
+  </div>
+
+    
+    </section>    
+    <br>
+    
+    
+    
+    </div>
+  </div>
+
+  
+    <hr>    
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+      <div class="row">
+        <div class="col-xs-6 col-md-4"><p>&copy; 2019 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a>
+                                          </p></div>
+        <div class="col-xs-6 col-md-4 col-md-push-4">
+          <p class="text-right">
+            Documentation generated by 
+            <a href="https://github.com/cmacmackin/ford">FORD</a>
+            
+          </p>
+        </div>
+        <div class="col-xs-12 col-md-4 col-md-pull-4"><p class="text-center"> RPN calculator in Fortran was developed by Michael Hirsch, Ph.D.</p></div>
+      </div>
+      <br>
+      </div> <!-- /container -->    
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+-->
+    <script src="../js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- MathJax JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+    <script src="../tipuesearch/tipuesearch_content.js"></script>
+    <script src="../tipuesearch/tipuesearch_set.js"></script>
+    <script src="../tipuesearch/tipuesearch.js"></script>
+    
+    
+  </body>
+</html>
