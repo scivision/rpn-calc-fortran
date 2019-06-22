@@ -34,11 +34,4 @@ endif()
 
 include(CheckFortranSourceCompiles)
 
-check_fortran_source_compiles("use, intrinsic:: ieee_arithmetic; end"
-  f08ieee SRC_EXT f90)
-
-if(NOT f08ieee)
-  message(FATAL_ERROR "IEEE_arithmetic not supported by your compiler")
-endif()
-
 check_fortran_source_compiles("print *,atanh((1.,1.)); end" f08hyper SRC_EXT f90)

@@ -6,10 +6,6 @@ if fc.get_id() == 'gcc'
   add_global_arguments('-Wno-all', '-fimplicit-none', language : 'fortran')
 endif
 
-F08errstop=[]
-if fc.compiles('error stop; end')
-  F08errstop='-DF08'
-endif
 
 F08hyper = []
 if fc.links('complex :: x; asech(x); end')
@@ -18,8 +14,7 @@ endif
 
 subdir('src')
 
-assert = library('assert', 'tests/assert.F90',
-  fortran_args: F08errstop)
+assert = library('assert', 'tests/assert.f90')
 
 reg = library('reg', 'src/reg.f90', link_with: assert)
 
