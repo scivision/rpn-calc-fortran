@@ -34,21 +34,18 @@ These commands install `rpncalc` to ~/.local/bin.
 ### Meson
 
 ```sh
-cd build
+meson build
 
-meson .. --prefix=$HOME/.local
-
-meson install
+meson install -C build
+```
 
 
 ### CMake
 
 ```sh
-cd build
+cmake -B build
 
-cmake ..
-
-cmake --build . --target install
+cmake --build build --parallel --target install
 ```
 
 ## Usage
