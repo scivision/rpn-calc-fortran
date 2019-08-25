@@ -1,4 +1,3 @@
-
 if(CMAKE_Fortran_COMPILER_ID STREQUAL GNU)
   list(APPEND FFLAGS -march=native -fimplicit-none)
   #-Wall #-Wextra #-Wpedantic  -Warray-temporaries -Werror=array-bounds
@@ -22,12 +21,12 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL Intel)
   endif()
 
   if(WIN32)
-    list(APPEND FFLAGS /4Yd)# /stand:f18)
+    list(APPEND FFLAGS /warn:declarations)# /stand:f18)
   else()
-    list(APPEND -implicitnone)# -stand f18)
+    list(APPEND -warn declarations)# -stand f18)
   endif()
 elseif(CMAKE_Fortran_COMPILER_ID STREQUAL Flang)
-
+    set(FFLAGS -C -Mdclchk)
 elseif(CMAKE_Fortran_COMPILER_ID STREQUAL PGI)
 
 endif()
