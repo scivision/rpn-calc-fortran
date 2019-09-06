@@ -36,7 +36,7 @@ testcalc_exe = executable('testcalc', 'tests/test.f90',
 test('RPNfunc', testcalc_exe)
 
 testUI = find_program('tests/test_ui.py')
-test('UI', testUI, args: rpncalc_exe)
+test('UI', testUI, args: rpncalc_exe.full_path())
 
 tester = find_program('tests/test_value.py')
-test('Values', tester, args: rpncalc_exe)
+test('Values', tester, args: rpncalc_exe.full_path())

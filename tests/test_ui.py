@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 import subprocess
 import sys
-from pathlib import Path
+import shutil
 
-try:
-    exe = Path(sys.argv[1])
-except IndexError:
-    raise ValueError('Must specify executable to run')
+exe = shutil.which(sys.argv[1])
+if not exe:
+    print('executable', sys.argv[1], 'not found', file=sys.stderr)
+    raise SystemExit(77)
 
-if not exe.is_file():
-    raise FileNotFoundError(exe)
-
-ret = subprocess.run(str(exe), input="2 5 *", universal_newlines=True, timeout=5)
+ret = subprocess.run(exe, input="2 5 *", universal_newlines=True, timeout=5)
 raise SystemExit(ret.returncode)

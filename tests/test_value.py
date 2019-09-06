@@ -2,20 +2,18 @@
 import subprocess
 import sys
 from pathlib import Path
+import shutil
 
-try:
-    exe = Path(sys.argv[1])
-except IndexError:
-    raise ValueError('Must specify executable to run')
-
-if not exe.is_file():
-    raise FileNotFoundError(exe)
+exe = shutil.which(sys.argv[1])
+if not exe:
+    print('executable', sys.argv[1], 'not found', file=sys.stderr)
+    raise SystemExit(77)
 
 R = Path(__file__).parent
 
 ref = (R/'test.asc').read_text()
 
-ret = subprocess.check_output(str(exe), input=ref, universal_newlines=True, timeout=5)
+ret = subprocess.check_output(exe, input=ref, universal_newlines=True, timeout=5)
 
 match = 1
 for line in ret.split('\n'):
