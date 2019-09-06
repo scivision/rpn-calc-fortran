@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.com/scivision/rpn-calc-fortran.svg?branch=master)](https://travis-ci.com/scivision/rpn-calc-fortran)
-[![Build status](https://ci.appveyor.com/api/projects/status/60r7ppiawed9xbct?svg=true)](https://ci.appveyor.com/project/scivision/rpn-calc-fortran)
+[![Actions Status](https://github.com/scivision/rpn-calc-fortran/workflows/ci/badge.svg)](https://github.com/scivision/rpn-calc-fortran/actions)
 
 # RPN Reverse Polish Notation Calculator -- in Fortran
 
@@ -36,7 +35,7 @@ These commands install `rpncalc` to ~/.local/bin.
 ```sh
 meson build
 
-meson install -C build
+meson test -C build
 ```
 
 
@@ -45,7 +44,11 @@ meson install -C build
 ```sh
 cmake -B build
 
-cmake --build build --parallel --target install
+cmake --build build --parallel
+
+cd build
+
+ctest -V
 ```
 
 ## Usage

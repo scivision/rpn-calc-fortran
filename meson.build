@@ -1,5 +1,5 @@
 project('RPNcalc', 'fortran',
-  default_options : ['default_library=static', 'warning_level=1', 'prefix=~/.local', 'buildtype=release'],
+  default_options : ['default_library=static', 'warning_level=1', 'buildtype=release'],
   meson_version: '>=0.51')
 
 fc = meson.get_compiler('fortran')
@@ -9,7 +9,7 @@ endif
 
 
 F08hyper = []
-if fc.links('complex :: x; asech(x); end')
+if fc.links('complex :: x; asech(x); end', name: 'F08 hyperbolic')
   F08hyper = '-DF08HYPER'
 endif
 
