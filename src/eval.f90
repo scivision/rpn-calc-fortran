@@ -88,30 +88,29 @@ case('/')                                                  ! /
   call divide(domain_mode)
 case('^')                                                  ! ^
   call power(domain_mode)
-case(achar(92))  ! for PGI/Flang     !('\')                                                  ! \
-   SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         IF (isclose(stack(1), 0._wp)) THEN
-            write(stderr, *) '  Divide Error'
-         ELSE
-            LASTX = STACK(1)
-            STACK(1) = 1._wp / STACK(1)
-         END IF
-      CASE (2)
-         IF (isclose(CSTACK(1), C0)) THEN
-            write(stderr, *) '  Divide Error'
-         ELSE
-            CLASTX = CSTACK(1)
-            CSTACK(1) = (1.0,0.0) / CSTACK(1)
-         END IF
-      CASE (3)
-         CALL RDIV (1,1,RNSTACK(1),RDSTACK(1),NUM,DEN)
-         RNLASTX = RNSTACK(1)
-         RDLASTX = RDSTACK(1)
-         RNSTACK(1) = NUM
-         RDSTACK(1) = DEN
+case(achar(92))  ! for PGI/Flang     !('\')                ! \
+  SELECT CASE (DOMAIN_MODE)
+    CASE (1)
+      IF (isclose(stack(1), 0._wp)) THEN
+        write(stderr, *) '  Divide Error'
+      ELSE
+        LASTX = STACK(1)
+        STACK(1) = 1._wp / STACK(1)
+      END IF
+    CASE (2)
+      IF (isclose(CSTACK(1), C0)) THEN
+        write(stderr, *) '  Divide Error'
+      ELSE
+        CLASTX = CSTACK(1)
+        CSTACK(1) = (1.0,0.0) / CSTACK(1)
+      END IF
+    CASE (3)
+      CALL RDIV (1,1,RNSTACK(1),RDSTACK(1),NUM,DEN)
+      RNLASTX = RNSTACK(1)
+      RDLASTX = RDSTACK(1)
+      RNSTACK(1) = NUM
+      RDSTACK(1) = DEN
    END SELECT
-
 case('%')                                                  ! %
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -132,7 +131,6 @@ case('%')                                                  ! %
          RNSTACK(1) = NUM
          RDSTACK(1) = DEN
    END SELECT
-
 case('%CHG')                                               ! %CHG
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -179,23 +177,23 @@ case('!')                                                  ! !
         write(stderr, *) '  Factorial Error'
         return
       endif
-     
+
       CLASTX = CSTACK(1)
       CSTACK(1) = CGAMMA(CSTACK(1)+(1._wp, 0._wp))
-     
+
     CASE (3)
       IF ((RDSTACK(1)==1).AND.(RNSTACK(1)<0)) THEN
         write(stderr, *) '  Factorial Error'
         return
       endif
-      
+
       IF (RDSTACK(1)==1) THEN
          ITMP = RNSTACK(1)
          IF (ITMP<0) THEN
             write(stderr, *) '  Factorial Error'
             return
-         endif   
-         
+         endif
+
          ITMP2 = 1
          DO I = 2, ITMP
            ITMP2 = ITMP2 * I
@@ -376,7 +374,7 @@ case('ACOS')                                               ! ACOS
 
 case('ACOSH')                                             ! ACOSH
   call hacos(domain_mode)
-  
+
 case('ACOT')                                               ! ACOT
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -776,7 +774,7 @@ case('BESSELJ1')
          x = bessel_j1(x)
    END SELECT
   end associate
-  
+
 case('BESSELJ1P')
   associate(x=>stack(1))
    SELECT CASE (DOMAIN_MODE)
@@ -791,7 +789,7 @@ case('BESSELJ1P')
          x = bessel_j0(x) - 1 / x * bessel_j1(x)
    END SELECT
   end associate
-  
+
 case('BESSELJ')
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -1300,10 +1298,10 @@ case('COMPLEX')
    DOMAIN_MODE = 2
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-      
+
          CSTACK = CMPLX(STACK, kind=wp)
          CREG = CMPLX(REG, kind=wp)
-         
+
          CLASTX = CMPLX(LASTX, kind=wp)
          CNN = CMPLX(NN, kind=wp)
          CSUMX = CMPLX(SUMX, kind=wp)
@@ -1312,10 +1310,10 @@ case('COMPLEX')
          CSUMY2 = CMPLX(SUMY2, kind=wp)
          CSUMXY = CMPLX(SUMXY, kind=wp)
       CASE (3)
-    
+
          CSTACK = CMPLX(real(RNSTACK, wp) / real(RDSTACK, wp), kind=wp)
          CREG = CMPLX(real(RNREG, wp)/ real(RDREG, wp), kind=wp)
-         
+
          CLASTX = CMPLX(real(RNLASTX, wp)/real(RDLASTX, wp), kind=wp)
          CNN = CMPLX(real(RNNN, wp)/real(RDNN, wp), kind=wp)
          CSUMX = CMPLX(real(RNSUMX, wp)/real(RDSUMX, wp), kind=wp)
@@ -2172,7 +2170,7 @@ case('KG>LB')                                             ! KG>LB
          LASTX = STACK(1)
          STACK(1) = STACK(1) / KG_PER_LB
    END SELECT
-   
+
 case('JINC')
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -2185,7 +2183,7 @@ case('JINC')
          LASTX = STACK(1)
          STACK(1) = jinc(STACK(1))
    END SELECT
-   
+
 case('L>GAL')                                             ! L>GAL
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -2767,7 +2765,7 @@ case('R')                                                  ! R
          rnstack = cshift(rnstack, 1)
          rdstack = cshift(rdstack, 1)
    END SELECT
-   
+
 case('D')                                                  ! D
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
@@ -2940,11 +2938,11 @@ case('REAL')                                               ! REAL
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
          DOMAIN_MODE = 1
-         
+
          STACK = real(CSTACK, wp)
 
          REG = real(CREG, wp)
-         
+
          LASTX = real(CLASTX, wp)
          NN = real(CNN, wp)
          SUMX = real(CSUMX, wp)
@@ -3507,11 +3505,11 @@ case('VERS')                                               ! VERS
          LASTX = STACK(1)
          STACK(1) = VERS(STACK(1)*ANGLE_FACTOR)
    END SELECT
-   
+
 case('X^')                                                 ! X^
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (NN <= 1._wp) THEN
+         IF (NN <= 1) THEN
             write(stderr, *) '  X^ Error'
          ELSE
             CALL LINREG (TMPM,TMPB,TMPR)
@@ -3519,7 +3517,7 @@ case('X^')                                                 ! X^
             STACK(1) = (STACK(1)-TMPB)/TMPM
          END IF
       CASE (2)
-         IF (real(CNN, wp) <= 1._wp) THEN
+         IF (real(CNN, wp) <= 1) THEN
             write(stderr, *) '  X^ Error'
          ELSE
             CALL CLINREG (CTMPM,CTMPB,CTMPR)
@@ -3800,21 +3798,21 @@ select case(str(:3))
 
 case('RCL')                                                 ! RCL
   IF (LEN_TRIM(STR) == 3) THEN
-    write(stderr, *) '  RCLx requires specifying a integer register x ~ (0..9) to store in.  E.g.  RCL6' 
+    write(stderr, *) '  RCLx requires specifying a integer register x ~ (0..9) to store in.  E.g.  RCL6'
     return
   endif
-  
+
   READ(STR(4:4), '(I1)', IOSTAT=IERR) ITMP
   IF (IERR /= 0) THEN
     write(stderr, *) '  RCL Error with register '//str(4:4)
     return
   endif
-  
+
   IF ((ITMP < 0).OR.(ITMP >= REG_SIZE)) THEN
     write(stderr, *) '  RCL Error: no register at',itmp
     return
   endif
-  
+
   SELECT CASE (DOMAIN_MODE)
     CASE (1)
       CALL PUSH_STACK(REG(ITMP))
@@ -3828,21 +3826,21 @@ case('RCL')                                                 ! RCL
 
 case('STO')                                                 ! STO
   IF (LEN_TRIM(STR) == 3) THEN
-    write(stderr, *) '  STOx requires specifying a integer register x ~ (0..9) to store in.  E.g.  STO6' 
+    write(stderr, *) '  STOx requires specifying a integer register x ~ (0..9) to store in.  E.g.  STO6'
     return
   endif
-  
+
   READ (STR(4:4), '(I1)', IOSTAT=IERR) ITMP
   IF (IERR /= 0) THEN
     write(stderr, *) '  STO Error with register '//str(4:4)
     return
   endif
-  
+
   IF ((ITMP < 0).OR.(ITMP >= REG_SIZE)) THEN
     write(stderr, *) '  STO Error: no register at',itmp
     return
   endif
-  
+
   SELECT CASE (DOMAIN_MODE)
     CASE (1)
       REG(ITMP) = STACK(1)
@@ -3852,21 +3850,21 @@ case('STO')                                                 ! STO
       RNREG(ITMP) = RNSTACK(1)
       RDREG(ITMP) = RDSTACK(1)
   END SELECT
-  
+
   PRINT *, REG(ITMP)
-   
+
 case('ENG')                                                 ! ENG
   IF (LEN_TRIM(STR) == 3) THEN
     write(stderr, *) '  ENG Error: must specify # of digits of precision (0..9)'
     return
   endif
-  
+
   READ(STR(4:4), '(I1)', IOSTAT=IERR) ITMP
   IF (IERR /= 0) THEN
     write(stderr, *) '  ENG Error: with # digits: '//str(4:4)
     return
   endif
-  
+
   DISP_MODE = 3
   DISP_DIGITS = ITMP
 
@@ -3880,7 +3878,7 @@ case('FIX')                                                 ! FIX
     write(stderr, *) '  FIX Error: with # digits: '//str(4:4)
     return
   endif
-  
+
   DISP_MODE = 1
   DISP_DIGITS = ITMP
 
@@ -3894,10 +3892,10 @@ case('SCI')                                                 ! SCI
     write(stderr, *) '  SCI Error: with # digits: '//str(4:4)
     return
   endif
-  
+
   DISP_MODE = 2
   DISP_DIGITS = ITMP
-  
+
 case default
   WRITE(stderr, *) '  Input error:  "'//TRIM(STR)//'"'
 end select
@@ -4001,11 +3999,11 @@ SELECT CASE (MODE)
         write(stderr, *) '  Divide by zero Error'
         return
      ENDIF
-     
+
      CLASTX = CSTACK(1)
      CSTACK(1) = CSTACK(2) / CSTACK(1)
      CALL CDROP_STACK(2)
-     
+
   CASE (3)
      CALL RDIV (RNSTACK(2),RDSTACK(2),RNSTACK(1),RDSTACK(1),NUM,DEN)
      RNLASTX = RNSTACK(1)
@@ -4049,51 +4047,51 @@ end subroutine power
 
 
 subroutine bsj()
-  integer :: Nb, ncalc
-  real(wp), allocatable :: B(:)
-  
-  associate(X=>stack(1), y=>stack(2))
-           
-  IF ((x < 0._wp) .OR. (y < 0._wp)) THEN
-    write(stderr, *) '  BESSELJ Error 1'
-    return
-  ENDIF
-  
+integer :: Nb, ncalc
+real(wp), allocatable :: B(:)
 
-  
-  NB = INT(y) + 1
-  ALLOCATE (B(NB))
-  
-  CALL RJBESL(X=x, ALPHA=FRAC(y), NB=NB, B=B, NCALC=NCALC)
-  
-  IF (NCALC < 0) THEN
-     write(stderr, *) '  BESSELJ Error 2'
-     return
-  ELSE IF (NCALC /= NB) THEN
-     write(stderr, *) '  BESSELJ Error 3'
-     return
-  Endif
-     
-  LASTX = x
-  x = B(NB)
-  CALL DROP_STACK(2)
- 
-  end associate
+associate(X=>stack(1), y=>stack(2))
+
+IF ((x < 0._wp) .OR. (y < 0._wp)) THEN
+   write(stderr, *) '  BESSELJ Error 1'
+   return
+ENDIF
+
+
+
+NB = INT(y) + 1
+ALLOCATE (B(NB))
+
+CALL RJBESL(X=x, ALPHA=FRAC(y), NB=NB, B=B, NCALC=NCALC)
+
+IF (NCALC < 0) THEN
+   write(stderr, *) '  BESSELJ Error 2'
+   return
+ELSE IF (NCALC /= NB) THEN
+   write(stderr, *) '  BESSELJ Error 3'
+   return
+Endif
+
+LASTX = x
+x = B(NB)
+CALL DROP_STACK(2)
+
+end associate
 end subroutine bsj
 
 
 subroutine bsy0()
 
-  associate(X=>stack(1))
-  
-  IF (x <= 0._wp) THEN
-    write(stderr, *) '  BESSELY0 Error'
-  ELSE
-    LASTX = x
-    x = bessel_y0(x)
-  END IF
-  
-  end associate
+associate(X=>stack(1))
+
+IF (x <= 0) THEN
+   write(stderr, *) '  BESSELY0 Error'
+ELSE
+   LASTX = x
+   x = bessel_y0(x)
+END IF
+
+end associate
 
 end subroutine bsy0
 

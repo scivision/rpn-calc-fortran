@@ -69,11 +69,7 @@ END FUNCTION ASECH_r
 elemental complex(wp) FUNCTION ASECH_c(Y) result(asech)
 COMPLEX(wp), INTENT (IN) :: Y
 
-#ifdef F08HYPER
 asech = ACOSH(1._wp/Y)
-#else
-asech = ieee_value(1.,ieee_quiet_nan)
-#endif
 
 END FUNCTION ASECH_c
 
@@ -112,11 +108,7 @@ END FUNCTION ACSCH_r
 elemental complex(wp) FUNCTION ACSCH_c(Y) RESULT (X)
 COMPLEX(wp), INTENT (IN) :: Y
 
-#ifdef F08HYPER
 X = ASINH(1._wp/Y)
-#else
-X = ieee_value(1.,ieee_quiet_nan)
-#endif
 
 END FUNCTION ACSCH_c
 
@@ -170,18 +162,14 @@ SELECT CASE (DOMAIN_MODE)
      LASTX = STACK(1)
      STACK(1) = ASINH(STACK(1))
   CASE (2)
-#ifdef F08HYPER
      CLASTX = CSTACK(1)
      CSTACK(1) = ASINH(CSTACK(1))
-#else
-     write(stderr,*) 'your compiler  does not yet support complex ASINH'
-#endif
   CASE (3)
      CALL SWITCH_RAT_TO_REAL
      LASTX = STACK(1)
      STACK(1) = ASINH(STACK(1))
 END SELECT
-   
+
 end subroutine hasin
 
 
@@ -197,12 +185,8 @@ integer, intent(in) :: domain_mode
             STACK(1) = ACOSH(STACK(1))
          END IF
       CASE (2)
-#ifdef F08HYPER
          CLASTX = CSTACK(1)
          CSTACK(1) = ACOSH(CSTACK(1))
-#else
-         write(stderr,*) 'your compiler  does not yet support complex ASINH'
-#endif
       CASE (3)
          IF (RNSTACK(1) < RDSTACK(1)) THEN
             write(stderr, *) '  ACOSH Error'
@@ -212,9 +196,9 @@ integer, intent(in) :: domain_mode
             STACK(1) = ACOSH(STACK(1))
          END IF
    END SELECT
-end subroutine hacos 
-   
-   
+end subroutine hacos
+
+
 subroutine hatan(domain_mode)
 integer, intent(in) :: domain_mode
 
@@ -227,13 +211,8 @@ SELECT CASE (DOMAIN_MODE)
         STACK(1) = ATANH(STACK(1))
      END IF
   CASE (2)
-#ifdef F08HYPER
      CLASTX = CSTACK(1)
      CSTACK(1) = ATANH(CSTACK(1))
-#else
-     write(stderr,*) 'your compiler  does not yet support complex ASINH'
-#endif
-
   CASE (3)
      IF (ABS(RNSTACK(1)) >= ABS(RDSTACK(1))) THEN
         write(stderr, *) '  ATANH Error'

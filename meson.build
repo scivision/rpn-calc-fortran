@@ -7,21 +7,15 @@ if fc.get_id() == 'gcc'
   add_global_arguments('-Wno-all', '-fimplicit-none', language : 'fortran')
 endif
 
-
-F08hyper = []
-if fc.links('complex :: x; asech(x); end', name: 'F08 hyperbolic')
-  F08hyper = '-DF08HYPER'
-endif
-
 subdir('src')
 
 assert = library('assert', 'tests/assert.f90')
 
 reg = library('reg', 'src/reg.f90', link_with: assert)
 
-hyper = library('hyper', 'src/hyper.F90', 'src/rat.f90',
-  link_with: [assert, reg],
-  fortran_args: F08hyper)
+hyper = library('hyper',
+  sources : ['src/hyper.f90', 'src/rat.f90'],
+  link_with: [assert, reg])
 
 #--- functions (usable in other programs too)
 funcs = library('funcs', funcs_src, link_with: [assert, reg, hyper])
