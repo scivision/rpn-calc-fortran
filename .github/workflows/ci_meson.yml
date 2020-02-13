@@ -77,3 +77,10 @@ jobs:
       with:
         name: Windows_Meson_Testlog
         path: build/meson-logs/testlog.txt
+
+    - name: .exe for release
+      uses: actions/upload-artifact@v1
+      if: success()
+      with:
+        name: rpncalc.exe
+        path: build/rpncalc.exe
