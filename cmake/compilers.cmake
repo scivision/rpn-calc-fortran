@@ -1,12 +1,8 @@
 if(CMAKE_Fortran_COMPILER_ID STREQUAL GNU)
   set(CMAKE_Fortran_FLAGS "-march=native -fimplicit-none ")
-  #-Wall #-Wextra #-Wpedantic  -Warray-temporaries -Werror=array-bounds
+  #-Wall #-Wextra  -Warray-temporaries -Werror=array-bounds
 
   set(CMAKE_Fortran_FLAGS_DEBUG "-fcheck=all -fexceptions -ffpe-trap=invalid,zero,overflow -finit-real=nan -Wconversion ")
-
-  if (UNIX AND NOT APPLE)
-    string(APPEND CMAKE_Fortran_FLAGS "-fstack-protector-all ")
-  endif()
 
 elseif(CMAKE_Fortran_COMPILER_ID STREQUAL Intel)
   set(CMAKE_Fortran_FLAGS_DEBUG "FFLAGS -warn -fpe0 -traceback ")# -debug extended -check all)
