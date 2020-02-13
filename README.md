@@ -1,25 +1,23 @@
-[![Actions Status](https://github.com/scivision/rpn-calc-fortran/workflows/ci/badge.svg)](https://github.com/scivision/rpn-calc-fortran/actions)
-
 # RPN Reverse Polish Notation Calculator -- in Fortran
 
-![Fortran logo](doc/FortranLogo.png)
+![ci_cmake](https://github.com/scivision/rpn-calc-fortran/workflows/ci_cmake/badge.svg)
+![ci_meson](https://github.com/scivision/rpn-calc-fortran/workflows/ci_meson/badge.svg)
 
-![Fortran RPN Calculator screen](doc/FortranCalculatorDemo.png)
+![Fortran logo](./doc/FortranLogo.png)
+
+![Fortran RPN Calculator screen](./doc/FortranCalculatorDemo.png)
 
 The `funcs.90` module provides over 100 elemental functions not found in Fortran instrinsics.
-For full functionality, a Fortran 2008/2018 compatible compiler is required such as `gfortran` or `ifort`.
+A Fortran 2008 compatible compiler is required such as `gfortran` or `ifort`.
+RPNcalc works on Linux, Mac and Windows, including:
 
-Specifically, RPNcalc is covered by continuous integration and testing on Linux, Mac and Windows, including:
-* GNU `gfortran` &ge; 5
+* GNU `gfortran` &ge; 6
 * Intel Fortran `ifort`
-* PGI `pgfortran`
-* Nvidia `flang`
 
 The stack size is set by the user with command line option.
 Default size is 4.
 
-
-#### Authors
+## Authors
 
 * Fortran 77 code: David G. Simpson
 * Fortran 2018 code: Michael Hirsch
@@ -28,7 +26,6 @@ Default size is 4.
 
 Use Meson or CMake.
 Do NOT use sudo.
-These commands install `rpncalc` to ~/.local/bin.
 
 ### Meson
 
@@ -37,7 +34,6 @@ meson build
 
 meson test -C build
 ```
-
 
 ### CMake
 
@@ -53,7 +49,9 @@ ctest -V
 
 ## Usage
 
-    rpncalc
+```sh
+rpncalc
+```
 
 Enter numbers and operations separated by blanks or carriage returns.
 The contents of the X register will be printed after each carriage return.
@@ -74,68 +72,78 @@ To get a brief help:
     help
 
 ### set stack size
+
 The default stack size is 4, and may be betweeen 2..99 levels.
 Set the stack size at runtime, say 25 by:
 
     rpncalc 25
 
-
 Show what modes the calculator is in with:
 
     MODES       Print modes
 
-
 ### Modes
+
 The Fortran 2018 RPN calculator has 3 operating modes.
 The default mode is REAL
 
-    COMPLEX     COMPLEX mode
-    REAL        REAL mode
-    RATIONAL    Rational (fraction) mode
+```
+COMPLEX     COMPLEX mode
+REAL        REAL mode
+RATIONAL    Rational (fraction) mode
+```
 
 Additionally, angle modes can be selected like any scientific calculator:
 
+```
+DEFAULT     Restore default modes
 
-    DEFAULT     Restore default modes
-
-    GRAD        Grads mode
-    RAD         Radians mode
-    DEG         Degrees mode
+GRAD        Grads mode
+RAD         Radians mode
+DEG         Degrees mode
+```
 
 ### Number base selection
 
-    DEC         Decimal mode   ( default )
-    BIN         Binary mode
-    HEX         Hexadecimal mode
-    OCT         Octal mode
+```
+DEC         Decimal mode   ( default )
+BIN         Binary mode
+HEX         Hexadecimal mode
+OCT         Octal mode
+```
 
 ### Stack operations
+
 These operations are fundamental to RPN use, and constitute some of RPN's key advantages over other calculating methods.
 
-    R           Roll stack down
-    U           Roll stack up
-    D           Drop lowest (X) register from stack
+```
+R           Roll stack down
+U           Roll stack up
+D           Drop lowest (X) register from stack
 
-    CLALL       Clear all
-    CLREG       Clear general registers
-    CLS         Clear summation registers
-    CLSTK       Clear stack
-    CLX         Clear X
+CLALL       Clear all
+CLREG       Clear general registers
+CLS         Clear summation registers
+CLSTK       Clear stack
+CLX         Clear X
 
-    RESET       Reset calculator to initial state
+RESET       Reset calculator to initial state
 
-    LASTX       Recall last X
+LASTX       Recall last X
 
-    PR          Print registers
-    PS          Print stack
-    PSUMS       Print sums
+PR          Print registers
+PS          Print stack
+PSUMS       Print sums
+```
 
 ### Registers
+
 There are ten registers (0..9) accessed with:
 
-
-    STOx       Store, where x ~ 0..9  e.g. STO3   STO6
-    RCLx       Recall, where x ~ 0..9 e.g. RCL3   RCL6
+```
+STOx       Store, where x ~ 0..9  e.g. STO3   STO6
+RCLx       Recall, where x ~ 0..9 e.g. RCL3   RCL6
+```
 
 ### Digits of precision display
 
@@ -344,105 +352,107 @@ Most of the functions overall in the program can handle real and complex numbers
 
 Many functions not commonly found in RPN calculators are included:
 
-    %           Percent
-    %CHG        Percent change
-    !!          Double factorial
+```
+%           Percent
+%CHG        Percent change
+!!          Double factorial
 
-    A0          Bohr radius (m)
+A0          Bohr radius (m)
 
-    ACOVERS     Inverse coversine
-    ACRD        Inverse chord (of Ptolemy)
+ACOVERS     Inverse coversine
+ACRD        Inverse chord (of Ptolemy)
 
-    AEXSEC      Inverse exsecant
+AEXSEC      Inverse exsecant
 
-    AVERS       Inverse versine
-    BESSELJ0    Bessel function of the first kind, order 0
-    BESSELJ1    Bessel function of the first kind, order 1
-    BESSELJ1P   first derivative J'1(x)
-    BESSELJ     Bessel function of the first kind, real order
+AVERS       Inverse versine
+BESSELJ0    Bessel function of the first kind, order 0
+BESSELJ1    Bessel function of the first kind, order 1
+BESSELJ1P   first derivative J'1(x)
+BESSELJ     Bessel function of the first kind, real order
 
-    BESSELY0    Bessel function of the second kind, order 0
-    BESSELY1    Bessel function of the second kind, order 1
-    BESSELY     Bessel function of the second kind, real order
+BESSELY0    Bessel function of the second kind, order 0
+BESSELY1    Bessel function of the second kind, order 1
+BESSELY     Bessel function of the second kind, real order
 
-    BESSELI0    Modified Bessel function of the first kind, order 0
-    BESSELI1    Modified Bessel function of the first kind, order 1
-    BESSELI     Modified Bessel function of the first kind, real order
+BESSELI0    Modified Bessel function of the first kind, order 0
+BESSELI1    Modified Bessel function of the first kind, order 1
+BESSELI     Modified Bessel function of the first kind, real order
 
-    BESSELK0    Modified Bessel function of the second kind, order 0
-    BESSELK1    Modified Bessel function of the second kind, order 1
-    BESSELK     Modified Bessel function of the second kind, real order
+BESSELK0    Modified Bessel function of the second kind, order 0
+BESSELK1    Modified Bessel function of the second kind, order 1
+BESSELK     Modified Bessel function of the second kind, real order
 
-    JINC        [JINC sombrero function](https://en.wikipedia.org/wiki/Sombrero_function)  J1(x)/x
+JINC        [JINC sombrero function](https://en.wikipedia.org/wiki/Sombrero_function)  J1(x)/x
 
-    BETA        Beta function
+BETA        Beta function
 
-    COVERS      Coversine
-    CRD         Chord (of Ptolemy)
+COVERS      Coversine
+CRD         Chord (of Ptolemy)
 
-    DIGAMMA     Digamma function
-    DUP         Duplicate X
+DIGAMMA     Digamma function
+DUP         Duplicate X
 
-    ERF         Error function
-    ERFC        Complementary error function
+ERF         Error function
+ERFC        Complementary error function
 
-    EXSEC       Exsecant
+EXSEC       Exsecant
 
-    GAMMA       Gamma function
+GAMMA       Gamma function
 
-    HMS+        HMS add
-    HMS-        HMS subtract
+HMS+        HMS add
+HMS-        HMS subtract
 
 
-    KEPLER      Solves elliptical Kepler's equation (e,M -> E)
+KEPLER      Solves elliptical Kepler's equation (e,M -> E)
 
-    MOD         Modulo
+MOD         Modulo
 
-    N           Number of points in summation
+N           Number of points in summation
 
-    RAND        Random number
+RAND        Random number
 
-    RCORR       Linear regression correlation coefficient
+RCORR       Linear regression correlation coefficient
 
-    REDUCE      Reduce an angle
+REDUCE      Reduce an angle
 
-    REV         Revs mode
+REV         Revs mode
 
-    RZETA       Riemann zeta function
-    S           Summation
-    S-          Delete summation
+RZETA       Riemann zeta function
+S           Summation
+S-          Delete summation
 
-    SGN         Signum
+SGN         Signum
 
-    SINC        [cardinal sine (sinc) function  sin(x) / x](https://en.wikipedia.org/wiki/Sinc_function)
+SINC        [cardinal sine (sinc) function  sin(x) / x](https://en.wikipedia.org/wiki/Sinc_function)
 
-    SINHC       Sinhc function
+SINHC       Sinhc function
 
-    SUMX        Summation of X
-    SUMX2       Summation of X^2
-    SUMXY       Summation of XY
-    SUMY        Summation of Y
-    SUMY2       Summation of Y^2
+SUMX        Summation of X
+SUMX2       Summation of X^2
+SUMXY       Summation of XY
+SUMY        Summation of Y
+SUMY2       Summation of Y^2
 
-    TANC        Tanc function
+TANC        Tanc function
 
-    TANHC       Tanhc function
-    TIME        Current date and time
-    VER         Print software version
-    VERS        Versine
-
+TANHC       Tanhc function
+TIME        Current date and time
+VER         Print software version
+VERS        Versine
+```
 
 ### Possible future operations:
 
-    ?           Incomplete gamma functions (upper and lower)
-    ?           Incomplete beta function
-    ?           Spherical Bessel functions j, n
-    ?           Legendre functions Pnm, Qnm (various normalizations)
-    ?           Legendre polynomials
-    ?           Elliptic integrals
-    ?           Jacobi elliptic functions sn, cn, dn
-    ?           Jacobi amplitude function am
-    ?           Exponential integrals
-    ?           Hypergeometric functions
-    ?           Hermite polynomials
-
+```
+?           Incomplete gamma functions (upper and lower)
+?           Incomplete beta function
+?           Spherical Bessel functions j, n
+?           Legendre functions Pnm, Qnm (various normalizations)
+?           Legendre polynomials
+?           Elliptic integrals
+?           Jacobi elliptic functions sn, cn, dn
+?           Jacobi amplitude function am
+?           Exponential integrals
+?           Hypergeometric functions
+?           Hermite polynomials
+```
