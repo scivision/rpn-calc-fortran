@@ -1,0 +1,28 @@
+name: ci_cmake
+
+on:
+  push:
+    paths:
+      - "**.f90"
+      - "**.F90"
+      - "**.cmake"
+      - "**.txt"
+      - ".github/workflows/ci_cmake.yml"
+
+jobs:
+
+  windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    - run: cinst -y ninja
+
+    - run: cmake -B build -G Ninja
+      env:
+        FC: gfortran
+
+    - run: cmake --build build --parallel
+
+    - run: ctest -V
+      working-directory: build
