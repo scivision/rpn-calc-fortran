@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.13)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Debug or Release")
 endif()
-project(RPNcalc Fortran)
+project(RPNcalc
+  LANGUAGES Fortran
+  VERSION 1.2.0
+  HOMEPAGE_URL https://github.com/scivision/rpn-calc-fortran)
 enable_testing()
 
 cmake_policy(SET CMP0076 NEW)
