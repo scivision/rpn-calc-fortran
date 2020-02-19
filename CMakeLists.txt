@@ -8,8 +8,6 @@ project(RPNcalc
   HOMEPAGE_URL https://github.com/scivision/rpn-calc-fortran)
 enable_testing()
 
-cmake_policy(SET CMP0076 NEW)
-
 include(cmake/compilers.cmake)
 
 add_executable(rpncalc)
