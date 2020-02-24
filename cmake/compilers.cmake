@@ -1,17 +1,23 @@
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Build type selections" FORCE)
+set(CMAKE_NMC_DEFAULT_BUILD_FILE_CONFIG "Release" CACHE STRING "Default Build type" FORCE)
+
+
 if(CMAKE_Fortran_COMPILER_ID STREQUAL GNU)
-  set(CMAKE_Fortran_FLAGS "-march=native -fimplicit-none ")
+  add_compile_options(-march=native)
+
+  string(APPEND CMAKE_Fortran_FLAGS " -fimplicit-none")
   #-Wall #-Wextra  -Warray-temporaries -Werror=array-bounds
 
-  set(CMAKE_Fortran_FLAGS_DEBUG "-fcheck=all -fexceptions -ffpe-trap=invalid,zero,overflow -finit-real=nan -Wconversion ")
+  string(APPEND CMAKE_Fortran_FLAGS_DEBUG " -fcheck=all -fexceptions -ffpe-trap=invalid,zero,overflow -finit-real=nan -Wconversion")
 
 elseif(CMAKE_Fortran_COMPILER_ID STREQUAL Intel)
-  set(CMAKE_Fortran_FLAGS_DEBUG "FFLAGS -warn -fpe0 -traceback ")# -debug extended -check all)
+  string(APPEND CMAKE_Fortran_FLAGS_DEBUG " -warn -fpe0 -traceback")# -debug extended -check all)
 
   if(WIN32)
-    set(CMAKE_Fortran_FLAGS "/warn:declarations ")
+    string(APPEND CMAKE_Fortran_FLAGS " /warn:declarations")
   else()
-    set(CMAKE_Fortran_FLAGS "-warn declarations ")
+    string(APPEND CMAKE_Fortran_FLAGS " -warn declarations")
   endif()
 elseif(CMAKE_Fortran_COMPILER_ID STREQUAL PGI)
-  set(CMAKE_Fortran_FLAGS "-C -Mdclchk ")
+  string(APPEND CMAKE_Fortran_FLAGS " -C -Mdclchk")
 endif()
