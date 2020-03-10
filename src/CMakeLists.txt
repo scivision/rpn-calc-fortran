@@ -10,3 +10,5 @@ target_link_libraries(funcs PRIVATE assert reg hyper)
 
 add_library(hyper OBJECT hyper.f90 rat.f90)
 target_link_libraries(hyper PRIVATE reg assert)
+
+add_subdirectory(tests)

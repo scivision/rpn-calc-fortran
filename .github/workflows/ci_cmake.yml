@@ -8,6 +8,8 @@ on:
       - "**.cmake"
       - "**.txt"
       - ".github/workflows/ci_cmake.yml"
+  pull_request:
+  release:
 
 jobs:
 
@@ -38,14 +40,11 @@ jobs:
       working-directory: build
 
   windows:
-    if: false
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
 
-    - run: cinst -y ninja
-
-    - run: cmake -B build -G Ninja
+    - run: cmake -B build -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND"
       env:
         FC: gfortran
 
