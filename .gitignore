@@ -1,6 +1,5 @@
-build/
-bin/
-rpncalc
+build*/
+
 # Prerequisites
 *.d
 
