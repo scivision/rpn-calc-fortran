@@ -4,7 +4,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 project(RPNcalc
   LANGUAGES Fortran
-  VERSION 1.2.0
+  VERSION 1.2.1
   HOMEPAGE_URL https://github.com/scivision/rpn-calc-fortran)
 enable_testing()
 

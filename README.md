@@ -24,8 +24,21 @@ Default size is 4.
 
 ## Build
 
-Use Meson or CMake.
-Do NOT use sudo.
+### CMake
+
+One-step CMake build and test:
+
+```sh
+ctest -S setup.cmake -VV
+```
+
+OR manually:
+
+```sh
+cmake -B build
+
+cmake --build build --parallel
+```
 
 ### Meson
 
@@ -33,18 +46,6 @@ Do NOT use sudo.
 meson build
 
 meson test -C build
-```
-
-### CMake
-
-```sh
-cmake -B build
-
-cmake --build build --parallel
-
-cd build
-
-ctest -V
 ```
 
 ## Usage
@@ -161,7 +162,6 @@ Other display modes:
 
     ALL         ALL digits display mode
 
-
 ### Common Functions
 
     +           Addition
@@ -169,7 +169,7 @@ Other display modes:
     *           Multiplication
     /           Division
     ^           Exponentiation
-    \           Reciprocal
+    RECIP       Reciprocal
 
 
     2X          2^x

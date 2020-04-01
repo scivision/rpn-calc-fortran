@@ -1,7 +1,7 @@
 project('RPNcalc', 'fortran',
   default_options : ['default_library=static', 'warning_level=1', 'buildtype=release'],
   meson_version: '>=0.51',
-  version: '1.2.0')
+  version: '1.2.1')
 
 fc = meson.get_compiler('fortran')
 if fc.get_id() == 'gcc'

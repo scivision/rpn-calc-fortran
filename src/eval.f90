@@ -70,7 +70,7 @@ real(wp), ALLOCATABLE, DIMENSION(:) :: BES_B
 
 IF (LEN_TRIM(STR) == 0) return
 
-select case(str)
+parse_cmd: select case(str)
 
 case('HELP')
   call eval('VER')
@@ -88,7 +88,7 @@ case('/')                                                  ! /
   call divide(domain_mode)
 case('^')                                                  ! ^
   call power(domain_mode)
-case(achar(92))  ! for PGI/Flang     !('\')                ! \
+case('RECIP')
   SELECT CASE (DOMAIN_MODE)
     CASE (1)
       IF (isclose(stack(1), 0._wp)) THEN
@@ -3784,7 +3784,7 @@ case('YSIG')                                               ! YSIG
 
 case default
    call regops(str)
-END select
+end select parse_cmd
 
 END SUBROUTINE EVAL
 
