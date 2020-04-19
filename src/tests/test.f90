@@ -1,7 +1,9 @@
 program test_funcs
+
 use funcs
 use assert, only: assert_isclose, wp
-implicit none
+
+implicit none (type, external)
 
 real(wp), parameter :: pi = 4._wp * atan(1._wp), pi3 = pi/3
 complex(wp), parameter :: cpi = (pi, pi)

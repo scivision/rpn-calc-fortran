@@ -1,9 +1,9 @@
       module rjy
-      
-      implicit none
-      
+
+      implicit none (type, external)
+
       contains
-      
+
       SUBROUTINE RYBESL(X,ALPHA,NB,BY,NCALC)
 C----------------------------------------------------------------------
 C
@@ -18,7 +18,7 @@ C         Y's are to be calculated.
 C ALPHA - Working precision fractional part of order for which
 C         Y's are to be calculated.  0 .LE. ALPHA .LT. 1.0.
 C NB    - Integer number of functions to be calculated, NB .GT. 0.
-C         The first function calculated is of order ALPHA, and the 
+C         The first function calculated is of order ALPHA, and the
 C         last is of order (NB - 1 + ALPHA).
 C BY    - Working precision output vector of length NB.  If the
 C         routine terminates normally (NCALC=NB), the vector BY
@@ -27,7 +27,7 @@ C         If (0 .LT. NCALC .LT. NB), BY(I) contains correct function
 C         values for I .LE. NCALC, and contains the ratios
 C         Y(ALPHA+I-1,X)/Y(ALPHA+I-2,X) for the rest of the array.
 C NCALC - Integer output variable indicating possible errors.
-C         Before using the vector BY, the user should check that 
+C         Before using the vector BY, the user should check that
 C         NCALC=NB, i.e., all orders have been calculated to
 C         the desired accuracy.  See error returns below.
 C
@@ -52,7 +52,7 @@ C            beta**maxexp
 C   THRESH = Lower bound for use of the asymptotic form; approximately
 C            AINT(-LOG10(EPS/2.0))+1.0
 C   XLARGE = Upper bound on X; approximately 1/DEL, because the sine
-C            and cosine functions have lost about half of their 
+C            and cosine functions have lost about half of their
 C            precision at that point.
 C
 C
@@ -61,7 +61,7 @@ C
 C                        beta    p     minexp      maxexp      EPS
 C
 C  CRAY-1        (S.P.)    2    48     -8193        8191    3.55E-15
-C  Cyber 180/185 
+C  Cyber 180/185
 C    under NOS   (S.P.)    2    48      -975        1070    3.55E-15
 C  IEEE (IBM/XT,
 C    SUN, etc.)  (S.P.)    2    24      -126         128    5.96E-8
@@ -176,7 +176,7 @@ CS    DATA THRESH,XLARGE/8.0E0,1.0E4/
 CD    DATA DEL,XMIN,XINF,EPS/1.0D-8,4.46D-308,1.79D308,1.11D-16/
 CD    DATA THRESH,XLARGE/16.0D0,1.0D8/
 C----------------------------------------------------------------------
-C  Coefficients for Chebyshev polynomial expansion of 
+C  Coefficients for Chebyshev polynomial expansion of
 C         1/gamma(1-x), abs(x) .le. .5
 C----------------------------------------------------------------------
 CS    DATA CH/-0.67735241822398840964E-23,-0.61455180116049879894E-22,
@@ -237,7 +237,7 @@ C----------------------------------------------------------------------
                            S = S*X2/EN/(EN-ONE)+ONE
                            EN = EN - TWO
    80                   CONTINUE
-                     ELSE 
+                     ELSE
                         S = (E - ONE/E) * HALF / F
                   END IF
 C----------------------------------------------------------------------
@@ -269,7 +269,7 @@ C----------------------------------------------------------------------
                   C = ENU*PIBY2
                   IF (ABS(C) .LT. DEL) THEN
                         R = ONE
-                     ELSE 
+                     ELSE
                         R = SIN(C)/C
                   END IF
                   R = PI*C*R*R
@@ -321,7 +321,7 @@ C----------------------------------------------------------------------
                   P = F
                   G = -Q/S
                   Q = G
-  220             EN = EN - ONE  
+  220             EN = EN - ONE
                   IF (EN .GT. ZERO) THEN
                         R = EN1*(TWO-P)-TWO
                         S = B + EN1*Q
@@ -431,7 +431,7 @@ C----------------------------------------------------------------------
                            IF (ABS(BY(I-1)) .GE. XINF/AYE/TWOBYX )
      1                                                     GO TO 450
                      END IF
-                     BY(I) = TWOBYX*AYE*BY(I-1) - BY(I-2) 
+                     BY(I) = TWOBYX*AYE*BY(I-1) - BY(I-2)
                      AYE = AYE + ONE
                      NCALC = NCALC + 1
   400             CONTINUE

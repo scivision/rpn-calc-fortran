@@ -10,9 +10,9 @@ use i1, only: besi1
 use k0, only: besk0
 use k1, only: besk1
 
-implicit none
+implicit none (type, external)
 
-private 
+private
 public :: jinc, besi0, besi1, besk0, besk1, ribesl, rjbesl, rkbesl, rybesl
 
 contains

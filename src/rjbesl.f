@@ -1,9 +1,9 @@
       module rjb
-      
-      implicit none
-      
+
+      implicit none (type, external)
+
       contains
-      
+
       SUBROUTINE RJBESL(X, ALPHA, NB, B, NCALC)
 C---------------------------------------------------------------------
 C This routine calculates Bessel functions J sub(N+ALPHA) (X)
@@ -204,8 +204,8 @@ C---------------------------------------------------------------------
 C Check for out of range arguments.
 C---------------------------------------------------------------------
       MAGX = INT(X)
-      IF ((NB.GT.0) .AND. (X.GE.ZERO) .AND. (X.LE.XLARGE) 
-     1       .AND. (ALPHA.GE.ZERO) .AND. (ALPHA.LT.ONE))  
+      IF ((NB.GT.0) .AND. (X.GE.ZERO) .AND. (X.LE.XLARGE)
+     1       .AND. (ALPHA.GE.ZERO) .AND. (ALPHA.LT.ONE))
      2   THEN
 C---------------------------------------------------------------------
 C Initialize result array to zero.
@@ -511,5 +511,5 @@ C---------------------------------------------------------------------
   300 RETURN
 C ---------- Last line of RJBESL ----------
       END SUBROUTINE RJBESL
-      
+
       end module rjb

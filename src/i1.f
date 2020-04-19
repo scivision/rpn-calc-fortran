@@ -1,12 +1,11 @@
       module i1
-      
-      implicit none
+
+      implicit none (type, external)
       private
-      
       public:: besi1
-      
+
       contains
-      
+
       SUBROUTINE CALCI1(ARG,RESULT,JINT)
 C--------------------------------------------------------------------
 C
@@ -58,7 +57,7 @@ C            machine precision for all ABS(X) .LE. XSMALL.
 C   XINF =   Largest positive machine number; approximately
 C            beta**maxexp
 C   XMAX =   Largest argument acceptable to BESI1;  Solution to
-C            equation: 
+C            equation:
 C               EXP(X) * (1-3/(8*X)) / SQRT(2*PI*X) = beta**maxexp
 C
 C
@@ -277,5 +276,5 @@ C--------------------------------------------------------------------
       RETURN
 C---------- Last line of BESEI1 ----------
       END FUNCTION BESEI1
-      
+
       end module i1

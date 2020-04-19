@@ -2,42 +2,42 @@ module trig
 
 use assert, only: wp
 
-implicit none
+implicit none (type, external)
 
 interface csc
-  procedure csc_r, csc_c
+procedure csc_r, csc_c
 end interface csc
 
 interface acsc
-  procedure acsc_r, acsc_c
+procedure acsc_r, acsc_c
 end interface acsc
 
 interface sec
-  procedure sec_r, sec_c
+procedure sec_r, sec_c
 end interface sec
 
 interface asec
-  procedure asec_r, asec_c
+procedure asec_r, asec_c
 end interface asec
 
 interface cot
-  procedure cot_r, cot_c
+procedure cot_r, cot_c
 end interface cot
 
 interface acot
-  procedure acot_r, acot_c
+procedure acot_r, acot_c
 end interface acot
 
 interface hav
-  procedure hav_r, hav_c
+procedure hav_r, hav_c
 end interface hav
 
 interface ahav
-  procedure ahav_r, ahav_c
+procedure ahav_r, ahav_c
 end interface ahav
 
 interface crd
-  procedure crd_r, crd_c
+procedure crd_r, crd_c
 end interface crd
 
 contains
@@ -170,7 +170,7 @@ END FUNCTION ACOT_c
 !  Inverse cotangent (two arguments).
 !***********************************************************************************************************************************
 
-elemental real(wp) FUNCTION ACOT2 (Y,Z) 
+elemental real(wp) FUNCTION ACOT2 (Y,Z)
 
 real(wp), INTENT (IN) :: Y                                           ! cotangent numerator
 real(wp), INTENT (IN) :: Z                                           ! cotangent denominator
@@ -188,7 +188,7 @@ END FUNCTION ACOT2
 
 elemental real(wp) FUNCTION EXSEC (X)
 real(wp), INTENT (IN) :: X
- 
+
 EXSEC = 1._wp/COS(X) - 1._wp
 
 END FUNCTION EXSEC
@@ -240,7 +240,7 @@ END FUNCTION CAEXSEC
 !  Versine.
 !***********************************************************************************************************************************
 
-elemental real(wp) FUNCTION VERS (X) 
+elemental real(wp) FUNCTION VERS (X)
 real(wp), INTENT (IN) :: X
 
 VERS = 1._wp - COS(X)

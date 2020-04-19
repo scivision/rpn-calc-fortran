@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.13)
+
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Debug or Release")
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "default build type")
 endif()
+
 project(RPNcalc
   LANGUAGES Fortran
   VERSION 1.2.1
   HOMEPAGE_URL https://github.com/scivision/rpn-calc-fortran)
+
 enable_testing()
 
 include(cmake/compilers.cmake)
@@ -17,6 +20,8 @@ install(TARGETS rpncalc
 
 #--- functions (usable in other programs too)
 add_subdirectory(src)
+
+add_subdirectory(src/tests)
 
 #--- properties
 foreach(t assert testcalc rpncalc funcs hyper reg)

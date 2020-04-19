@@ -1,9 +1,9 @@
       module rjk
-      
-      implicit none
-      
+
+      implicit none (type, external)
+
       contains
-      
+
       SUBROUTINE RKBESL(X,ALPHA,NB,IZE,BK,NCALC)
 C-------------------------------------------------------------------
 C
@@ -20,11 +20,11 @@ C X     - Working precision non-negative real argument for which
 C         K's or exponentially scaled K's (K*EXP(X))
 C         are to be calculated.  If K's are to be calculated,
 C         X must not be greater than XMAX (see below).
-C ALPHA - Working precision fractional part of order for which 
+C ALPHA - Working precision fractional part of order for which
 C         K's or exponentially scaled K's (K*EXP(X)) are
 C         to be calculated.  0 .LE. ALPHA .LT. 1.0.
 C NB    - Integer number of functions to be calculated, NB .GT. 0.
-C         The first function calculated is of order ALPHA, and the 
+C         The first function calculated is of order ALPHA, and the
 C         last is of order (NB - 1 + ALPHA).
 C IZE   - Integer type.  IZE = 1 if unscaled K's are to be calculated,
 C         and 2 if exponentially scaled K's are to be calculated.
@@ -36,7 +36,7 @@ C         If (0 .LT. NCALC .LT. NB), BK(I) contains correct function
 C         values for I .LE. NCALC, and contains the ratios
 C         K(ALPHA+I-1,X)/K(ALPHA+I-2,X) for the rest of the array.
 C NCALC - Integer output variable indicating possible errors.
-C         Before using the vector BK, the user should check that 
+C         Before using the vector BK, the user should check that
 C         NCALC=NB, i.e., all orders have been calculated to
 C         the desired accuracy.  See error returns below.
 C
@@ -49,9 +49,9 @@ C
 C   beta   = Radix for the floating-point system
 C   minexp = Smallest representable power of beta
 C   maxexp = Smallest power of beta that overflows
-C   EPS    = The smallest positive floating-point number such that 
+C   EPS    = The smallest positive floating-point number such that
 C            1.0+EPS .GT. 1.0
-C   XMAX   = Upper limit on the magnitude of X when IZE=1;  Solution 
+C   XMAX   = Upper limit on the magnitude of X when IZE=1;  Solution
 C            to equation:
 C               W(X) * (1-1/8X+9/128X**2) = beta**minexp
 C            where  W(X) = EXP(-X)*SQRT(PI/2X)
@@ -67,7 +67,7 @@ C
 C                          beta       minexp      maxexp      EPS
 C
 C  CRAY-1        (S.P.)      2        -8193        8191    7.11E-15
-C  Cyber 180/185 
+C  Cyber 180/185
 C    under NOS   (S.P.)      2         -975        1070    3.55E-15
 C  IEEE (IBM/XT,
 C    SUN, etc.)  (S.P.)      2         -126         128    1.19E-7
@@ -107,7 +107,7 @@ C       XMAX.  In this case, the B-vector is not calculated,
 C       and NCALC is set to MIN0(NB,0)-2  so that NCALC .NE. NB.
 C  NCALC = -1:  Either  K(ALPHA,X) .GE. XINF  or
 C       K(ALPHA+NB-1,X)/K(ALPHA+NB-2,X) .GE. XINF.  In this case,
-C       the B-vector is not calculated.  Note that again 
+C       the B-vector is not calculated.  Note that again
 C       NCALC .NE. NB.
 C
 C  0 .LT. NCALC .LT. NB: Not all requested function values could
@@ -149,7 +149,7 @@ C
 C-------------------------------------------------------------------
       INTEGER I,IEND,ITEMP,IZE,J,K,M,MPLUS1,NB,NCALC
 CS    REAL
-      DOUBLE PRECISION   
+      DOUBLE PRECISION
      1    A,ALPHA,BLPHA,BK,BK1,BK2,C,D,DM,D1,D2,D3,ENU,EPS,ESTF,ESTM,
      2    EX,FOUR,F0,F1,F2,HALF,ONE,P,P0,Q,Q0,R,RATIO,S,SQXMIN,T,TINYX,
      3    TWO,TWONU,TWOX,T1,T2,WMINF,X,XINF,XMAX,XMIN,X2BY4,ZERO
@@ -261,7 +261,7 @@ C---------------------------------------------------------------------
                   F1 = ENU*F0
                   P0 = EXP(F1)
 C---------------------------------------------------------------------
-C  Calculation of F0 = 
+C  Calculation of F0 =
 C---------------------------------------------------------------------
                   D1 = R(5)
                   T1 = ONE
@@ -457,7 +457,7 @@ C--------------------------------------------------------------------
                IF (EX .LT. ONE) THEN
                      IF (BK1 .GE. (XINF/TWONU)*EX) GO TO 195
                      GO TO 187
-                  ELSE 
+                  ELSE
                      IF (BK1/EX .GE. XINF/TWONU) GO TO 195
                END IF
   187          CONTINUE
@@ -495,5 +495,5 @@ C--------------------------------------------------------------------
   500 RETURN
 C---------- Last line of RKBESL ----------
       END subroutine rkbesl
-      
+
       end module rjk

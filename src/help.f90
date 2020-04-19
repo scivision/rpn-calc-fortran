@@ -1,7 +1,7 @@
 module help
 use, intrinsic:: iso_fortran_env, only: stderr=>output_unit
 
-implicit none
+implicit none (type, external)
 
 contains
 
@@ -18,8 +18,6 @@ print *,'Number systems:     REAL     COMPLEX     RATIONAL'
 print *,'Angular systems:    DEG     RAD     GRAD'
 print *,'Number base:  BIN    DEC    HEX    OCT'
 print *,'Register memory:  STOx   RCLx   where x ~ 0..9'
-
-
 
 end subroutine print_help
 

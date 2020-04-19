@@ -1,6 +1,6 @@
       module rji
 
-      implicit none
+      implicit none (type, external)
 
       contains
 

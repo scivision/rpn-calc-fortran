@@ -5,31 +5,32 @@ use assert, only: wp
 use rat, only: SWITCH_RAT_TO_REAL
 use global
 
-implicit none
+implicit none (type, external)
 
 interface sech
-  procedure sech_r, sech_c
+procedure sech_r, sech_c
 end interface sech
 
 interface asech
-  procedure asech_r, asech_c
+procedure asech_r, asech_c
 end interface asech
 
 interface csch
-  procedure csch_r, csch_c
+procedure csch_r, csch_c
 end interface csch
 
 interface acsch
-  procedure acsch_r, acsch_c
+procedure acsch_r, acsch_c
 end interface acsch
 
 interface coth
-  procedure coth_r, coth_c
+procedure coth_r, coth_c
 end interface coth
 
 interface acoth
-  procedure acoth_r, acoth_c
+procedure acoth_r, acoth_c
 end interface acoth
+
 contains
 
 !***********************************************************************************************************************************

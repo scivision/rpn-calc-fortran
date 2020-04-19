@@ -6,13 +6,12 @@ use stackops
 use assert, only: wp, isclose
 use help, only: print_help
 
-implicit none
+implicit none (type, external)
 private
+public :: eval
 
 complex(wp), parameter, private :: C0 = (0._wp, 0._wp)
 
-
-public :: eval
 
 contains
 

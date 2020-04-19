@@ -2,7 +2,7 @@ module fgamma
 
 use assert, only: wp
 
-implicit none
+implicit none (type, external)
 
 contains
 

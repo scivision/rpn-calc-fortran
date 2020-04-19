@@ -1,4 +1,5 @@
 module funcs
+
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 use assert, only: wp, isclose
 use bessel
@@ -9,22 +10,22 @@ use hyper
 use stats
 use fgamma
 
-implicit none
+implicit none (type, external)
 
 interface cuberoot
-  procedure cuberoot_r, cuberoot_c
+procedure cuberoot_r, cuberoot_c
 end interface cuberoot
 
 interface frac
-  procedure frac_r, frac_c
+procedure frac_r, frac_c
 end interface frac
 
 interface sinc
-  procedure sinc_r, sinc_c
+procedure sinc_r, sinc_c
 end interface sinc
 
 interface tanc
-  procedure tanc_r, tanc_c
+procedure tanc_r, tanc_c
 end interface tanc
 
 real(wp), parameter, private :: xinf = huge(0._wp), xmax = xinf, xmin = tiny(0._wp)
@@ -222,7 +223,7 @@ real(wp), INTENT(IN) :: X
 END FUNCTION CUBEROOT_r
 
 elemental complex(wp) FUNCTION CUBEROOT_c (Z) result(cuberoot)
-COMPLEX(wp), INTENT(IN) :: Z 
+COMPLEX(wp), INTENT(IN) :: Z
 
  CUBEROOT = Z**(1._wp / 3._wp)
 END FUNCTION CUBEROOT_c

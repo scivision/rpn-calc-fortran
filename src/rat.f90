@@ -3,7 +3,7 @@ module rat
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 use assert, only: wp, isclose
 
-implicit none
+implicit none (type, external)
 
 contains
 
@@ -39,7 +39,7 @@ END FUNCTION ISPM
 !  Determines whether the input character is a valid hexadecimal digit
 !***********************************************************************************************************************************
 
-elemental logical FUNCTION ISHEX (CH) 
+elemental logical FUNCTION ISHEX (CH)
 CHARACTER, INTENT(IN) :: CH
 
 ishex = (((CH .GE. '0') .AND. (CH .LE. '9')) .OR. ((CH .GE. 'A') .AND. (CH .LE. 'F')))

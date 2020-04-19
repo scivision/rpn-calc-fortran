@@ -5,10 +5,10 @@ use, intrinsic:: iso_c_binding, only: sp=>c_float, dp=>c_double
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 use, intrinsic:: ieee_arithmetic
 
-implicit none
+implicit none (type, external)
 
 interface isclose
-  procedure isclose_r, isclose_c
+procedure isclose_r, isclose_c
 end interface isclose
 
 private

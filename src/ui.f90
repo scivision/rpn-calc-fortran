@@ -1,16 +1,18 @@
 module stackops
+
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 use global
 use assert, only: wp, isclose
 use funcs
-implicit none
+
+implicit none (type, external)
 
 interface push_stack
-  procedure push_stack_r, cpush_stack, rpush_stack
+procedure push_stack_r, cpush_stack, rpush_stack
 end interface push_stack
 
 interface printx
-  procedure printx_r, cprintx, rprintx
+procedure printx_r, cprintx, rprintx
 end interface
 
 complex(wp), parameter, private :: c0 = (0._wp, 0._wp)
