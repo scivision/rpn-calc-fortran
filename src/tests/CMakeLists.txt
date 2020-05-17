@@ -7,7 +7,6 @@ set_tests_properties(RPNfunc PROPERTIES TIMEOUT 10)
 #--- errors
 add_library(assert OBJECT assert.f90)
 target_include_directories(assert INTERFACE
-  PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/include  # IBM XL
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 set_target_properties(assert PROPERTIES

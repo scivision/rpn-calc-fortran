@@ -1,5 +1,4 @@
 module assert
-! Gfortran >= 6 needed for ieee_arithmetic: ieee_is_nan
 
 use, intrinsic:: iso_c_binding, only: sp=>c_float, dp=>c_double
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
