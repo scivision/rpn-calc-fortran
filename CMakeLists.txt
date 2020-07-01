@@ -13,6 +13,9 @@ enable_testing()
 
 include(cmake/compilers.cmake)
 
+# this helps linters e.g. Visual Studio Intellicode work properly
+set(CMAKE_EXPORT_COMPILE_COMMANDS on)
+
 add_executable(rpncalc)
 target_link_libraries(rpncalc PRIVATE assert hyper reg funcs)
 install(TARGETS rpncalc
