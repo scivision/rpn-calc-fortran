@@ -38,9 +38,7 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: '3.x'
-    - run: |
-        brew install ninja
-        pip install meson
+    - run: pip install meson ninja
 
     - run: meson setup build
       env:
@@ -61,9 +59,7 @@ jobs:
       with:
         python-version: '3.8'
 
-    - run: |
-        cinst -y ninja
-        pip install meson
+    - run: pip install meson ninja
 
     - run: meson setup build
       env:
