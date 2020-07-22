@@ -42,7 +42,7 @@ jobs:
 
     - run: meson setup build
       env:
-        FC: gfortran
+        FC: gfortran-9
 
     - run: meson test -C build -v
     - uses: actions/upload-artifact@v1
@@ -62,8 +62,6 @@ jobs:
     - run: pip install meson ninja
 
     - run: meson setup build
-      env:
-        FC: gfortran
 
     - run: meson test -C build -v
     - uses: actions/upload-artifact@v1
