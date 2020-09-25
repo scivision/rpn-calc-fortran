@@ -5,13 +5,6 @@ add_test(NAME RPNfunc COMMAND $<TARGET_FILE:testcalc>)
 set_tests_properties(RPNfunc PROPERTIES TIMEOUT 10)
 
 #--- errors
-add_library(assert OBJECT assert.f90)
-target_include_directories(assert INTERFACE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-set_target_properties(assert PROPERTIES
-  Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include)
-
 find_package(Python3 COMPONENTS Interpreter)
 if(Python3_FOUND)
 add_test(NAME UI
