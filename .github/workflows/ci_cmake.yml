@@ -16,9 +16,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - run: ctest -S setup.cmake -VV
-      env:
-        FC: gfortran-9
+    - run: cmake -B build
+    - run: cmake --build build
+    - run: ctest --output-on-failure
+      working-directory: build
 
 
   windows:
