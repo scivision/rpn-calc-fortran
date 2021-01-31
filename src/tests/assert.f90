@@ -117,10 +117,16 @@ real(wp), intent(in), optional :: rtol, atol
 logical, intent(in), optional :: equal_nan
 character(*), intent(in), optional :: err_msg
 
-if (.not.isclose(actual,desired,rtol,atol,equal_nan)) then
-  write(stderr,*) merge(err_msg,'',present(err_msg)),': actual',actual,'desired',desired
-  error stop
-endif
+character(:), allocatable :: msg
+
+if (isclose(actual,desired,rtol,atol,equal_nan)) return
+
+msg = 'MISMATCH'
+if (present(err_msg)) msg = err_msg
+
+write(stderr,*) msg,': actual',actual,'desired',desired
+
+error stop
 
 end subroutine assert_isclose
 
