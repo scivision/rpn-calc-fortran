@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.14...${CMAKE_VERSION})
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "default build type")
@@ -18,8 +18,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
 add_executable(rpncalc)
 target_link_libraries(rpncalc PRIVATE assert hyper reg funcs)
-install(TARGETS rpncalc
-  RUNTIME DESTINATION bin)
+install(TARGETS rpncalc)
 
 #--- functions (usable in other programs too)
 add_library(assert OBJECT src/tests/assert.f90)
