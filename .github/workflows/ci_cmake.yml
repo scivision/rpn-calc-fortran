@@ -16,10 +16,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - run: cmake -B build
+    - run: cmake --preset make
     - run: cmake --build build
-    - run: ctest --output-on-failure
-      working-directory: build
+    - run: ctest --preset default
 
 
   windows:
@@ -27,4 +26,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - run: ctest -S setup.cmake -VV
+    - run: cmake --preset makewin
+    - run: cmake --build build
+    - run: ctest --preset default
