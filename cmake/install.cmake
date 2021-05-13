@@ -39,6 +39,6 @@ string(REGEX REPLACE "\n" ";" _cpack_ignore ${_cpack_ignore})
 set(CPACK_SOURCE_IGNORE_FILES "${_cpack_ignore}")
 
 install(FILES ${CPACK_RESOURCE_FILE_README} ${CPACK_RESOURCE_FILE_LICENSE}
-  DESTINATION share/docs/rpncalc-fortran/${PROJECT_NAME})
+  DESTINATION share/docs/${PROJECT_NAME})
 
 include(CPack)
