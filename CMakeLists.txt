@@ -54,4 +54,4 @@ endforeach()
 #--- install
 
 install(FILES ${PROJECT_SOURCE_DIR}/README.md
-  DESTINATION share/doc)
+  DESTINATION share/docs/${PROJECT_NAME})
