@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - run: cmake --preset make
+    - run: cmake --preset default -G "Unix Makefiles"
     - run: cmake --build build
     - run: ctest --preset default
 
@@ -26,6 +26,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - run: cmake --preset makewin
+    - run: cmake --preset default -G "MinGW Makefiles"
     - run: cmake --build build
     - run: ctest --preset default
