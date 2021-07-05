@@ -3,8 +3,6 @@ name: ci_meson
 on:
   push:
     paths:
-      - "**.f90"
-      - "**.F90"
       - "**/meson.build"
       - ".github/workflows/ci_meson.yml"
 
@@ -36,7 +34,7 @@ jobs:
 
     - run: meson setup build
       env:
-        FC: gfortran-10
+        FC: gfortran-11
 
     - run: meson test -C build -v
 
@@ -54,10 +52,3 @@ jobs:
     - run: meson setup build
 
     - run: meson test -C build -v
-
-    - name: .exe for release
-      uses: actions/upload-artifact@v1
-      if: success()
-      with:
-        name: rpncalc.exe
-        path: build/rpncalc.exe

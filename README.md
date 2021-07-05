@@ -8,11 +8,7 @@
 ![Fortran RPN Calculator screen](./doc/FortranCalculatorDemo.png)
 
 The `funcs.90` module provides over 100 elemental functions not found in Fortran instrinsics.
-A Fortran 2008 compatible compiler is required such as `gfortran` or `ifort`.
-RPNcalc works on Linux, Mac and Windows, including:
-
-* GNU `gfortran` &ge; 6
-* Intel Fortran `ifort`
+RPNcalc works on Linux, Mac and Windows.
 
 The stack size is set by the user with command line option.
 Default size is 4.
@@ -24,20 +20,16 @@ Default size is 4.
 
 ## Build
 
+Build with CMake or Meson.
+
 ### CMake
-
-One-step CMake build and test:
-
-```sh
-ctest -S setup.cmake -VV
-```
-
-OR manually:
 
 ```sh
 cmake -B build
 
-cmake --build build --parallel
+cmake --build build
+
+ctest --test-dir build  # optional
 ```
 
 ### Meson

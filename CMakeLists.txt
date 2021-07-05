@@ -1,8 +1,4 @@
-cmake_minimum_required(VERSION 3.14...${CMAKE_VERSION})
-
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "default build type")
-endif()
+cmake_minimum_required(VERSION 3.14...3.21)
 
 project(RPNcalc
   LANGUAGES Fortran
@@ -12,9 +8,6 @@ project(RPNcalc
 include(CTest)
 
 include(cmake/compilers.cmake)
-
-# this helps linters e.g. Visual Studio Intellicode work properly
-set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
 add_executable(rpncalc)
 target_link_libraries(rpncalc PRIVATE assert hyper reg funcs)
