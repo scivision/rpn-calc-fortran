@@ -9,7 +9,7 @@ if(CMAKE_Fortran_COMPILER_ID STREQUAL GNU)
 
   string(APPEND CMAKE_Fortran_FLAGS_DEBUG " -fcheck=all -fexceptions -ffpe-trap=invalid,zero,overflow -finit-real=nan -Wconversion")
 
-elseif(CMAKE_Fortran_COMPILER_ID MATCHES Intel)
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "^Intel")
   string(APPEND CMAKE_Fortran_FLAGS_DEBUG " -warn -fpe0 -traceback")# -debug extended -check all)
 
   if(WIN32)
