@@ -1,7 +1,8 @@
 name: ci_cmake
 
 env:
-  cmake_version: '3.21.0-rc3'
+  CMAKE_BUILD_PARALLEL_LEVEL: 3
+  CTEST_PARALLEL_LEVEL: 3
 
 on:
   push:
@@ -18,16 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-
-    # FIXME: till CMake 3.21 is released, we need to use the following
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
-    - run: |
-        pip install cmakeutils ninja
-        python -m cmakeutils.cmake_setup ${cmake_version} --prefix ${HOME}/.local
-        echo "${HOME}/.local/cmake-${cmake_version}-linux-x86_64/bin" >> $GITHUB_PATH
 
     - run: cmake --preset default
     - run: cmake --build build
