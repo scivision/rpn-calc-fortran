@@ -3,6 +3,7 @@ name: ci_cmake
 env:
   CMAKE_BUILD_PARALLEL_LEVEL: 3
   CTEST_PARALLEL_LEVEL: 3
+  CMAKE_BUILD_TYPE: Release
 
 on:
   push:
@@ -31,6 +32,7 @@ jobs:
         files: build/test-results.xml
 
   windows:
+    needs: linux
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
