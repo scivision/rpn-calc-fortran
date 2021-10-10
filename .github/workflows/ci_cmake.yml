@@ -21,6 +21,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - run: |
+        sudo apt update
+        sudo apt install ninja-build
+
     - run: cmake --preset multi
 
     - run: cmake --build --preset debug
