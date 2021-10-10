@@ -21,15 +21,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - run: cmake --preset default
-    - run: cmake --build build
-    - run: ctest --preset default --output-junit test-results.xml
+    - run: cmake --preset multi
 
-    - name: Publish Unit Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1
-      if: always()
-      with:
-        files: build/test-results.xml
+    - run: cmake --build --preset debug
+    - run: ctest --preset debug
+
+    - run: cmake --build --preset release
+    - run: ctest --preset release
 
   windows:
     needs: linux
@@ -37,9 +35,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - run: cmake --preset default -G "MinGW Makefiles"
+    - run: cmake -B build -G "MinGW Makefiles"
     - run: cmake --build build
-    - run: ctest --preset default
+    - run: ctest --test-dir build --preset default
 
     - name: .exe for release
       uses: actions/upload-artifact@v1
