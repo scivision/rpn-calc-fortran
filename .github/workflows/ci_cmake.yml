@@ -1,7 +1,6 @@
 name: ci_cmake
 
 env:
-  CMAKE_BUILD_PARALLEL_LEVEL: 3
   CTEST_PARALLEL_LEVEL: 3
   CMAKE_BUILD_TYPE: Release
 
@@ -40,11 +39,11 @@ jobs:
     - uses: actions/checkout@v2
 
     - run: cmake -B build -G "MinGW Makefiles"
-    - run: cmake --build build
+    - run: cmake --build build --parallel
     - run: ctest --test-dir build --preset default
 
     - name: .exe for release
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       if: success()
       with:
         name: rpncalc.exe
