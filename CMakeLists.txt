@@ -1,8 +1,11 @@
-cmake_minimum_required(VERSION 3.14...3.22)
+cmake_minimum_required(VERSION 3.19...3.22)
+
+file(READ ${CMAKE_CURRENT_LIST_DIR}/codemeta.json _j)
+string(JSON PROJECT_VERSION GET ${_j} version)
 
 project(RPNcalc
 LANGUAGES Fortran
-VERSION 1.2.1
+VERSION ${PROJECT_VERSION}
 HOMEPAGE_URL https://github.com/scivision/rpn-calc-fortran)
 
 include(CTest)
