@@ -36,7 +36,7 @@ real(wp), PARAMETER :: L_PER_GAL = 3.785411784D0
 real(wp), PARAMETER :: A0 = 0.5291772108D-10                          ! m
 real(wp), PARAMETER :: AMU = 1.660539040e-27_wp                       ! kg
 real(wp), PARAMETER :: AU = 1.49597870D11                             ! m
-real(wp), PARAMETER :: C = 299792458.0D0                              ! m/s
+real(wp), PARAMETER :: C = 299792458._wp                              ! m/s
 real(wp), PARAMETER :: ECHG = 1.6021766e-19_wp                        ! C
 real(wp), PARAMETER :: EPS0 = 8.8541878176203898505D-12               ! F/m
 real(wp), PARAMETER :: G = 9.80665D0                                  ! m/s^2
@@ -51,7 +51,7 @@ real(wp), PARAMETER :: MU0 = 12.5663706143591729539D-7                ! N/A^2
 real(wp), PARAMETER :: MUB = 927.400949D-26                           ! A m^2
 real(wp), PARAMETER :: MUN = 5.05078343D-27                           ! A m^2
 real(wp), PARAMETER :: NA = 6.0221415D23                              ! mol^-1
-real(wp), PARAMETER :: REARTH = 6378140.0D0                           ! m
+real(wp), PARAMETER :: REARTH = 6378140._wp                           ! m
 real(wp), PARAMETER :: RGAS = 8.314472D0                              ! J/mol K
 real(wp), PARAMETER :: STEFAN = 5.670400D-8                           ! W/m^2 K^4
 
@@ -203,7 +203,7 @@ case('!')                                                  ! !
          RDSTACK(1) = 1
       ELSE
          CALL SWITCH_RAT_TO_REAL
-         IF (ISINT(STACK(1)).AND.(STACK(1)<0.0D0)) THEN
+         IF (ISINT(STACK(1)).AND.(STACK(1)<0)) THEN
            write(stderr, *) '  Factorial Error'
            return
          endif
@@ -317,11 +317,11 @@ case('2X')                                                 ! 2X
       CASE (1)
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = 2.0D0**(CSTACK(1))
+         CSTACK(1) = 2**(CSTACK(1))
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
-         STACK(1) = 2.0D0**(STACK(1))
+         STACK(1) = 2**(STACK(1))
    END SELECT
 
 case('A0')                                                 ! A0
@@ -452,7 +452,7 @@ case('ACOVERS')                                            ! ACOVERS
 case('ACRD')                                               ! ACRD
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (ABS(STACK(1)) > 2.0D0) THEN
+         IF (ABS(STACK(1)) > 2) THEN
             write(stderr, *) '  ACRD Error'
          ELSE
             LASTX = STACK(1)
@@ -540,7 +540,7 @@ case('AEXSEC')                                             ! AEXSEC
 case('AHAV')                                               ! AHAV
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((STACK(1)<0.0D0).OR.(STACK(1)>1)) THEN
+         IF ((STACK(1)<0).OR.(STACK(1)>1)) THEN
             write(stderr, *) '  AHAV Error'
          ELSE
             LASTX = STACK(1)
@@ -637,7 +637,7 @@ case('ASEC')                                               ! ASEC
 case('ASECH')                                             ! ASECH
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((STACK(1)<=0.0D0).OR.(STACK(1)>1)) THEN
+         IF ((STACK(1)<=0).OR.(STACK(1)>1)) THEN
             write(stderr, *) '  ASECH Error'
          ELSE
             LASTX = STACK(1)
@@ -835,7 +835,7 @@ case('BESSELY1')                                           ! BESSELY1
 case('BESSELY')                                            ! BESSELY
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+         IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
             write(stderr, *) '  BESSELY Error 1'
          ELSE
             NB = INT(STACK(2)) + 1
@@ -857,7 +857,7 @@ case('BESSELY')                                            ! BESSELY
             'in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+         IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
             write(stderr, *) '  BESSELY Error 1'
          ELSE
             NB = INT(STACK(2)) + 1
@@ -905,7 +905,7 @@ case('BESSELI1')                                           ! BESSELI1
 case('BESSELI')                                            ! BESSELI
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+         IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
             write(stderr, *) '  BESSELI Error 1'
          ELSE
             NB = INT(STACK(2)) + 1
@@ -926,7 +926,7 @@ case('BESSELI')                                            ! BESSELI
          write(stderr, *) '  Error:  BESSELI not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+         IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
             write(stderr, *) '  BESSELI Error 1'
          ELSE
             NB = INT(STACK(2)) + 1
@@ -990,7 +990,7 @@ case('BESSELK1')                                           ! BESSELK1
 case('BESSELK')                                            ! BESSELK
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+         IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
             write(stderr, *) '  BESSELK Error 1'
          ELSE
             NB = INT(STACK(2)) + 1
@@ -1013,7 +1013,7 @@ case('BESSELK')                                            ! BESSELK
          write(stderr, *) '  Error:  BESSELK not available in COMPLEX mode.'
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+         IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
             write(stderr, *) '  BESSELK Error 1'
          ELSE
             NB = INT(STACK(2)) + 1
@@ -1037,8 +1037,8 @@ case('BESSELK')                                            ! BESSELK
 case('BETA')                                               ! BETA
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF ((ISINT(STACK(1)).AND.(STACK(1)<=0.0D0)) .OR.  &
-             (ISINT(STACK(2)).AND.(STACK(2)<=0.0D0))) THEN
+         IF ((ISINT(STACK(1)).AND.(STACK(1)<=0)) .OR.  &
+             (ISINT(STACK(2)).AND.(STACK(2)<=0))) THEN
             write(stderr, *) '  BETA Error'
          ELSE
             LASTX = STACK(1)
@@ -1068,8 +1068,8 @@ case('BETA')                                               ! BETA
                END IF
             ELSE
                CALL SWITCH_RAT_TO_REAL
-               IF ((ISINT(STACK(1)).AND.(STACK(1)<=0.0D0)) .OR.  &
-                   (ISINT(STACK(2)).AND.(STACK(2)<=0.0D0))) THEN
+               IF ((ISINT(STACK(1)).AND.(STACK(1)<=0)) .OR.  &
+                   (ISINT(STACK(2)).AND.(STACK(2)<=0))) THEN
                   write(stderr, *) '  BETA Error'
                ELSE
                   LASTX = STACK(1)
@@ -1098,10 +1098,10 @@ case('C>F')                                                ! C>F
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
-         STACK(1) = (9.0D0/5.0D0)*STACK(1)+32.0D0
+         STACK(1) = (9._wp/5._wp)*STACK(1)+32
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = (9.0D0/5.0D0)*CSTACK(1)+32.0D0
+         CSTACK(1) = (9._wp/5._wp)*CSTACK(1)+32
       CASE (3)
          RNLASTX = RNSTACK(1)
          RDLASTX = RDSTACK(1)
@@ -1246,7 +1246,7 @@ case('CNR')                                                ! CNR
       CASE (1)
          IF (ISFRAC(STACK(1)) .OR. ISFRAC(STACK(2))) THEN
             write(stderr, *) '  CNR Error'
-         ELSE IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+         ELSE IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
             write(stderr, *) '  CNR Error'
          ELSE IF (STACK(2) < STACK(1)) THEN
             write(stderr, *) '  CNR Error'
@@ -1260,9 +1260,9 @@ case('CNR')                                                ! CNR
       CASE (2)
          IF (ISFRAC(real(CSTACK(1), wp)) .OR. ISFRAC(real(CSTACK(2), wp))) THEN
             write(stderr, *) '  CNR Error'
-         ELSE IF (real(CSTACK(1), wp)<0.0D0) THEN
+         ELSE IF (real(CSTACK(1), wp)<0) THEN
             write(stderr, *) '  CNR Error'
-         ELSE IF (real(CSTACK(2), wp)<0.0D0) THEN
+         ELSE IF (real(CSTACK(2), wp)<0) THEN
             write(stderr, *) '  CNR Error'
          ELSE IF (.not.isclose(AIMAG(CSTACK(1)), 0)) THEN
             write(stderr, *) '  CNR Error'
@@ -1480,14 +1480,14 @@ case('D>R')                                                ! D>R
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
-         STACK(1) = STACK(1)*PI/180.0D0
+         STACK(1) = STACK(1)*PI/180
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CSTACK(1)*PI/180.0D0
+         CSTACK(1) = CSTACK(1)*PI/180
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
-         STACK(1) = STACK(1)*PI/180.0D0
+         STACK(1) = STACK(1)*PI/180
    END SELECT
 
 case('DEC')                                                ! DEC
@@ -1498,11 +1498,11 @@ case('DEFAULT')                                            ! DEFAULT
 
    SELECT CASE (ANGLE_MODE)
       CASE (1)
-         ANGLE_FACTOR = PI/180.0D0
+         ANGLE_FACTOR = PI/180
       CASE (2)
          ANGLE_FACTOR = 1
       CASE (3)
-         ANGLE_FACTOR = PI/200.0D0
+         ANGLE_FACTOR = PI/200
       CASE (4)
          ANGLE_FACTOR = 2*pi
    END SELECT
@@ -1515,7 +1515,7 @@ case('DEFAULT')                                            ! DEFAULT
 
 case('DEG')                                                ! DEG
    ANGLE_MODE = 1
-   ANGLE_FACTOR = PI/180.0D0
+   ANGLE_FACTOR = PI/180
 
 case('DIGAMMA')                                            ! DIGAMMA
    SELECT CASE (DOMAIN_MODE)
@@ -1631,10 +1631,10 @@ case('F>C')                                                ! F>C
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
-         STACK(1) = (5.0D0/9.0D0)*(STACK(1)-32.0D0)
+         STACK(1) = (5._wp/9._wp)*(STACK(1)-32)
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = (5.0D0/9.0D0)*(CSTACK(1)-32.0D0)
+         CSTACK(1) = (5._wp/9._wp)*(CSTACK(1)-32)
       CASE (3)
          RNLASTX = RNSTACK(1)
          RDLASTX = RDSTACK(1)
@@ -1788,7 +1788,7 @@ case('GOLDEN')                                             ! GOLDEN
 
 case('GRAD')                                               ! GRAD
    ANGLE_MODE = 3
-   ANGLE_FACTOR = PI/200.0D0
+   ANGLE_FACTOR = PI/200
 
 case('GRAV')                                               ! GRAV
    SELECT CASE (DOMAIN_MODE)
@@ -2630,9 +2630,9 @@ case('PNR')                                                ! PNR
       CASE (2)
          IF (ISFRAC(real(CSTACK(1), wp)) .OR. ISFRAC(real(CSTACK(2), wp))) THEN
             write(stderr, *) '  PNR Error'
-         ELSE IF (real(CSTACK(1), wp)<0.0D0) THEN
+         ELSE IF (real(CSTACK(1), wp)<0) THEN
             write(stderr, *) '  PNR Error'
-         ELSE IF (real(CSTACK(2), wp)<0.0D0) THEN
+         ELSE IF (real(CSTACK(2), wp)<0) THEN
             write(stderr, *) '  PNR Error'
          ELSE IF (.not.isclose(AIMAG(CSTACK(1)), 0)) THEN
             write(stderr, *) '  PNR Error'
@@ -2651,7 +2651,7 @@ case('PNR')                                                ! PNR
       CASE (3)
          IF (ISFRAC(STACK(1)) .OR. ISFRAC(STACK(2))) THEN
             write(stderr, *) '  PNR Error'
-         ELSE IF ((STACK(1)<0.0D0) .OR. (STACK(2)<0.0D0)) THEN
+         ELSE IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
             write(stderr, *) '  PNR Error'
          ELSE IF (STACK(2) < STACK(1)) THEN
             write(stderr, *) '  PNR Error'
@@ -2779,14 +2779,14 @@ case('R>D')                                                ! R>D
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
          LASTX = STACK(1)
-         STACK(1) = STACK(1)*180.0D0/PI
+         STACK(1) = STACK(1)*180/PI
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CSTACK(1)*180.0D0/PI
+         CSTACK(1) = CSTACK(1)*180/PI
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
          LASTX = STACK(1)
-         STACK(1) = STACK(1)*180.0D0/PI
+         STACK(1) = STACK(1)*180/PI
    END SELECT
 
 case('R>P')                                                ! R>P
@@ -3023,11 +3023,11 @@ case('RESET')                                             ! RESET
 
    SELECT CASE (ANGLE_MODE)
       CASE (1)
-         ANGLE_FACTOR = PI/180.0D0
+         ANGLE_FACTOR = PI/180
       CASE (2)
          ANGLE_FACTOR = 1
       CASE (3)
-         ANGLE_FACTOR = PI/200.0D0
+         ANGLE_FACTOR = PI/200
       CASE (4)
          ANGLE_FACTOR = 2*pi
    END SELECT
