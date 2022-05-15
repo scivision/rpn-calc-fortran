@@ -446,7 +446,7 @@ INTEGER :: N,K
 
 NSTERM = S*(S+1)*(S+2)* &
   (S+3)*(S+4)/30240
-N = int((NSTERM*(2**S)/EPS)**(1._wp/(S+5)))
+N = int((NSTERM*(2**S)/EPS)**(1 / (S+5)))
 IF ( N < 10 )  THEN
    N = 10
 END IF
@@ -461,7 +461,7 @@ END DO
 
 !     Add Euler-Maclaurin correction terms
 SUM = SUM+(FN**NEGS)*(0.5D00+FN/(S-1) &
-  +S*(1._wp-(S+ 1._wp)*(S+2)/ &
+  +S*(1 - (S + 1)*(S+2)/ &
   (60*FN*FN)) &
   /(12*FN))+NSTERM/(FN**(S+5))
 riemannZETA = SUM

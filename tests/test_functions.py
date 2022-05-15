@@ -22,8 +22,9 @@ def frun(name: str, args) -> float:
     if not isinstance(args, (list, tuple)):
         args = [args]
     input = "\n".join(map(str, args)) + "\n" + name
-    raw = subprocess.check_output([EXE], input=input, text=True, timeout=5)
-    return float(raw.strip().split("\n")[-1])
+    raw = subprocess.run([EXE], capture_output=True, input=input, text=True, timeout=5)
+    assert not raw.stderr, raw.stderr
+    return float(raw.stdout.strip().split("\n")[-1])
 
 
 def test_bessel0():
@@ -54,6 +55,11 @@ def test_bessel_general():
     for k, f in fcns.items():
         for a in args:
             assert frun(k, a) == approx(f(*a))
+
+
+def test_riemann_zeta():
+
+    assert frun("rzeta", (2)) == approx(sp.zeta(2))
 
 
 if __name__ == "__main__":
