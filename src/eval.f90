@@ -3,6 +3,7 @@ module evals
 use global
 use funcs
 use stackops
+use rat, only : SWITCH_RAT_TO_REAL
 use assert, only: wp, isclose
 use help, only: print_help
 

@@ -5,6 +5,8 @@ use global
 
 implicit none (type, external)
 
+private
+
 interface sech
 procedure sech_r, sech_c
 end interface sech
@@ -28,6 +30,8 @@ end interface coth
 interface acoth
 procedure acoth_r, acoth_c
 end interface acoth
+
+public :: sech, asech, csch, acsch, coth, acoth
 
 contains
 

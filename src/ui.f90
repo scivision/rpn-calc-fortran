@@ -6,6 +6,7 @@ use assert, only: wp, isclose
 use funcs
 
 implicit none (type, external)
+private
 
 interface push_stack
 procedure push_stack_r, cpush_stack, rpush_stack
@@ -15,7 +16,9 @@ interface printx
 procedure printx_r, cprintx, rprintx
 end interface
 
-complex(wp), parameter, private :: c0 = (0._wp, 0._wp)
+complex(wp), parameter, private :: c0 = (0, 0)
+
+public :: drop_stack, cdrop_stack, rdrop_stack, push_stack, printx
 
 contains
 
