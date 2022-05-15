@@ -1749,7 +1749,7 @@ case('HMS>H')                                             ! HMS>H
             ITMP = INT(real(CSTACK(1), wp))
             ITMP2 = INT(FRAC(real(CSTACK(1), wp))*1.0D2)
             TMP = (real(CSTACK(1), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
-            CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
+            TMP2 = HMS2H(ITMP, ITMP2, TMP)
             CLASTX = CSTACK(1)
             CSTACK(1) = CMPLX(TMP2, kind=wp)
          END IF
@@ -1758,7 +1758,7 @@ case('HMS>H')                                             ! HMS>H
          ITMP = INT(STACK(1))
          ITMP2 = INT(FRAC(STACK(1))*1.0D2)
          TMP = (STACK(1) - ITMP - ITMP2*1.0D-2)*1.0D4
-         CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
+         TMP2 = HMS2H(ITMP, ITMP2, TMP)
          LASTX = STACK(1)
          STACK(1) = TMP2
    END SELECT
@@ -1772,11 +1772,11 @@ case('HMS+')                                               ! HMS+
             ITMP = INT(CSTACK(1))
             ITMP2 = INT(FRAC(CSTACK(1))*1.0e2_wp)
             TMP = (real(CSTACK(1), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
-            CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
+            TMP2 = HMS2H(ITMP, ITMP2, TMP)
             ITMP = INT(CSTACK(2))
             ITMP2 = INT(FRAC(CSTACK(2))*1.0e2_wp)
             TMP = (real(CSTACK(2), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
-            CALL HMS2H (ITMP, ITMP2, TMP, TMP3)
+            TMP3 = HMS2H(ITMP, ITMP2, TMP)
             CALL H2HMSD (TMP2+TMP3, ITMP, ITMP2, TMP)
             CLASTX = CSTACK(1)
             CSTACK(1) = real(itmp, wp) + 1.0D-2*ITMP2 + 1.0D-4*TMP
@@ -1787,11 +1787,11 @@ case('HMS+')                                               ! HMS+
          ITMP = INT(STACK(1))
          ITMP2 = INT(FRAC(STACK(1))*1.0D2)
          TMP = (STACK(1) - ITMP - ITMP2*1.0D-2)*1.0D4
-         CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
+         TMP2 = HMS2H(ITMP, ITMP2, TMP)
          ITMP = INT(STACK(2))
          ITMP2 = INT(FRAC(STACK(2))*1.0D2)
          TMP = (STACK(2) - ITMP - ITMP2*1.0D-2)*1.0D4
-         CALL HMS2H (ITMP, ITMP2, TMP, TMP3)
+         TMP3 = HMS2H(ITMP, ITMP2, TMP)
          CALL H2HMSD (TMP2+TMP3, ITMP, ITMP2, TMP)
          LASTX = STACK(1)
          STACK(1) = real(itmp, wp) + 1.0D-2*ITMP2 + 1.0D-4*TMP
@@ -1807,11 +1807,11 @@ case('HMS-')                                               ! HMS-
             ITMP = INT(CSTACK(1))
             ITMP2 = INT(FRAC(CSTACK(1))*1.0D2)
             TMP = (real(CSTACK(1), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
-            CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
+            TMP2 = HMS2H(ITMP, ITMP2, TMP)
             ITMP = INT(CSTACK(2))
             ITMP2 = INT(FRAC(CSTACK(2))*1.0D2)
             TMP = (real(CSTACK(2), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
-            CALL HMS2H (ITMP, ITMP2, TMP, TMP3)
+            TMP3 = HMS2H(ITMP, ITMP2, TMP)
             CALL H2HMSD (TMP3-TMP2, ITMP, ITMP2, TMP)
             CLASTX = CSTACK(1)
             CSTACK(1) = real(itmp, wp) + 1.0D-2*ITMP2 + 1.0D-4*TMP
@@ -1822,11 +1822,11 @@ case('HMS-')                                               ! HMS-
          ITMP = INT(STACK(1))
          ITMP2 = INT(FRAC(STACK(1))*1.0D2)
          TMP = (STACK(1) - ITMP - ITMP2*1.0D-2)*1.0D4
-         CALL HMS2H (ITMP, ITMP2, TMP, TMP2)
+         TMP2 = HMS2H(ITMP, ITMP2, TMP)
          ITMP = INT(STACK(2))
          ITMP2 = INT(FRAC(STACK(2))*1.0D2)
          TMP = (STACK(2) - ITMP - ITMP2*1.0D-2)*1.0D4
-         CALL HMS2H (ITMP, ITMP2, TMP, TMP3)
+         TMP3 = HMS2H(ITMP, ITMP2, TMP)
          CALL H2HMSD (TMP3-TMP2, ITMP, ITMP2, TMP)
          LASTX = STACK(1)
          STACK(1) = real(itmp, wp) + 1.0D-2*ITMP2 + 1.0D-4*TMP

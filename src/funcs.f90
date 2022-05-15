@@ -391,19 +391,19 @@ END FUNCTION ERFCX
 !  Convert decimal hours to hours, minutes, and seconds. Seconds are returned as a real value.
 !***********************************************************************************************************************************
 
-elemental SUBROUTINE H2HMSD (DHR, IHR, IMIN, SEC)
+elemental SUBROUTINE H2HMSD (DHR, IHR, IMIN, second)
 
 real(wp), INTENT(IN) :: DHR
 INTEGER, INTENT(OUT) :: IHR, IMIN
-real(wp), INTENT(OUT) :: SEC
+real(wp), INTENT(OUT) :: second
 real(wp) :: TIME
 
 
 TIME = DHR                                                                    ! hours
 IHR = INT(TIME)                                                               ! hours
-TIME = 60.0D0 * (TIME - IHR)                                                  ! minutes
+TIME = 60 * (TIME - IHR)                                                  ! minutes
 IMIN = INT(TIME)                                                              ! minutes
-SEC = 60.0D0 * (TIME - IMIN)                                                  ! seconds
+second = 60 * (TIME - IMIN)                                                  ! seconds
 
 END SUBROUTINE H2HMSD
 
@@ -414,16 +414,14 @@ END SUBROUTINE H2HMSD
 !  Convert hours, minutes, and seconds to decimal hours.
 !***********************************************************************************************************************************
 
-elemental SUBROUTINE HMS2H (IHR, IMIN, SEC, DHR)
+elemental real(wp) function HMS2H (IHR, minute, second)
 
-INTEGER, INTENT(IN) :: IHR, IMIN
-real(wp), INTENT(IN) :: SEC
-real(wp), INTENT(OUT) :: DHR
+INTEGER, INTENT(IN) :: IHR, minute
+real(wp), INTENT(IN) :: second
 
+HMS2H = real(IHR) + real(minute)/60 + second/3600
 
-DHR = DBLE(IHR) + DBLE(IMIN)/60.0D0 + SEC/3600.0D0
-
-END SUBROUTINE HMS2H
+END function HMS2H
 
 
 !***********************************************************************************************************************************
@@ -446,9 +444,9 @@ INTEGER :: N,K
 
 !     Estimate N for accuracy  eps
 
-NSTERM = S*(S+1.0D00)*(S+2.0D00)* &
-  (S+3.0D00)*(S+4.0D00)/30240.0D00
-N = int((NSTERM*(2.0D00**S)/EPS)**(1._wp/(S+5.0D00)))
+NSTERM = S*(S+1)*(S+2)* &
+  (S+3)*(S+4)/30240
+N = int((NSTERM*(2**S)/EPS)**(1._wp/(S+5)))
 IF ( N < 10 )  THEN
    N = 10
 END IF
@@ -456,16 +454,16 @@ END IF
 FN = N
 NEGS = -S
 !     Direct sum
-SUM = 0.0D00
+SUM = 0
 DO K =2, N-1
    SUM = SUM+K**NEGS
 END DO
 
 !     Add Euler-Maclaurin correction terms
-SUM = SUM+(FN**NEGS)*(0.5D00+FN/(S-1.0D00) &
-  +S*(1._wp-(S+ 1._wp)*(S+2.0D00)/ &
-  (60.0D00*FN*FN)) &
-  /(12.0D00*FN))+NSTERM/(FN**(S+5.0D00))
+SUM = SUM+(FN**NEGS)*(0.5D00+FN/(S-1) &
+  +S*(1._wp-(S+ 1._wp)*(S+2)/ &
+  (60*FN*FN)) &
+  /(12*FN))+NSTERM/(FN**(S+5))
 riemannZETA = SUM
 
 END FUNCTION RIEMANNZETA
