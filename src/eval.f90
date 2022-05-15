@@ -3777,8 +3777,6 @@ IF ((x < 0) .OR. (y < 0)) THEN
    return
 ENDIF
 
-
-
 NB = INT(y) + 1
 ALLOCATE (B(NB))
 
