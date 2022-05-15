@@ -748,291 +748,226 @@ case('AVERS')                                             ! AVERS
 
 case('BESSELJ0')                                           ! BESSELJ0
    SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         LASTX = STACK(1)
-         STACK(1) = bessel_J0(STACK(1))
       CASE (2)
          write(stderr, *) '  Error:  BESSELJ0 not available in COMPLEX mode.'
+         return
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         LASTX = STACK(1)
-         STACK(1) = bessel_j0(STACK(1))
    END SELECT
+
+   LASTX = STACK(1)
+   STACK(1) = bessel_j0(STACK(1))
 
 case('BESSELJ1')
-  associate(x=>stack(1))
    SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         LASTX = x
-         x = bessel_j1(x)
       CASE (2)
          write(stderr, *) '  Error:  BESSELJ1 not available in COMPLEX mode.'
+         return
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         LASTX = x
-         x = bessel_j1(x)
    END SELECT
-  end associate
+
+   LASTX = stack(1)
+   stack(1) = bessel_j1(stack(1))
 
 case('BESSELJ1P')
-  associate(x=>stack(1))
    SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         LASTX = x
-         x = bessel_j0(x) - 1 / x * bessel_j1(x)
       CASE (2)
          write(stderr, *) " Error:  BESSELJ0' not available in COMPLEX mode."
+         return
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         LASTX = x
-         x = bessel_j0(x) - 1 / x * bessel_j1(x)
    END SELECT
-  end associate
+
+   associate(x=>stack(1))
+   LASTX = x
+   x = bessel_j0(x) - 1 / x * bessel_j1(x)
+   end associate
 
 case('BESSELJ')
    SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         call bsj()
       CASE (2)
          write(stderr, *) '  Error:  BESSELJ not available in COMPLEX mode.'
+         return
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         call bsj()
    END SELECT
+
+   call bsj()
 
 case('BESSELY0')                                           ! BESSELY0
    SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         call bsy0()
       CASE (2)
          write(stderr, *) '  Error:  BESSELY0 not available in COMPLEX mode.'
+         return
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         call bsy0()
    END SELECT
+
+   IF (stack(1) <= 0) THEN
+      write(stderr, *) '  BESSELY0 Error'
+   ELSE
+      LASTX = stack(1)
+      stack(1) = bessel_y0(stack(1))
+   END IF
 
 case('BESSELY1')                                           ! BESSELY1
    SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         IF (STACK(1) <= 0) THEN
-            write(stderr, *) '  BESSELY1 Error'
-         ELSE
-            LASTX = STACK(1)
-            STACK(1) = bessel_y1(STACK(1))
-         END IF
       CASE (2)
          write(stderr, *) '  Error:  BESSELY1 not available in COMPLEX mode.'
+         return
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF (STACK(1) <= 0) THEN
-            write(stderr, *) '  BESSELY1 Error'
-         ELSE
-            LASTX = STACK(1)
-            STACK(1) = bessel_y1(STACK(1))
-         END IF
    END SELECT
+
+   IF (STACK(1) <= 0) THEN
+      write(stderr, *) '  BESSELY1 Error'
+   ELSE
+      LASTX = STACK(1)
+      STACK(1) = bessel_y1(STACK(1))
+   END IF
 
 case('BESSELY')                                            ! BESSELY
    SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
-            write(stderr, *) '  BESSELY Error 1'
-         ELSE
-            NB = INT(STACK(2)) + 1
-            ALLOCATE (BES_B(NB))
-            CALL RYBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, BY=BES_B, NCALC=NCALC)
-            IF (NCALC < 0) THEN
-               write(stderr, *) '  BESSELY Error 2'
-            ELSE IF (NCALC /= NB) THEN
-               write(stderr, *) '  BESSELY Error 3'
-            ELSE
-               LASTX = STACK(1)
-               STACK(1) = BES_B(NB)
-               CALL DROP_STACK(2)
-            END IF
-            DEALLOCATE (BES_B)
-         END IF
       CASE (2)
-         write(stderr, *) '  Error:  BESSELY not available '// &
-            'in COMPLEX mode.'
+         write(stderr, *) '  Error:  BESSELY not available in COMPLEX mode.'
+         return
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
-            write(stderr, *) '  BESSELY Error 1'
-         ELSE
-            NB = INT(STACK(2)) + 1
-            ALLOCATE (BES_B(NB))
-            CALL RYBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, BY=BES_B, NCALC=NCALC)
-            IF (NCALC < 0) THEN
-               write(stderr, *) '  BESSELY Error 2'
-            ELSE IF (NCALC /= NB) THEN
-               write(stderr, *) '  BESSELY Error 3'
-            ELSE
-               LASTX = STACK(1)
-               STACK(1) = BES_B(NB)
-               CALL DROP_STACK(2)
-            END IF
-            DEALLOCATE (BES_B)
-         END IF
    END SELECT
+
+   IF (any(STACK(1:2) < 0)) THEN
+      write(stderr, *) '  BESSELY Error 1'
+      return
+   endif
+
+   NB = INT(STACK(2)) + 1
+   ALLOCATE (BES_B(NB))
+   CALL RYBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, BY=BES_B, NCALC=NCALC)
+   IF (NCALC < 0) THEN
+      write(stderr, *) '  BESSELY Error 2'
+   ELSE IF (NCALC /= NB) THEN
+      write(stderr, *) '  BESSELY Error 3'
+   ELSE
+      LASTX = STACK(1)
+      STACK(1) = BES_B(NB)
+      CALL DROP_STACK(2)
+   END IF
+   DEALLOCATE (BES_B)
 
 case('BESSELI0')                                           ! BESSELI0
    SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         LASTX = STACK(1)
-         STACK(1) = BESI0(STACK(1))
       CASE (2)
          write(stderr, *) '  Error:  BESSELI0 not available in COMPLEX mode.'
+         return
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         LASTX = STACK(1)
-         STACK(1) = BESI0(STACK(1))
    END SELECT
+
+   LASTX = STACK(1)
+   STACK(1) = BESI0(STACK(1))
 
 case('BESSELI1')                                           ! BESSELI1
    SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         LASTX = STACK(1)
-         STACK(1) = BESI1(STACK(1))
       CASE (2)
          write(stderr, *) '  Error:  BESSELI1 not available in COMPLEX mode.'
+         return
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         LASTX = STACK(1)
-         STACK(1) = BESI1(STACK(1))
    END SELECT
+
+   LASTX = STACK(1)
+   STACK(1) = BESI1(STACK(1))
 
 case('BESSELI')                                            ! BESSELI
    SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
-            write(stderr, *) '  BESSELI Error 1'
-         ELSE
-            NB = INT(STACK(2)) + 1
-            ALLOCATE (BES_B(NB))
-            CALL RIBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, IZE=1, B=BES_B, NCALC=NCALC)
-            IF (NCALC < 0) THEN
-               write(stderr, *) '  BESSELI Error 2'
-            ELSE IF (NCALC /= NB) THEN
-               write(stderr, *) '  BESSELI Error 3'
-            ELSE
-               LASTX = STACK(1)
-               STACK(1) = BES_B(NB)
-               CALL DROP_STACK(2)
-            END IF
-            DEALLOCATE (BES_B)
-         END IF
       CASE (2)
          write(stderr, *) '  Error:  BESSELI not available in COMPLEX mode.'
+         return
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
-            write(stderr, *) '  BESSELI Error 1'
-         ELSE
-            NB = INT(STACK(2)) + 1
-            ALLOCATE (BES_B(NB))
-            CALL RIBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, IZE=1, B=BES_B, NCALC=NCALC)
-            IF (NCALC < 0) THEN
-               write(stderr, *) '  BESSELI Error 2'
-            ELSE IF (NCALC /= NB) THEN
-               write(stderr, *) '  BESSELI Error 3'
-            ELSE
-               LASTX = STACK(1)
-               STACK(1) = BES_B(NB)
-               CALL DROP_STACK(2)
-            END IF
-            DEALLOCATE (BES_B)
-         END IF
    END SELECT
+
+   IF (any(STACK(1:2) < 0)) THEN
+      write(stderr, *) '  BESSELI Error 1'
+      return
+   endif
+
+   NB = INT(STACK(2)) + 1
+   ALLOCATE (BES_B(NB))
+   CALL RIBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, IZE=1, B=BES_B, NCALC=NCALC)
+   IF (NCALC < 0) THEN
+      write(stderr, *) '  BESSELI Error 2'
+   ELSE IF (NCALC /= NB) THEN
+      write(stderr, *) '  BESSELI Error 3'
+   ELSE
+      LASTX = STACK(1)
+      STACK(1) = BES_B(NB)
+      CALL DROP_STACK(2)
+   END IF
+   DEALLOCATE (BES_B)
 
 case('BESSELK0')                                           ! BESSELK0
    SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         IF (STACK(1) <= 0) THEN
-            write(stderr, *) '  BESSELK0 Error'
-         ELSE
-            LASTX = STACK(1)
-            STACK(1) = BESK0(STACK(1))
-         END IF
       CASE (2)
          write(stderr, *) '  Error:  BESSELK0 not available in COMPLEX mode.'
+         return
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF (STACK(1) <= 0) THEN
-            write(stderr, *) '  BESSELK0 Error'
-         ELSE
-            LASTX = STACK(1)
-            STACK(1) = BESK0(STACK(1))
-         END IF
    END SELECT
+
+   IF (STACK(1) <= 0) THEN
+      write(stderr, *) '  BESSELK0 Error'
+   ELSE
+      LASTX = STACK(1)
+      STACK(1) = BESK0(STACK(1))
+   END IF
 
 case('BESSELK1')                                           ! BESSELK1
    SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         IF (STACK(1) <= 0) THEN
-            write(stderr, *) '  BESSELK1 Error'
-         ELSE
-            LASTX = STACK(1)
-            STACK(1) = BESK1(STACK(1))
-         END IF
       CASE (2)
          write(stderr, *) '  Error:  BESSELK1 not available in COMPLEX mode.'
+         return
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF (STACK(1) <= 0) THEN
-            write(stderr, *) '  BESSELK1 Error'
-         ELSE
-            LASTX = STACK(1)
-            STACK(1) = BESK1(STACK(1))
-         END IF
    END SELECT
+
+   IF (STACK(1) <= 0) THEN
+      write(stderr, *) '  BESSELK1 Error'
+   ELSE
+      LASTX = STACK(1)
+      STACK(1) = BESK1(STACK(1))
+   END IF
 
 case('BESSELK')                                            ! BESSELK
    SELECT CASE (DOMAIN_MODE)
-      CASE (1)
-         IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
-            write(stderr, *) '  BESSELK Error 1'
-         ELSE
-            NB = INT(STACK(2)) + 1
-            ALLOCATE (BES_B(NB))
-            CALL RKBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, IZE=1, BK=BES_B, NCALC=NCALC)
-            IF (NCALC < -1) THEN
-               write(stderr, *) '  BESSELK Error 2'
-            ELSE IF (NCALC == -1) THEN
-               write(stderr, *) '  BESSELK Error 3'
-            ELSE IF (NCALC /= NB) THEN
-               write(stderr, *) '  BESSELK Error 4'
-            ELSE
-               LASTX = STACK(1)
-               STACK(1) = BES_B(NB)
-               CALL DROP_STACK(2)
-            END IF
-            DEALLOCATE (BES_B)
-         END IF
       CASE (2)
          write(stderr, *) '  Error:  BESSELK not available in COMPLEX mode.'
+         return
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
-         IF ((STACK(1)<0) .OR. (STACK(2)<0)) THEN
-            write(stderr, *) '  BESSELK Error 1'
-         ELSE
-            NB = INT(STACK(2)) + 1
-            ALLOCATE (BES_B(NB))
-            CALL RKBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, IZE=1, BK=BES_B, NCALC=NCALC)
-            IF (NCALC < -1) THEN
-               write(stderr, *) '  BESSELK Error 2'
-            ELSE IF (NCALC == -1) THEN
-               write(stderr, *) '  BESSELK Error 3'
-            ELSE IF (NCALC /= NB) THEN
-               write(stderr, *) '  BESSELK Error 4'
-            ELSE
-               LASTX = STACK(1)
-               STACK(1) = BES_B(NB)
-               CALL DROP_STACK(2)
-            END IF
-            DEALLOCATE (BES_B)
-         END IF
    END SELECT
+
+   IF (any(STACK(1:2) < 0)) THEN
+      write(stderr, *) '  BESSELK Error 1'
+      return
+   endif
+
+   NB = INT(STACK(2)) + 1
+   ALLOCATE (BES_B(NB))
+   CALL RKBESL(X=STACK(1), ALPHA=FRAC(STACK(2)), NB=NB, IZE=1, BK=BES_B, NCALC=NCALC)
+   IF (NCALC < -1) THEN
+      write(stderr, *) '  BESSELK Error 2'
+   ELSE IF (NCALC == -1) THEN
+      write(stderr, *) '  BESSELK Error 3'
+   ELSE IF (NCALC /= NB) THEN
+      write(stderr, *) '  BESSELK Error 4'
+   ELSE
+      LASTX = STACK(1)
+      STACK(1) = BES_B(NB)
+      CALL DROP_STACK(2)
+   END IF
+   DEALLOCATE (BES_B)
 
 case('BETA')                                               ! BETA
    SELECT CASE (DOMAIN_MODE)
@@ -4077,21 +4012,5 @@ CALL DROP_STACK(2)
 
 end associate
 end subroutine bsj
-
-
-subroutine bsy0()
-
-associate(X=>stack(1))
-
-IF (x <= 0) THEN
-   write(stderr, *) '  BESSELY0 Error'
-ELSE
-   LASTX = x
-   x = bessel_y0(x)
-END IF
-
-end associate
-
-end subroutine bsy0
 
 end module evals
