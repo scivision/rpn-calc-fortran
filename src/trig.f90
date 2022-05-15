@@ -426,7 +426,7 @@ elemental real(wp) FUNCTION ACRD (Y) RESULT (X)
 
 real(wp), INTENT (IN) :: Y
 
-X = 2.0D0*ASIN(0.5D0*Y)
+X = 2*ASIN(0.5D0*Y)
 
 END FUNCTION ACRD
 !***********************************************************************************************************************************
@@ -439,7 +439,7 @@ elemental complex(wp) FUNCTION CACRD (Y) RESULT (X)
 
 COMPLEX(wp), INTENT (IN) :: Y
 
-X = 2.0D0*asin(0.5D0*Y)
+X = 2*asin(0.5D0*Y)
 
 END FUNCTION CACRD
 
