@@ -1,8 +1,6 @@
 module hyper
-use, intrinsic:: ieee_arithmetic
-use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
+
 use assert, only: wp
-use rat, only: SWITCH_RAT_TO_REAL
 use global
 
 implicit none (type, external)

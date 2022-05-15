@@ -1,6 +1,5 @@
 module rat
 
-use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 use assert, only: wp, isclose
 
 implicit none (type, external)
