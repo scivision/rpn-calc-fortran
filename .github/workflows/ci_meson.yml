@@ -10,13 +10,19 @@ jobs:
 
   linux:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
         python-version: '3.x'
 
-    - run: pip install meson ninja
+    - name: install pytest
+      run: python -m pip install numpy scipy pytest
+
+    - name: install Meson
+      run: pip install meson ninja
+
+    - uses: actions/checkout@v2
 
     - run: meson setup build
     - run: meson test -C build -v

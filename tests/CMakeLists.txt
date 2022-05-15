@@ -16,11 +16,11 @@ set_tests_properties(Value PROPERTIES
 PASS_REGULAR_EXPRESSION "308 / 29"
 )
 
-# add_test(NAME Bessel
-# COMMAND ${CMAKE_COMMAND} -Dtgt:FILEPATH=$<TARGET_FILE:rpncalc> -Dtxt:FILEPATH=${CMAKE_CURRENT_SOURCE_DIR}/test_value.asc -P ${PROJECT_SOURCE_DIR}/cmake/test_stdin.cmake)
-# set_tests_properties(Value PROPERTIES
-# PASS_REGULAR_EXPRESSION "308 / 29"
-# )
+if(Scipy_VERSION)
+  add_test(NAME FunctionEval
+  COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_functions.py $<TARGET_FILE:rpncalc>
+  )
+endif()
 
 get_property(test_names DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY TESTS)
 

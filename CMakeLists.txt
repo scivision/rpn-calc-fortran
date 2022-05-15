@@ -21,26 +21,34 @@ add_library(assert OBJECT tests/assert.f90)
 target_include_directories(assert INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-set_target_properties(assert PROPERTIES
-  Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include)
+set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include)
 
 add_subdirectory(src)
 set(_targs assert rpncalc funcs hyper reg)
 
 if(BUILD_TESTING)
+  find_package(Python COMPONENTS Interpreter)
+
+  if(Python_FOUND AND NOT DEFINED Scipy_VERSION)
+    execute_process(COMMAND ${Python_EXECUTABLE} -c "import scipy; print(scipy.__version__)"
+    RESULT_VARIABLE ret
+    OUTPUT_VARIABLE out
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    if(ret EQUAL 0)
+      set(Scipy_VERSION ${out} CACHE STRING "Scipy version")
+    else()
+      set(Scipy_VERSION 0 CACHE STRING "Scipy Not Found")
+    endif()
+
+    message(STATUS "Found Scipy ${Scipy_VERSION}")
+  endif()
+
   add_subdirectory(tests)
   list(APPEND _targs testcalc)
 endif(BUILD_TESTING)
 
-#--- properties
-foreach(t ${_targs})
-target_include_directories(${t}
-PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/include
-$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-$<INSTALL_INTERFACE:include>)
-set_target_properties(${t} PROPERTIES
-  Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include)
-endforeach()
+
 
 #--- install
 
