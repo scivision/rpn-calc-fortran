@@ -1,6 +1,6 @@
 project('RPNcalc', 'fortran',
-  default_options : ['default_library=static', 'warning_level=1', 'buildtype=release'],
-  meson_version: '>=0.51')
+default_options : ['default_library=static'],
+meson_version: '>=0.51')
 
 fc = meson.get_compiler('fortran')
 if fc.get_id() == 'gcc'
@@ -10,8 +10,8 @@ endif
 subdir('src')
 
 rpncalc_exe = executable('rpncalc', rpncalc_src,
-  link_with: [reg, funcs, assert, hyper],
-  install : true)
+link_with: [reg, funcs, assert, hyper],
+install : true)
 
 # tests
-subdir('src/tests')
+subdir('tests')

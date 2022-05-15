@@ -13,16 +13,12 @@ RPNcalc works on Linux, Mac and Windows.
 The stack size is set by the user with command line option.
 Default size is 4.
 
-## Authors
+Authors:
 
 * Fortran 77 code: David G. Simpson
 * Fortran 2018 code: Michael Hirsch
 
-## Build
-
 Build with CMake or Meson.
-
-### CMake
 
 ```sh
 cmake -B build
@@ -32,7 +28,7 @@ cmake --build build
 ctest --test-dir build  # optional
 ```
 
-### Meson
+or
 
 ```sh
 meson build

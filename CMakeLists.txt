@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19...3.23)
+cmake_minimum_required(VERSION 3.19)
 
 file(READ ${CMAKE_CURRENT_LIST_DIR}/codemeta.json _j)
 string(JSON PROJECT_VERSION GET ${_j} version)
@@ -17,7 +17,7 @@ target_link_libraries(rpncalc PRIVATE assert hyper reg funcs)
 install(TARGETS rpncalc)
 
 #--- functions (usable in other programs too)
-add_library(assert OBJECT src/tests/assert.f90)
+add_library(assert OBJECT tests/assert.f90)
 target_include_directories(assert INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
   $<INSTALL_INTERFACE:include>)
@@ -28,7 +28,7 @@ add_subdirectory(src)
 set(_targs assert rpncalc funcs hyper reg)
 
 if(BUILD_TESTING)
-  add_subdirectory(src/tests)
+  add_subdirectory(tests)
   list(APPEND _targs testcalc)
 endif(BUILD_TESTING)
 

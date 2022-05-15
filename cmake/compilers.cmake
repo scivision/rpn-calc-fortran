@@ -4,7 +4,7 @@ if(CMAKE_Fortran_COMPILER_ID STREQUAL GNU)
   )
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "^Intel")
   add_compile_options(
-  "$<$<CONFIG:Debug>:-warn;-fpe0;-traceback>"
-  "$<IF:$<BOOL:${WIN32}>,/QxHost,-xHost>"
+  -traceback
+  "$<$<CONFIG:Debug>:-warn;-fpe0>"
   )
 endif()
