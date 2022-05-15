@@ -12,4 +12,5 @@ endif()
 
 endfunction(test_stdin)
 
+
 test_stdin(${tgt} ${txt})
