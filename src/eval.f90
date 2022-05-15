@@ -365,7 +365,26 @@ case('ACOS')                                               ! ACOS
    END SELECT
 
 case('ACOSH')                                             ! ACOSH
-  call hacos(domain_mode)
+   SELECT CASE (DOMAIN_MODE)
+   CASE (1)
+      IF (STACK(1) < 1) THEN
+         write(stderr, *) '  ACOSH Error'
+      ELSE
+         LASTX = STACK(1)
+         STACK(1) = ACOSH(STACK(1))
+      END IF
+   CASE (2)
+      CLASTX = CSTACK(1)
+      CSTACK(1) = ACOSH(CSTACK(1))
+   CASE (3)
+      IF (RNSTACK(1) < RDSTACK(1)) THEN
+         write(stderr, *) '  ACOSH Error'
+      ELSE
+         CALL SWITCH_RAT_TO_REAL
+         LASTX = STACK(1)
+         STACK(1) = ACOSH(STACK(1))
+      END IF
+   END SELECT
 
 case('ACOT')                                               ! ACOT
    SELECT CASE (DOMAIN_MODE)
@@ -663,7 +682,15 @@ case('ASIN')                                               ! ASIN
    END SELECT
 
 case('ASINH')                                             ! ASINH
-  call hasin(domain_mode)
+   SELECT CASE (DOMAIN_MODE)
+   CASE (2)
+      CLASTX = CSTACK(1)
+      CSTACK(1) = ASINH(CSTACK(1))
+   CASE (1,3)
+      if(domain_mode == 3) CALL SWITCH_RAT_TO_REAL
+      LASTX = STACK(1)
+      STACK(1) = ASINH(STACK(1))
+ END SELECT
 
 case('ATAN')                                               ! ATAN
    SELECT CASE (DOMAIN_MODE)
@@ -690,7 +717,27 @@ case('ATAN2')                                             ! ATAN2
    END SELECT
 
 case('ATANH')                                             ! ATANH
-   call hatan(domain_mode)
+   SELECT CASE (DOMAIN_MODE)
+   CASE (1)
+      IF (ABS(STACK(1)) >= 1) THEN
+         write(stderr, *) '  ATANH Error'
+      ELSE
+         LASTX = STACK(1)
+         STACK(1) = ATANH(STACK(1))
+      END IF
+   CASE (2)
+      CLASTX = CSTACK(1)
+      CSTACK(1) = ATANH(CSTACK(1))
+   CASE (3)
+      IF (ABS(RNSTACK(1)) >= ABS(RDSTACK(1))) THEN
+         write(stderr, *) '  ATANH Error'
+      ELSE
+         CALL SWITCH_RAT_TO_REAL
+         LASTX = STACK(1)
+         STACK(1) = ATANH(STACK(1))
+      END IF
+ END SELECT
+
 
 case('AU')                                                 ! AU
    SELECT CASE (DOMAIN_MODE)
