@@ -632,7 +632,7 @@ DOMAIN_MODE = 1
 where(rdstack /= 0)
   STACK = real(RNSTACK, wp) / real(RDSTACK, wp)
 elsewhere
-  stack = 0._wp
+  stack = 0
 endwhere
 
 reg = real(RNREG, wp) / real(RDREG, wp)
@@ -886,7 +886,7 @@ END SUBROUTINE RDIV
       INTEGER :: N1, N2, D1, D2
       LOGICAL :: SGN
 
-      if (isclose(x, 0._wp)) then
+      if (isclose(x, 0)) then
         num = 0
         den = 1
         return
@@ -906,7 +906,7 @@ END SUBROUTINE RDIV
 !
 
       NU = X                                                                        ! make a local copy of X
-      SGN = NU < 0._wp                                                           ! save sign
+      SGN = NU < 0                                                           ! save sign
       NU = ABS(NU)                                                                  ! remove sign from X
 
 !
@@ -918,8 +918,8 @@ END SUBROUTINE RDIV
       N1 = INT(NU)
       N2 = N1 + 1
       GO TO 300
-  100 IF (R .GT. 1._wp) GO TO 200
-      R = 1._wp/R
+  100 IF (R .GT. 1) GO TO 200
+      R = 1/R
   200 N2 = N2 + N1*INT(R)
       D2 = D2 + D1*INT(R)
       N1 = N1 + N2
@@ -927,19 +927,19 @@ END SUBROUTINE RDIV
   300 R = 0.0D0
       IF (NU*D1 .EQ. DBLE(N1)) GO TO 400
       R = (N2-NU*D2)/(NU*D1-N1)
-      IF (R .GT. 1._wp) GO TO 400
+      IF (R .GT. 1) GO TO 400
       T = N2
       N2 = N1
       N1 = int(T)
       T = D2
       D2 = D1
       D1 = int(T)
-  400 EPS = ABS(1._wp - (N1/(NU*D1)))
+  400 EPS = ABS(1 - (N1/(NU*D1)))
       IF (EPS .LE. TOL1) GO TO 600
-      M = 1._wp
+      M = 1
   500 M = 10*M
-      IF (M*EPS .LT. 1._wp) GO TO 500
-      EPS = (1._wp/M)*INT(0.5D0+M*EPS)
+      IF (M*EPS .LT. 1) GO TO 500
+      EPS = (1/M)*INT(0.5D0+M*EPS)
   600 IF (EPS .LE. TOL1) THEN
          NUM = N1
          DEN = D1

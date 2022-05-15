@@ -46,32 +46,38 @@ Enter numbers and operations separated by blanks or carriage returns.
 The contents of the X register will be printed after each carriage return.
 For example:
 
-              X
+```
+            X
 
-    2 3 +     5.0000
-    6 *      30.0000
-    SIN       0.5000
+2 3 +     5.0000
+6 *      30.0000
+SIN       0.5000
+```
 
 To exit the program, type:
 
-    q
+```
+q
+```
 
 To get a brief help:
 
-    help
+```
+help
+```
 
-### set stack size
-
-The default stack size is 4, and may be betweeen 2..99 levels.
+Stack size: default stack size is 4, and may be betweeen 2..99 levels.
 Set the stack size at runtime, say 25 by:
 
-    rpncalc 25
+```
+rpncalc 25
+```
 
 Show what modes the calculator is in with:
 
-    MODES       Print modes
-
-### Modes
+```
+MODES       Print modes
+```
 
 The Fortran 2018 RPN calculator has 3 operating modes.
 The default mode is REAL

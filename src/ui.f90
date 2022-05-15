@@ -78,7 +78,7 @@ INTEGER, INTENT(IN) :: N
 
 STACK(N:stack_size-1) = STACK(N+1:stack_size)
 
-stack(stack_size) = 0._wp
+stack(stack_size) = 0
 
 END SUBROUTINE DROP_STACK
 
@@ -94,7 +94,7 @@ INTEGER, INTENT(IN) :: N
 
  CSTACK(N:stack_size-1) = CSTACK(N+1:stack_size)
 
- Cstack(stack_size) = 0._wp
+ Cstack(stack_size) = 0
 
 END SUBROUTINE CDROP_STACK
 
@@ -146,7 +146,7 @@ IF (BASE_MODE == 10) THEN                                                   ! DE
          IF (INDEX(NUMSTR,'*') /= 0)  WRITE(NUMSTR, F2) X
 
          READ (NUMSTR, *) TMPX
-         IF (.not.isclose(x, 0._wp) .AND. isclose(TMPX,0._wp)) WRITE (NUMSTR, F2) X      !   disp. underflow
+         IF (.not.isclose(x, 0) .AND. isclose(TMPX,0)) WRITE (NUMSTR, F2) X      !   disp. underflow
       CASE (2)                                                                ! print X (SCI)
          WRITE (NUMSTR, F2) X
       CASE (3)                                                                ! print X (ENG)

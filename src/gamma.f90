@@ -292,7 +292,7 @@ contains
       COMPLEX(wp), INTENT(IN) :: Z
 
       real(wp), PARAMETER :: EPS = 1.0D-14
-      real(wp), PARAMETER :: PI = 4._wp * atan(1._wp)
+      real(wp), PARAMETER :: PI = 4 * atan(1._wp)
       real(wp), PARAMETER :: EULER = 0.57721566490153286060651209008240243104215933593992359880576723488486772677766467094_wp
 
       INTEGER :: J
@@ -333,7 +333,7 @@ contains
 
       THETA = Y*PSI(X) + SUM
 
-      PROD = 1._wp
+      PROD = 1
       PPROD = HUGE(0._wp)
 
       J = 0

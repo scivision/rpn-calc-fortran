@@ -17,7 +17,7 @@ elemental real(wp) FUNCTION CNR (N,R) RESULT (Y)
 INTEGER, INTENT(IN) :: N, R
 INTEGER :: I, J
 
-Y = 1._wp
+Y = 1
 J = N
 
 DO I = N-R, 1, -1
@@ -38,7 +38,7 @@ elemental real(wp) FUNCTION PNR (N,R) RESULT (Y)
 INTEGER, INTENT(IN) :: N, R
 INTEGER :: I, J
 
-Y = 1._wp
+Y = 1
 J = N
 
 DO I = N-R, 1, -1

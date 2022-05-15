@@ -21,7 +21,7 @@ contains
 elemental real(wp) FUNCTION jinc(X)
 real(wp), INTENT(IN) :: X
 
-IF (isclose(x, 0._wp)) THEN
+IF (isclose(x, 0)) THEN
    jinc = 0.5_wp
 ELSE
    jinc = bessel_j1(X)/X
@@ -30,4 +30,3 @@ END FUNCTION jinc
 
 
 end module bessel
-

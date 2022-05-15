@@ -2,12 +2,12 @@ module assert
 
 use, intrinsic:: iso_c_binding, only: sp=>c_float, dp=>c_double
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
-use, intrinsic:: ieee_arithmetic
+use, intrinsic:: ieee_arithmetic, only: ieee_is_finite, ieee_is_nan
 
 implicit none (type, external)
 
 interface isclose
-procedure isclose_r, isclose_c
+  procedure isclose_r, isclose_ri, isclose_c
 end interface isclose
 
 private
@@ -61,6 +61,29 @@ isclose = abs(actual-desired) <= max(r * max(abs(actual), abs(desired)), a)
 end function isclose_r
 
 
+elemental logical function isclose_ri(actual, desired, rtol, atol, equal_nan) result(isclose)
+real(wp), intent(in) :: actual
+integer, intent(in) :: desired
+real(wp), intent(in), optional :: rtol, atol
+logical, intent(in), optional :: equal_nan
+
+real(wp) :: r,a
+logical :: n
+
+r = 1e-5_wp
+a = 0
+if (present(rtol)) r = rtol
+if (present(atol)) a = atol
+
+!--- sanity check
+if ((r < 0).or.(a < 0)) error stop 'invalid tolerance parameter(s)'
+if (.not.ieee_is_finite(actual)) return
+!--- floating point closeness check
+isclose = abs(actual-desired) <= max(r * max(abs(actual), real(abs(desired))), a)
+
+end function isclose_ri
+
+
 elemental logical function isclose_c(actual, desired, rtol, atol) result(isclose)
 ! inputs
 ! ------
@@ -79,13 +102,11 @@ complex(wp), intent(in) :: actual, desired
 real(wp), intent(in), optional :: rtol, atol
 
 real(wp) :: r,a
-! this is appropriate INSTEAD OF merge(), since non present values aren't defined.
+
 r = 1e-5_wp
 a = 0
 if (present(rtol)) r = rtol
 if (present(atol)) a = atol
-
-!print*,r,a,n,actual,desired
 
 !--- sanity check
 if ((abs(r) < 0).or.(abs(a) < 0)) error stop 'impossible rel or abs tolerance'

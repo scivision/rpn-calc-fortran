@@ -42,14 +42,14 @@ contains
 elemental real(wp) FUNCTION SECH_r(X) result(sech)
 real(wp), INTENT (IN) :: X
 
-sech = 1._wp/COSH(X)
+sech = 1/COSH(X)
 END FUNCTION SECH_r
 
 
 elemental complex(wp) FUNCTION SECH_c(Z) RESULT(sech)
 COMPLEX(wp), INTENT (IN) :: Z
 
-sech = 1._wp/cosh(Z)
+sech = 1/cosh(Z)
 END FUNCTION SECH_c
 
 
@@ -63,14 +63,14 @@ END FUNCTION SECH_c
 elemental real(wp) FUNCTION ASECH_r(y) result(asech)
 real(wp), INTENT (IN) :: Y
 
-asech = ACOSH(1._wp/Y)
+asech = ACOSH(1/Y)
 END FUNCTION ASECH_r
 
 
 elemental complex(wp) FUNCTION ASECH_c(Y) result(asech)
 COMPLEX(wp), INTENT (IN) :: Y
 
-asech = ACOSH(1._wp/Y)
+asech = ACOSH(1/Y)
 
 END FUNCTION ASECH_c
 
@@ -83,14 +83,14 @@ END FUNCTION ASECH_c
 elemental real(wp) FUNCTION CSCH_r(X) RESULT (Y)
 real(wp), INTENT (IN) :: X
 
-Y = 1._wp/SINH(X)
+Y = 1/SINH(X)
 END FUNCTION CSCH_r
 
 
 elemental complex(wp) FUNCTION CSCH_c(Z) RESULT (Y)
 COMPLEX(wp), INTENT (IN) :: Z
 
-Y = 1._wp / SINH(Z)
+Y = 1 / SINH(Z)
 END FUNCTION CSCH_c
 
 !***********************************************************************************************************************************
@@ -102,14 +102,14 @@ END FUNCTION CSCH_c
 elemental real(wp) FUNCTION ACSCH_r(Y) RESULT (X)
 real(wp), INTENT (IN) :: Y
 
-X = ASINH(1._wp/Y)
+X = ASINH(1/Y)
 END FUNCTION ACSCH_r
 
 
 elemental complex(wp) FUNCTION ACSCH_c(Y) RESULT (X)
 COMPLEX(wp), INTENT (IN) :: Y
 
-X = ASINH(1._wp/Y)
+X = ASINH(1/Y)
 
 END FUNCTION ACSCH_c
 
@@ -123,14 +123,14 @@ END FUNCTION ACSCH_c
 elemental real(wp) FUNCTION COTH_r(X) result(coth)
 real(wp), INTENT (IN) :: X
 
-coth = 1._wp/TANH(X)
+coth = 1/TANH(X)
 END FUNCTION COTH_r
 
 
 elemental complex(wp) FUNCTION COTH_c(Z) result(coth)
 COMPLEX(wp), INTENT (IN) :: Z
 
-COTH = 1._wp / tanh(Z)
+COTH = 1 / tanh(Z)
 END FUNCTION COTH_c
 
 
@@ -144,14 +144,14 @@ END FUNCTION COTH_c
 elemental real(wp) FUNCTION ACOTH_r(Y) result(acoth)
 real(wp), INTENT (IN) :: Y
 
-ACOTH = ATANH(1._wp/Y)
+ACOTH = ATANH(1/Y)
 END FUNCTION ACOTH_r
 
 
 elemental complex(wp) FUNCTION ACOTH_c(Z) result(acoth)
 COMPLEX(wp), INTENT(IN) :: Z
 
-acoth = 0.5_wp*LOG((Z+1._wp)/(Z-1._wp))
+acoth = 0.5_wp*LOG((Z+1)/(Z-1))
 END FUNCTION ACOTH_c
 
 !-------------------------------------------------
@@ -179,7 +179,7 @@ integer, intent(in) :: domain_mode
 
    SELECT CASE (DOMAIN_MODE)
       CASE (1)
-         IF (STACK(1) < 1._wp) THEN
+         IF (STACK(1) < 1) THEN
             write(stderr, *) '  ACOSH Error'
          ELSE
             LASTX = STACK(1)
@@ -205,7 +205,7 @@ integer, intent(in) :: domain_mode
 
 SELECT CASE (DOMAIN_MODE)
   CASE (1)
-     IF (ABS(STACK(1)) >= 1._wp) THEN
+     IF (ABS(STACK(1)) >= 1) THEN
         write(stderr, *) '  ATANH Error'
      ELSE
         LASTX = STACK(1)
