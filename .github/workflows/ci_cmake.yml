@@ -20,20 +20,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - run: |
-        sudo apt update
-        sudo apt install ninja-build
+    - run: cmake -Bbuild
 
-    - run: cmake --preset multi
-
-    - run: cmake --build --preset debug
-    - run: ctest --preset debug
-
-    - run: cmake --build --preset release
-    - run: ctest --preset release
+    - run: cmake --build build
+    - run: ctest --test-dir build --preset default
 
   windows:
-    needs: linux
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
