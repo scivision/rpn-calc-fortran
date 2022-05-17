@@ -14,7 +14,7 @@ include(cmake/compilers.cmake)
 
 set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include)
 
-add_executable(rpncalc)
+add_executable(rpncalc app/main.f90)
 target_include_directories(rpncalc INTERFACE
 $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
 $<INSTALL_INTERFACE:include>
@@ -22,7 +22,7 @@ $<INSTALL_INTERFACE:include>
 target_link_libraries(rpncalc PRIVATE assert hyper reg funcs)
 
 #--- functions (usable in other programs too)
-add_library(assert OBJECT tests/assert.f90)
+add_library(assert OBJECT src/assert.f90)
 target_include_directories(assert INTERFACE
 $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
 $<INSTALL_INTERFACE:include>

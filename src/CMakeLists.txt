@@ -1,4 +1,4 @@
-target_sources(rpncalc PRIVATE help.f90 eval.f90 ui.f90 calc.f90)
+target_sources(rpncalc PRIVATE help.f90 eval.f90 ui.f90)
 
 add_library(reg OBJECT reg.f90)
 target_link_libraries(reg PRIVATE assert)

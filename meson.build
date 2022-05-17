@@ -9,7 +9,8 @@ endif
 
 subdir('src')
 
-rpncalc_exe = executable('rpncalc', rpncalc_src,
+rpncalc_exe = executable('rpncalc',
+sources: ['app/main.f90', rpncalc_src],
 link_with: [reg, funcs, assert, hyper],
 install : true)
 
