@@ -1,8 +1,7 @@
 name: ci_cmake
 
 env:
-  CTEST_PARALLEL_LEVEL: 3
-  CMAKE_BUILD_TYPE: Release
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
 
 on:
   push:
@@ -13,45 +12,69 @@ on:
       - "**/CMakeLists.txt"
       - ".github/workflows/ci_cmake.yml"
 
+
 jobs:
 
-  linux:
-    runs-on: ubuntu-latest
+  linux_macos:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
 
     steps:
-    - uses: actions/setup-python@v2
+    - uses: actions/setup-python@v4
       with:
         python-version: '3.x'
 
     - name: install pytest
       run: python -m pip install numpy scipy pytest
 
-    - uses: actions/checkout@v2
+    - name: install gfortran
+      if: runner.os == 'macOS'
+      run: brew reinstall gcc
 
-    - run: cmake -Bbuild
+    - uses: actions/checkout@v3
 
-    - run: cmake --build build
+    - run: cmake -Bbuild || cmake -Bbuild --log-level=DEBUG
+
+    - run: cmake --build build --parallel
+
     - run: ctest --test-dir build --preset default
 
 
   windows:
     runs-on: windows-latest
+    timeout-minutes: 15
+
     steps:
-    - uses: actions/setup-python@v2
+    - uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: >-
+          mingw-w64-x86_64-ninja
+          mingw-w64-x86_64-gcc-fortran
+
+    - name: Put MSYS2_MinGW64 on PATH
+      run: echo "D:/a/_temp/msys64/mingw64/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - uses: actions/setup-python@v4
       with:
         python-version: '3.x'
 
     - name: install pytest
       run: python -m pip install numpy scipy pytest
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - run: cmake -B build -G "MinGW Makefiles"
+    - run: cmake -B build -G Ninja
     - run: cmake --build build --parallel
     - run: ctest --test-dir build --preset default
 
     - name: .exe for release
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       if: success()
       with:
         name: rpncalc.exe

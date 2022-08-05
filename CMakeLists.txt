@@ -1,21 +1,20 @@
-cmake_minimum_required(VERSION 3.19)
-
-file(READ ${CMAKE_CURRENT_LIST_DIR}/codemeta.json _j)
-string(JSON PROJECT_VERSION GET ${_j} version)
+cmake_minimum_required(VERSION 3.12...3.25)
 
 project(RPNcalc
 LANGUAGES Fortran
-VERSION ${PROJECT_VERSION}
-HOMEPAGE_URL https://github.com/scivision/rpn-calc-fortran)
+VERSION 1.4.1
+)
 
-include(CTest)
+enable_testing()
+
+option(${PROJECT_NAME}_BUILD_TESTING "build tests" on)
 
 include(cmake/compilers.cmake)
 
 set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include)
 
-add_executable(rpncalc app/main.f90)
-target_include_directories(rpncalc INTERFACE
+add_executable(rpncalc app/main.f90 src/help.f90 src/eval.f90 src/ui.f90)
+target_include_directories(rpncalc PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
 $<INSTALL_INTERFACE:include>
 )
@@ -23,37 +22,39 @@ target_link_libraries(rpncalc PRIVATE assert hyper reg funcs)
 
 #--- functions (usable in other programs too)
 add_library(assert OBJECT src/assert.f90)
-target_include_directories(assert INTERFACE
+target_include_directories(assert PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
 $<INSTALL_INTERFACE:include>
 )
 
 add_subdirectory(src)
 
-if(BUILD_TESTING)
+if(${PROJECT_NAME}_BUILD_TESTING)
   find_package(Python COMPONENTS Interpreter)
 
-  if(Python_FOUND AND NOT DEFINED Scipy_VERSION)
-    execute_process(COMMAND ${Python_EXECUTABLE} -c "import scipy; print(scipy.__version__)"
+  if(Python_FOUND AND NOT DEFINED Scipy_ok)
+    execute_process(COMMAND ${Python_EXECUTABLE} -c "import scipy; print('SciPy', scipy.__version__)"
     RESULT_VARIABLE ret
-    OUTPUT_VARIABLE out
-    OUTPUT_STRIP_TRAILING_WHITESPACE
+    TIMEOUT 10
     )
     if(ret EQUAL 0)
-      set(Scipy_VERSION ${out} CACHE STRING "Scipy version")
+      set(Scipy_ok true CACHE BOOL "Scipy OK")
     else()
-      set(Scipy_VERSION 0 CACHE STRING "Scipy Not Found")
+      set(Scipy_ok false CACHE BOOL "Scipy Not Found")
     endif()
-
-    message(STATUS "Found Scipy ${Scipy_VERSION}")
   endif()
 
-  add_subdirectory(tests)
-endif(BUILD_TESTING)
+  add_subdirectory(test)
+endif()
 
 
 #--- install
-install(TARGETS rpncalc)
+install(TARGETS rpncalc
+LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
 
 install(FILES ${PROJECT_SOURCE_DIR}/README.md
   DESTINATION share/docs/${PROJECT_NAME})

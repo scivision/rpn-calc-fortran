@@ -7,7 +7,6 @@
     "downloadUrl": "https://github.com/scivision/rpn-calc-fortran/releases",
     "issueTracker": "https://github.com/scivision/rpn-calc-fortran/issues",
     "name": "RPN Calculator",
-    "version": "1.4.1",
     "identifier": "",
     "description": "Reverse Polish Notation (RPN) calculator. Over 100 functions not in standard Fortran",
     "applicationCategory": "calculator",
