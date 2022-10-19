@@ -1,6 +1,6 @@
       module rjb
 
-      implicit none (type, external)
+      implicit none
 
       contains
 

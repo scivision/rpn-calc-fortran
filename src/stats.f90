@@ -2,7 +2,7 @@ module stats
 
 use assert, only: wp
 
-implicit none (type, external)
+implicit none
 
 contains
 

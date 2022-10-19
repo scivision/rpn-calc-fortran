@@ -3,7 +3,7 @@ module hyper
 use assert, only: wp
 use global
 
-implicit none (type, external)
+implicit none
 
 private
 
@@ -31,9 +31,48 @@ interface acoth
 procedure acoth_r, acoth_c
 end interface acoth
 
-public :: sech, asech, csch, acsch, coth, acoth
+public :: sech, asech, csch, acsch, coth, acoth, tanhc, ctanhc
 
 contains
+
+
+!***********************************************************************************************************************************
+!  TANHC
+!
+!  Tanhc function.
+!***********************************************************************************************************************************
+
+elemental real(wp) FUNCTION TANHC (X) RESULT (Y)
+
+real(wp), INTENT(IN) :: X
+
+IF (X .EQ. 0._wp) THEN
+   Y = 1
+ELSE
+   Y = TANH(X) / X
+END IF
+
+
+END FUNCTION TANHC
+
+
+!***********************************************************************************************************************************
+!  CTANHC
+!
+!  Complex tanhc function.
+!***********************************************************************************************************************************
+
+elemental complex(wp) FUNCTION CTANHC (Z) RESULT (Y)
+
+COMPLEX(wp), INTENT(IN) :: Z
+
+IF (Z .EQ. (0._wp, 0._wp)) THEN
+   Y = (1._wp, 0._wp)
+ELSE
+   Y = TANH(Z) / Z
+END IF
+
+END FUNCTION CTANHC
 
 !***********************************************************************************************************************************
 !  SECH

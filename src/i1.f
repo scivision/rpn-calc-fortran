@@ -1,6 +1,6 @@
       module i1
 
-      implicit none (type, external)
+      implicit none
       private
       public:: besi1
 

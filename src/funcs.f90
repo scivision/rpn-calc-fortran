@@ -10,7 +10,7 @@ use hyper
 use stats
 use fgamma
 
-implicit none (type, external)
+implicit none
 
 interface cuberoot
 procedure cuberoot_r, cuberoot_c
@@ -325,49 +325,6 @@ ELSE
    Y = SINH(Z)/Z
 END IF
 END FUNCTION CSINHC
-
-
-
-
-
-!***********************************************************************************************************************************
-!  TANHC
-!
-!  Tanhc function.
-!***********************************************************************************************************************************
-
-elemental real(wp) FUNCTION TANHC (X) RESULT (Y)
-
-real(wp), INTENT(IN) :: X
-
-
-IF (X .EQ. 0._wp) THEN
-   Y = 1._wp
-ELSE
-   Y = TANH(X) / X
-END IF
-
-
-END FUNCTION TANHC
-
-
-!***********************************************************************************************************************************
-!  CTANHC
-!
-!  Complex tanhc function.
-!***********************************************************************************************************************************
-
-elemental complex(wp) FUNCTION CTANHC (Z) RESULT (Y)
-
-COMPLEX(wp), INTENT(IN) :: Z
-
-IF (Z .EQ. (0._wp, 0._wp)) THEN
-   Y = (1._wp, 0._wp)
-ELSE
-   Y = TANH(Z) / Z
-END IF
-
-END FUNCTION CTANHC
 
 
 

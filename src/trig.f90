@@ -2,7 +2,7 @@ module trig
 
 use assert, only: wp
 
-implicit none (type, external)
+implicit none
 
 interface csc
 procedure csc_r, csc_c

@@ -4,7 +4,7 @@ use, intrinsic:: iso_c_binding, only: sp=>c_float, dp=>c_double
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 use, intrinsic:: ieee_arithmetic, only: ieee_is_finite, ieee_is_nan
 
-implicit none (type, external)
+implicit none
 
 interface isclose
   procedure isclose_r, isclose_ri, isclose_c

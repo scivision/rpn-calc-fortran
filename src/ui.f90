@@ -5,7 +5,7 @@ use global
 use assert, only: wp, isclose
 use funcs
 
-implicit none (type, external)
+implicit none
 private
 
 interface push_stack

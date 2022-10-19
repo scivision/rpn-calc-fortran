@@ -7,7 +7,7 @@ use rat, only : SWITCH_RAT_TO_REAL
 use assert, only: wp, isclose
 use help, only: print_help
 
-implicit none (type, external)
+implicit none
 private
 public :: eval
 

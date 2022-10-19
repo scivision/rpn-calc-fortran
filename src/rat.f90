@@ -2,7 +2,7 @@ module rat
 
 use assert, only: wp, isclose
 
-implicit none (type, external)
+implicit none
 
 contains
 

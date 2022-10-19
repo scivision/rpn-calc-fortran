@@ -1,6 +1,6 @@
       module rjk
 
-      implicit none (type, external)
+      implicit none
 
       contains
 
