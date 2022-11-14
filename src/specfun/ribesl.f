@@ -1,4 +1,5 @@
       module rji
+      !! https://netlib.org/specfun/ribesl
 
       implicit none
 

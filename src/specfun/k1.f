@@ -1,4 +1,5 @@
       module k1
+      !! from https://netlib.org/specfun/k1
 
       implicit none
       private

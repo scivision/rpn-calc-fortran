@@ -7,6 +7,8 @@
 ![Fortran RPN Calculator screen](./doc/FortranCalculatorDemo.png)
 
 The `funcs.90` module provides over 100 elemental functions not found in Fortran instrinsics.
+Besell, complex gamma, psi and a few others come are vendored and modernized from Netlib Specfun under the [specfun/](./src/specfun/) directory.
+
 RPNcalc works on Linux, Mac and Windows.
 
 The stack size is set by the user with command line option.
