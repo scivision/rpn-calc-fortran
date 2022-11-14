@@ -19,28 +19,42 @@ Authors:
 * Fortran 77 code: [David G. Simpson](https://caps.gsfc.nasa.gov/simpson)
 * Fortran 2018 code: Michael Hirsch
 
-Build with CMake or Meson.
+We have created some self-tests using Python SciPy, which is not necessary for normal use -- this is a standalone Fortran program.
+
+## Build
+
+Build with CMake or Fortran package manager (FPM).
+
+CMake:
 
 ```sh
 cmake -B build
 
 cmake --build build
 
-ctest --test-dir build  # optional
+ctest --test-dir build  # optional, compare with SciPy output.
 ```
 
-or
+Fortran Package Manager (FPM):
 
 ```sh
-meson build
+fpm build
 
-meson test -C build
+fpm run
 ```
 
 ## Usage
 
+Run the "rpncalc" executable like:
+
 ```sh
-rpncalc
+build/rpncalc
+```
+
+or with:
+
+```sh
+fpm run
 ```
 
 Enter numbers and operations separated by blanks or carriage returns.
@@ -99,7 +113,7 @@ RAD         Radians mode
 DEG         Degrees mode
 ```
 
-### Number base selection
+Number base selection:
 
 ```
 DEC         Decimal mode   ( default )
@@ -108,9 +122,7 @@ HEX         Hexadecimal mode
 OCT         Octal mode
 ```
 
-### Stack operations
-
-These operations are fundamental to RPN use, and constitute some of RPN's key advantages over other calculating methods.
+Stack operations are fundamental to RPN use, and constitute some of RPN's key advantages over other calculating methods.
 
 ```
 R           Roll stack down
@@ -132,7 +144,7 @@ PS          Print stack
 PSUMS       Print sums
 ```
 
-### Registers
+Registers:
 
 There are ten registers (0..9) accessed with:
 
@@ -141,209 +153,230 @@ STOx       Store, where x ~ 0..9  e.g. STO3   STO6
 RCLx       Recall, where x ~ 0..9 e.g. RCL3   RCL6
 ```
 
-### Digits of precision display
+Digits of precision display:
 
 For each case, x ~ (0..9) digits of DISPLAYED precision.
 Iinternal precision remains at 32 or 64 bits, set when compiled.
 
-    ENGx         Engineering notation
-    FIXx         Fix notation
-    SCIx         Scientific notation
+```
+ENGx         Engineering notation
+FIXx         Fix notation
+SCIx         Scientific notation
+```
 
 Other display modes:
 
-    IMPROPER    Improper fraction display mode
-    MIXED       Mixed fraction display mode
+```
+IMPROPER    Improper fraction display mode
+MIXED       Mixed fraction display mode
 
-    ALL         ALL digits display mode
+ALL         ALL digits display mode
+```
 
-### Common Functions
+Common Functions:
 
-    +           Addition
-    -           Subtraction
-    *           Multiplication
-    /           Division
-    ^           Exponentiation
-    RECIP       Reciprocal
-
-
-    2X          2^x
-
-    SQR         Square
-    SQRT        Square root
-
-    HYPOT       Compute SQRT(X^2+Y^2)
-    HYPOT3      Compute SQRT(X^2+Y^2+Z^2)
-
-    CUBE        Cube
-    CBRT        Cube root
-
-    !           Factorial (= GAMMA(n+1))
-
-    ROUND       Round to integer
-
-    CHS         Change sign
-
-    FRAC        Fractional part
-    FRACTOL     Set fraction tolerance
+```
++           Addition
+-           Subtraction
+*           Multiplication
+/           Division
+^           Exponentiation
+RECIP       Reciprocal
 
 
-### Complex functions
+2X          2^x
+
+SQR         Square
+SQRT        Square root
+
+HYPOT       Compute SQRT(X^2+Y^2)
+HYPOT3      Compute SQRT(X^2+Y^2+Z^2)
+
+CUBE        Cube
+CBRT        Cube root
+
+!           Factorial (= GAMMA(n+1))
+
+ROUND       Round to integer
+
+CHS         Change sign
+
+FRAC        Fractional part
+FRACTOL     Set fraction tolerance
+```
+
+Complex functions:
+
 These utility functions are for operations with numbers having a real and imaginary component.
 Most of the functions overall in the program can handle real and complex numbers, using Fortran 2003+ polymorphism.
 
-    ABS         Absolute value
-    CONJ        Complex conjugate
+```
+ABS         Absolute value
+CONJ        Complex conjugate
 
-    I           i (imaginary unit)
+I           i (imaginary unit)
 
-    IM          Imaginary component
-    RE          Real component
-    ARG         Argument of a complex number
+IM          Imaginary component
+RE          Real component
+ARG         Argument of a complex number
 
-    RI          Exchange real and imaginary parts
+RI          Exchange real and imaginary parts
+```
+
+Conversions:
+
+```
+P>R         Polar to rectangular
+R>D         Radians to degrees
+R>P         Rectangular to polar
+D>F         Decimal to fraction
+D>R         Degrees to radians
+
+C>F         Celsius to Fahrenheit
+CM>IN       Centimeter to inches
+F>C         Fahrenheit to Celsius
+GAL>L       Gallons to liters
+HMS>H       HMS to hours
+KG>LB       Kilograms to pounds
+L>GAL       Liters to gallons
+H>HMS       Hours to HMS
+LB>KG       Pounds to kilograms
+IN>CM       Inches to centimeters
+```
+
+Trigonometric:
+
+```
+SIN         Sine
+ASIN        Inverse sine
+
+COS         Cosine
+ACOS        Inverse cosine
+
+COT         Cotangent
+ACOT        Inverse cotangent
+ACOT2       Inverse cotangent (2 args)
+
+CSC         Cosecant
+ACSC        Inverse cosecant
+
+SEC         Secant
+ASEC        Inverse secant
+
+TAN         Tangent
+ATAN        Inverse tangent
+ATAN2       Inverse tangent (2 args)
+
+AHAV        Inverse haversine
+HAV         Haversine
+```
+
+Hyperbolic:
+
+```
+ACOSH       Inverse hyperbolic cosine
+ACOTH       Inverse hyperbolic cotangent
+COSH        Hyperbolic cosine
+COTH        Hyperbolic cotangent
+
+ASECH       Inverse hyperbolic secant
+ACSCH       Inverse hyperbolic cosecant
+ASINH       Inverse hyperbolic sine
+ATANH       Inverse hyperbolic tangent
+
+SINH        Hyperbolic sine
+TANH        Hyperbolic tangent
+SECH        Hyperbolic secant
+CSCH        Hyperbolic cosecant
+```
+
+Logarithms:
+
+```
+XRT         X root of Y
+
+EXP         exp(x)
+10X         10^x
+
+LN          Natural logarithm
+LOG         Common logarithm
+LOG2        Logarithm base 2
+```
+
+Rational numbers:
+
+```
+GCD         Greatest common divisor
+LCM         Least common multiple
+
+INT         Integer part
+INT/        Integer division
+```
+
+Statistics:
+
+```
+CNR         Combinations
+PNR         Permutations
+
+LR          Linear regression (leaves b in X, m in Y)
+
+X^          Linear estimate X
+XMEAN       Mean of X
+
+XS          Sample standard deviation of X
+XSIG        Population standard deviation of X
+XY          X-Y exchange
+Y^          Linear estimate Y
+YMEAN       Mean of Y
+YS          Sample standard deviation of Y
+YSIG        Population standard deviation of Y
+```
+
+Constants:
+
+```
+AMU         Atomic mass unit (kg)
+AU          Astronomical unit (m)
+C           Speed of light in vacuum (m/s)
+ECHG        Elementary charge e (C)
+EPS0        Permittivity of free space (F/m)
+EULER       Euler-Mascheroni constant
+G           Standard acceleration due to gravity (m/s^2)
+GOLDEN      Golden ratio
+GRAV        Gravitational constant G (m^3/kg s^2)
+H           Planck constant (J s)
+HBAR        Planck constant (J s)
+KB          Boltzmann constant (J/K)
+ME          Electron mass (kg)
+MN          Neutron mass (kg)
+MP          Proton mass (kg)
+MU0         Permeability of free space (N/A^2)
+MUB         Bohr magneton (A m^2)
+MUN         Nuclear magneton (A m^2)
+NA          Avogadro's number (mol^-1)
 
 
-### Conversions
+PI          Pi   ( ~ 22/7)
+2PI         2 * pi
+2PII        2 * pi * i
 
-    P>R         Polar to rectangular
-    R>D         Radians to degrees
-    R>P         Rectangular to polar
-    D>F         Decimal to fraction
-    D>R         Degrees to radians
+RGAS        Gas constant (J/mol K)
+REARTH      Earth radius (m)
 
-    C>F         Celsius to Fahrenheit
-    CM>IN       Centimeter to inches
-    F>C         Fahrenheit to Celsius
-    GAL>L       Gallons to liters
-    HMS>H       HMS to hours
-    KG>LB       Kilograms to pounds
-    L>GAL       Liters to gallons
-    H>HMS       Hours to HMS
-    LB>KG       Pounds to kilograms
-    IN>CM       Inches to centimeters
+STEFAN      Stefan-Boltzmann constant (W/m^2 K^4)
+```
 
+logical:
 
-### Trigonometric
+```
+AND         Logical AND
+NOT         Logical NOT
+OR          Logical OR
+XOR         Logical XOR
+```
 
-    SIN         Sine
-    ASIN        Inverse sine
-
-    COS         Cosine
-    ACOS        Inverse cosine
-
-    COT         Cotangent
-    ACOT        Inverse cotangent
-    ACOT2       Inverse cotangent (2 args)
-
-    CSC         Cosecant
-    ACSC        Inverse cosecant
-
-    SEC         Secant
-    ASEC        Inverse secant
-
-    TAN         Tangent
-    ATAN        Inverse tangent
-    ATAN2       Inverse tangent (2 args)
-
-    AHAV        Inverse haversine
-    HAV         Haversine
-
-### Hyperbolic
-
-    ACOSH       Inverse hyperbolic cosine
-    ACOTH       Inverse hyperbolic cotangent
-    COSH        Hyperbolic cosine
-    COTH        Hyperbolic cotangent
-
-    ASECH       Inverse hyperbolic secant
-    ACSCH       Inverse hyperbolic cosecant
-    ASINH       Inverse hyperbolic sine
-    ATANH       Inverse hyperbolic tangent
-
-    SINH        Hyperbolic sine
-    TANH        Hyperbolic tangent
-    SECH        Hyperbolic secant
-    CSCH        Hyperbolic cosecant
-
-### Logarithms
-
-    XRT         X root of Y
-
-    EXP         exp(x)
-    10X         10^x
-
-    LN          Natural logarithm
-    LOG         Common logarithm
-    LOG2        Logarithm base 2
-
-### Rational numbers
-
-    GCD         Greatest common divisor
-    LCM         Least common multiple
-
-    INT         Integer part
-    INT/        Integer division
-
-### Statistics
-
-
-    CNR         Combinations
-    PNR         Permutations
-
-    LR          Linear regression (leaves b in X, m in Y)
-
-    X^          Linear estimate X
-    XMEAN       Mean of X
-
-    XS          Sample standard deviation of X
-    XSIG        Population standard deviation of X
-    XY          X-Y exchange
-    Y^          Linear estimate Y
-    YMEAN       Mean of Y
-    YS          Sample standard deviation of Y
-    YSIG        Population standard deviation of Y
-
-### Constants
-
-    AMU         Atomic mass unit (kg)
-    AU          Astronomical unit (m)
-    C           Speed of light in vacuum (m/s)
-    ECHG        Elementary charge e (C)
-    EPS0        Permittivity of free space (F/m)
-    EULER       Euler-Mascheroni constant
-    G           Standard acceleration due to gravity (m/s^2)
-    GOLDEN      Golden ratio
-    GRAV        Gravitational constant G (m^3/kg s^2)
-    H           Planck constant (J s)
-    HBAR        Planck constant (J s)
-    KB          Boltzmann constant (J/K)
-    ME          Electron mass (kg)
-    MN          Neutron mass (kg)
-    MP          Proton mass (kg)
-    MU0         Permeability of free space (N/A^2)
-    MUB         Bohr magneton (A m^2)
-    MUN         Nuclear magneton (A m^2)
-    NA          Avogadro's number (mol^-1)
-
-
-    PI          Pi   ( ~ 22/7)
-    2PI         2 * pi
-    2PII        2 * pi * i
-
-    RGAS        Gas constant (J/mol K)
-    REARTH      Earth radius (m)
-
-    STEFAN      Stefan-Boltzmann constant (W/m^2 K^4)
-
-### logical
-
-    AND         Logical AND
-    NOT         Logical NOT
-    OR          Logical OR
-    XOR         Logical XOR
-
-### Other Functions
+Other Functions:
 
 Many functions not commonly found in RPN calculators are included:
 
@@ -436,7 +469,7 @@ VER         Print software version
 VERS        Versine
 ```
 
-### Possible future operations:
+Possible future operations:
 
 ```
 ?           Incomplete gamma functions (upper and lower)
