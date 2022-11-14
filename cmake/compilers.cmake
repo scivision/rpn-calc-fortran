@@ -8,6 +8,25 @@ implicit none
 
 complex :: x
 
+print *, x%RE, x%IM
+end program
+]=]
+f08prop
+SRC_EXT f90
+)
+
+if(NOT f08prop)
+  message(FATAL_ERROR "${CMAKE_Fortran_COMPILER_ID} does not have Fortran 2008 %RE %IM real imaginary properties.")
+endif()
+
+
+check_fortran_source_compiles(
+[=[
+program a
+implicit none
+
+complex :: x
+
 print *, acosh(x)
 end program
 ]=]
