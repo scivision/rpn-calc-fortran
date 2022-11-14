@@ -51,13 +51,13 @@ Y = SIGN(Y,X)
 END FUNCTION FRAC_r
 
 
-elemental complex(wp) FUNCTION FRAC_c (X) result(frac)
+elemental complex(wp) FUNCTION FRAC_c (X) result(r)
 
 COMPLEX(wp), INTENT(IN) :: X
 real(wp) :: XR, XI, YR, YI, ZR, ZI
 
 XR = real(X, wp)
-XI = AIMAG(X)
+XI = X%IM
 
 ZR = ABS(XR)
 YR = ZR - INT(ZR)
@@ -67,7 +67,7 @@ ZI = ABS(XI)
 YI = ZI - INT(ZI)
 YI = SIGN(YI,XI)
 
-FRAC = CMPLX(YR,YI, wp)
+r = CMPLX(YR,YI, wp)
 
 END FUNCTION FRAC_c
 
@@ -106,8 +106,8 @@ COMPLEX(wp), INTENT(IN) :: X
 
 real(wp) :: YR, YI
 
-YR = AINT(DBLE(X))
-YI = AINT(AIMAG(X))
+YR = INT(real(X, wp))
+YI = INT(X%IM)
 Y = CMPLX(YR,YI, wp)
 
 END FUNCTION CINT
