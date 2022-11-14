@@ -25,6 +25,7 @@ jobs:
         gcc_version: ['9', '10', '11']
         include:
         - os: macos-latest
+          gcc_version: '11'
 
 
     steps:
@@ -39,13 +40,11 @@ jobs:
       if: runner.os == 'Linux'
       run: sudo apt install gfortran-${{ matrix.gcc_version }}
 
-    - name: install gfortran
-      if: runner.os == 'macOS'
-      run: brew reinstall gcc
-
     - uses: actions/checkout@v3
 
     - run: cmake --preset default
+      env:
+        FC: gfortran-${{ matrix.gcc_version }}
 
     - run: cmake --build --preset default --parallel
 
