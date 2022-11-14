@@ -279,8 +279,8 @@ END IF
       real(wp) :: X, Y, THETA, SUM, PROD, PSUM, PPROD
 
 
-      X = DBLE(Z)
-      Y = AIMAG(Z)
+      X = Z%RE
+      Y = Z%IM
 
       IF (Z .EQ. (0.0D0,0.0D0)) THEN
          ! write(stderr, *) '  CGAMMA Error.'

@@ -56,7 +56,7 @@ elemental complex(wp) FUNCTION FRAC_c (X) result(r)
 COMPLEX(wp), INTENT(IN) :: X
 real(wp) :: XR, XI, YR, YI, ZR, ZI
 
-XR = real(X, wp)
+XR = X%RE
 XI = X%IM
 
 ZR = ABS(XR)
@@ -106,7 +106,7 @@ COMPLEX(wp), INTENT(IN) :: X
 
 real(wp) :: YR, YI
 
-YR = INT(real(X, wp))
+YR = INT(X%RE)
 YI = INT(X%IM)
 Y = CMPLX(YR,YI, wp)
 

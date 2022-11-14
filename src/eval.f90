@@ -234,18 +234,18 @@ case('!!')                                                 ! !!
             END DO
          END IF
       CASE (2)
-         IF (real(CSTACK(1), wp) < 0) THEN
+         IF (CSTACK(1)%RE < 0) THEN
             write(stderr, *) '  !! Error'
-         ELSE IF (.not.isclose(AIMAG(CSTACK(1)), 0)) THEN
+         ELSE IF (.not.isclose(CSTACK(1)%IM, 0)) THEN
             write(stderr, *) '  !! Error'
-         ELSE IF (ISFRAC(real(CSTACK(1), wp))) THEN
+         ELSE IF (ISFRAC(CSTACK(1)%RE)) THEN
             write(stderr, *) '  !! Error'
-         ELSE IF (NINT(real(CSTACK(1), wp)) == 0) THEN
+         ELSE IF (NINT(CSTACK(1)%RE) == 0) THEN
             CLASTX = CSTACK(1)
             CSTACK(1) = (1, 0)
          ELSE
             CLASTX = CSTACK(1)
-            ITMP = NINT(real(CSTACK(1), wp))
+            ITMP = NINT(CSTACK(1)%RE)
             TMP = 1
             DO
                TMP = TMP * ITMP
@@ -584,8 +584,8 @@ case('AND')                                                ! AND
          STACK(1) = IAND (INT(STACK(2)), INT(STACK(1)))
          CALL DROP_STACK(2)
       CASE (2)
-         TMP = IAND (INT(real(CSTACK(2), wp)), INT(real(CSTACK(1), wp)))
-         TMP2 = IAND (INT(AIMAG(CSTACK(2))), INT(AIMAG(CSTACK(1))))
+         TMP = IAND (INT(CSTACK(2)%RE), INT(CSTACK(1)%RE))
+         TMP2 = IAND (INT(CSTACK(2)%IM), INT(CSTACK(1)%IM))
          CLASTX = CSTACK(1)
          CSTACK(1) = CMPLX(TMP,TMP2, wp)
          CALL CDROP_STACK(2)
@@ -605,7 +605,7 @@ case('ARG')                                                ! ARG
          LASTX = STACK(1)
          STACK(1) = 0
       CASE (2)
-         TMP = ATAN2(AIMAG(CSTACK(1)),real(CSTACK(1), wp))/ANGLE_FACTOR
+         TMP = ATAN2(CSTACK(1)%IM,CSTACK(1)%RE)/ANGLE_FACTOR
          CLASTX = CSTACK(1)
          CSTACK(1) = CMPLX(TMP, kind=wp)
       CASE (3)
@@ -1216,21 +1216,21 @@ case('CNR')                                                ! CNR
             CALL DROP_STACK(2)
          END IF
       CASE (2)
-         IF (ISFRAC(real(CSTACK(1), wp)) .OR. ISFRAC(real(CSTACK(2), wp))) THEN
+         IF (ISFRAC(CSTACK(1)%RE) .OR. ISFRAC(CSTACK(2)%RE)) THEN
             write(stderr, *) '  CNR Error'
-         ELSE IF (real(CSTACK(1), wp)<0) THEN
+         ELSE IF (CSTACK(1)%RE<0) THEN
             write(stderr, *) '  CNR Error'
-         ELSE IF (real(CSTACK(2), wp)<0) THEN
+         ELSE IF (CSTACK(2)%RE<0) THEN
             write(stderr, *) '  CNR Error'
-         ELSE IF (.not.isclose(AIMAG(CSTACK(1)), 0)) THEN
+         ELSE IF (.not.isclose(CSTACK(1)%IM, 0)) THEN
             write(stderr, *) '  CNR Error'
-         ELSE IF (.not.isclose(AIMAG(CSTACK(2)), 0)) THEN
+         ELSE IF (.not.isclose(CSTACK(2)%IM, 0)) THEN
             write(stderr, *) '  CNR Error'
-         ELSE IF (real(CSTACK(2), wp) < real(CSTACK(1), wp)) THEN
+         ELSE IF (CSTACK(2)%RE < CSTACK(1)%RE) THEN
             write(stderr, *) '  CNR Error'
          ELSE
-            ITMP  = NINT(real(CSTACK(1), wp))
-            ITMP2 = NINT(real(CSTACK(2), wp))
+            ITMP  = NINT(CSTACK(1)%RE)
+            ITMP2 = NINT(CSTACK(2)%RE)
             TMP = CNR (ITMP2, ITMP)
             CLASTX = CSTACK(1)
             CSTACK(1) = CMPLX(TMP, kind=wp)
@@ -1403,8 +1403,8 @@ case('D>F')                                                ! D>F
          CALL PUSH_STACK(real(DEN, wp))
       CASE (2)
          CLASTX = CSTACK(1)
-         CALL DEC_TO_FRAC (real(CSTACK(1), wp), NUM, DEN, FRACTOL)
-         CALL DEC_TO_FRAC (AIMAG(CSTACK(1)), NUM2, DEN2, FRACTOL)
+         CALL DEC_TO_FRAC (CSTACK(1)%RE, NUM, DEN, FRACTOL)
+         CALL DEC_TO_FRAC (CSTACK(1)%IM, NUM2, DEN2, FRACTOL)
          CALL CDROP_STACK(1)
          CALL push_stack(CMPLX(real(NUM, wp),real(NUM2, wp), wp))
          CALL push_stack(CMPLX(real(DEN, wp),real(DEN2, wp), wp))
@@ -1576,7 +1576,7 @@ case('FRACTOL')                                            ! FRACTOL
          FRACTOL = STACK(1)
          CALL DROP_STACK(1)
       CASE (2)
-         FRACTOL = real(CSTACK(1), wp)
+         FRACTOL = CSTACK(1)%RE
          CALL CDROP_STACK(1)
       CASE (3)
          FRACTOL = real(RNSTACK(1), wp)/real(RDSTACK(1), wp)
@@ -1660,12 +1660,12 @@ case('GCD')                                                ! GCD
             CALL DROP_STACK(2)
          END IF
       CASE (2)
-         IF (ISFRAC(real(CSTACK(1), wp)).OR.ISFRAC(real(CSTACK(2), wp)).OR. &
-            .not.isclose(AIMAG(CSTACK(1)), 0).OR..not.isclose(AIMAG(CSTACK(2)), 0)) THEN
+         IF (ISFRAC(CSTACK(1)%RE).OR.ISFRAC(CSTACK(2)%RE).OR. &
+            .not.isclose(CSTACK(1)%IM, 0).OR..not.isclose(CSTACK(2)%IM, 0)) THEN
             write(stderr, *) '  GCD Error'
          ELSE
             CLASTX = CSTACK(1)
-            CSTACK(1) = GCD(NINT(real(CSTACK(2), wp)),NINT(real(CSTACK(1), wp)))
+            CSTACK(1) = GCD(NINT(CSTACK(2)%RE),NINT(CSTACK(1)%RE))
             CALL CDROP_STACK(2)
          END IF
       CASE (3)
@@ -1714,10 +1714,10 @@ case('H')                                                  ! H
 case('H>HMS')                                             ! H>HMS
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
-         IF (.not.isclose(AIMAG(CSTACK(1)), 0)) THEN
+         IF (.not.isclose(CSTACK(1)%IM, 0)) THEN
             write(stderr, *) '  H>HMS Error'
          ELSE
-            CALL H2HMSD (real(CSTACK(1), wp), ITMP, ITMP2, TMP)
+            CALL H2HMSD (CSTACK(1)%RE, ITMP, ITMP2, TMP)
             CLASTX = CSTACK(1)
             CSTACK(1) = CMPLX(real(itmp, wp)+1.0D-2*ITMP2+1.0D-4*TMP, 0, 8)
          END IF
@@ -1743,12 +1743,12 @@ case('HEX')                                                ! HEX
 case('HMS>H')                                             ! HMS>H
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
-         IF (.not.isclose(AIMAG(CSTACK(1)), 0)) THEN
+         IF (.not.isclose(CSTACK(1)%IM, 0)) THEN
             write(stderr, *) '  HMS>H Error'
          ELSE
-            ITMP = INT(real(CSTACK(1), wp))
-            ITMP2 = INT(FRAC(real(CSTACK(1), wp))*1.0D2)
-            TMP = (real(CSTACK(1), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
+            ITMP = INT(CSTACK(1)%RE)
+            ITMP2 = INT(FRAC(CSTACK(1)%RE)*1.0D2)
+            TMP = (CSTACK(1)%RE - ITMP - ITMP2*1.0D-2)*1.0D4
             TMP2 = HMS2H(ITMP, ITMP2, TMP)
             CLASTX = CSTACK(1)
             CSTACK(1) = CMPLX(TMP2, kind=wp)
@@ -1766,16 +1766,16 @@ case('HMS>H')                                             ! HMS>H
 case('HMS+')                                               ! HMS+
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
-         IF (.not.isclose(AIMAG(CSTACK(1)), 0)) THEN
+         IF (.not.isclose(CSTACK(1)%IM, 0)) THEN
             write(stderr, *) '  HMS+ Error'
          ELSE
             ITMP = INT(CSTACK(1))
             ITMP2 = INT(FRAC(CSTACK(1))*1.0e2_wp)
-            TMP = (real(CSTACK(1), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
+            TMP = (CSTACK(1)%RE - ITMP - ITMP2*1.0D-2)*1.0D4
             TMP2 = HMS2H(ITMP, ITMP2, TMP)
             ITMP = INT(CSTACK(2))
             ITMP2 = INT(FRAC(CSTACK(2))*1.0e2_wp)
-            TMP = (real(CSTACK(2), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
+            TMP = (CSTACK(2)%RE - ITMP - ITMP2*1.0D-2)*1.0D4
             TMP3 = HMS2H(ITMP, ITMP2, TMP)
             CALL H2HMSD (TMP2+TMP3, ITMP, ITMP2, TMP)
             CLASTX = CSTACK(1)
@@ -1801,16 +1801,16 @@ case('HMS+')                                               ! HMS+
 case('HMS-')                                               ! HMS-
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
-         IF (.not.isclose(AIMAG(CSTACK(1)), 0)) THEN
+         IF (.not.isclose(CSTACK(1)%IM, 0)) THEN
             write(stderr, *) '  HMS- Error'
          ELSE
             ITMP = INT(CSTACK(1))
             ITMP2 = INT(FRAC(CSTACK(1))*1.0D2)
-            TMP = (real(CSTACK(1), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
+            TMP = (CSTACK(1)%RE - ITMP - ITMP2*1.0D-2)*1.0D4
             TMP2 = HMS2H(ITMP, ITMP2, TMP)
             ITMP = INT(CSTACK(2))
             ITMP2 = INT(FRAC(CSTACK(2))*1.0D2)
-            TMP = (real(CSTACK(2), wp) - ITMP - ITMP2*1.0D-2)*1.0D4
+            TMP = (CSTACK(2)%RE - ITMP - ITMP2*1.0D-2)*1.0D4
             TMP3 = HMS2H(ITMP, ITMP2, TMP)
             CALL H2HMSD (TMP3-TMP2, ITMP, ITMP2, TMP)
             CLASTX = CSTACK(1)
@@ -1910,7 +1910,7 @@ case('IM')                                                 ! IM
          STACK(1) = 0
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CMPLX(AIMAG(CSTACK(1)), kind=wp)
+         CSTACK(1) = CMPLX(CSTACK(1)%IM, kind=wp)
       CASE (3)
          RNLASTX = RNSTACK(1)
          RDLASTX = RDSTACK(1)
@@ -1990,7 +1990,7 @@ case('KB')                                                 ! KB
 case('KEPLER')                                             ! KEPLER
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
-         TMP = KEPLER(real(CSTACK(2), wp)*ANGLE_FACTOR,real(CSTACK(1), wp)) / &
+         TMP = KEPLER(CSTACK(2)%RE*ANGLE_FACTOR,CSTACK(1)%RE) / &
             ANGLE_FACTOR
          CLASTX = CSTACK(1)
          CSTACK(1) = CMPLX(TMP, kind=wp)
@@ -2066,14 +2066,14 @@ case('LCM')                                                ! LCM
             CALL DROP_STACK(2)
          END IF
       CASE (2)
-         IF (ISFRAC(real(CSTACK(1), wp)).OR.ISFRAC(real(CSTACK(2), wp)).OR. &
-            .not.isclose(AIMAG(CSTACK(1)), 0).OR..not.isclose(AIMAG(CSTACK(2)), 0)) THEN
+         IF (ISFRAC(CSTACK(1)%RE).OR.ISFRAC(CSTACK(2)%RE).OR. &
+            .not.isclose(CSTACK(1)%IM, 0).OR..not.isclose(CSTACK(2)%IM, 0)) THEN
             write(stderr, *) '  LCM Error'
          ELSEIF (isclose(cstack(1), C0) .AND. isclose(cstack(2), C0)) THEN
             write(stderr, *) '  LCM Error'
          ELSE
             CLASTX = CSTACK(1)
-            CSTACK(1) = LCM(NINT(real(CSTACK(2), wp)),NINT(real(CSTACK(1), wp)))
+            CSTACK(1) = LCM(NINT(CSTACK(2)%RE),NINT(CSTACK(1)%RE))
             CALL CDROP_STACK(2)
          END IF
       CASE (3)
@@ -2158,7 +2158,7 @@ case('LR')                                                 ! LR
             CALL PUSH_STACK (TMPB)
          END IF
       CASE (2)
-         IF (real(CNN, wp) <= 1) THEN
+         IF (CNN%RE <= 1) THEN
             write(stderr, *) '  LR Error'
          ELSE
             CALL CLINREG (CTMPM,CTMPB,CTMPR)
@@ -2340,8 +2340,8 @@ case('NOT')                                                ! NOT
          LASTX = STACK(1)
          STACK(1) = NOT (INT(STACK(1)))
       CASE (2)
-         TMP = NOT (INT(real(CSTACK(1), wp)))
-         TMP2 = NOT (INT(AIMAG(CSTACK(1))))
+         TMP = NOT (INT(CSTACK(1)%RE))
+         TMP2 = NOT (INT(CSTACK(1)%IM))
          CLASTX = CSTACK(1)
          CSTACK(1) = CMPLX(TMP,TMP2, wp)
       CASE (3)
@@ -2362,8 +2362,8 @@ case('OR')                                                 ! OR
          STACK(1) = IOR (INT(STACK(2)), INT(STACK(1)))
          CALL DROP_STACK(2)
       CASE (2)
-         TMP = IOR (INT(real(CSTACK(2), wp)), INT(real(CSTACK(1), wp)))
-         TMP2 = IOR (INT(AIMAG(CSTACK(2))), INT(AIMAG(CSTACK(1))))
+         TMP = IOR (INT(CSTACK(2)%RE), INT(CSTACK(1)%RE))
+         TMP2 = IOR (INT(CSTACK(2)%IM), INT(CSTACK(1)%IM))
          CLASTX = CSTACK(1)
          CSTACK(1) = CMPLX(TMP,TMP2, wp)
          CALL CDROP_STACK(2)
@@ -2380,8 +2380,8 @@ case('OR')                                                 ! OR
 case('P>R')                                                ! P>R
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
-         TMP  = real(CSTACK(1), wp)*COS(AIMAG(CSTACK(1))*ANGLE_FACTOR)
-         TMP2 = real(CSTACK(1), wp)*SIN(AIMAG(CSTACK(1))*ANGLE_FACTOR)
+         TMP  = CSTACK(1)%RE*COS(CSTACK(1)%IM*ANGLE_FACTOR)
+         TMP2 = CSTACK(1)%RE*SIN(CSTACK(1)%IM*ANGLE_FACTOR)
          CLASTX = CSTACK(1)
          CSTACK(1) = CMPLX(TMP,TMP2, wp)
       CASE (1,3)
@@ -2417,21 +2417,21 @@ case('PNR')                                                ! PNR
             CALL DROP_STACK(2)
          END IF
       CASE (2)
-         IF (ISFRAC(real(CSTACK(1), wp)) .OR. ISFRAC(real(CSTACK(2), wp))) THEN
+         IF (ISFRAC(CSTACK(1)%RE) .OR. ISFRAC(CSTACK(2)%RE)) THEN
             write(stderr, *) '  PNR Error'
-         ELSE IF (real(CSTACK(1), wp)<0) THEN
+         ELSE IF (CSTACK(1)%RE<0) THEN
             write(stderr, *) '  PNR Error'
-         ELSE IF (real(CSTACK(2), wp)<0) THEN
+         ELSE IF (CSTACK(2)%RE<0) THEN
             write(stderr, *) '  PNR Error'
-         ELSE IF (.not.isclose(AIMAG(CSTACK(1)), 0)) THEN
+         ELSE IF (.not.isclose(CSTACK(1)%IM, 0)) THEN
             write(stderr, *) '  PNR Error'
-         ELSE IF (.not.isclose(AIMAG(CSTACK(2)), 0)) THEN
+         ELSE IF (.not.isclose(CSTACK(2)%IM, 0)) THEN
             write(stderr, *) '  PNR Error'
-         ELSE IF (real(CSTACK(2), wp) < real(CSTACK(1), wp)) THEN
+         ELSE IF (CSTACK(2)%RE < CSTACK(1)%RE) THEN
             write(stderr, *) '  PNR Error'
          ELSE
-            ITMP  = NINT(real(CSTACK(1), wp))
-            ITMP2 = NINT(real(CSTACK(2), wp))
+            ITMP  = NINT(CSTACK(1)%RE)
+            ITMP2 = NINT(CSTACK(2)%RE)
             TMP = PNR (ITMP2, ITMP)
             CLASTX = CSTACK(1)
             CSTACK(1) = CMPLX(TMP, kind=wp)
@@ -2579,7 +2579,7 @@ case('R>P')                                                ! R>P
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
          TMP = ABS(CSTACK(1))
-         TMP2 = ATAN2(AIMAG(CSTACK(1)),real(CSTACK(1), wp))/ANGLE_FACTOR
+         TMP2 = ATAN2(CSTACK(1)%IM,CSTACK(1)%RE)/ANGLE_FACTOR
          CLASTX = CSTACK(1)
          CSTACK(1) = CMPLX(TMP,TMP2, wp)
       CASE (1,3)
@@ -2648,34 +2648,34 @@ case('RATIONAL')                                           ! RATIONAL
       CASE (2)
          DOMAIN_MODE = 3
          DO I = 1, STACK_SIZE
-            CALL DEC_TO_FRAC (real(CSTACK(I), wp),ITMP,ITMP2,FRACTOL)
+            CALL DEC_TO_FRAC (CSTACK(I)%RE,ITMP,ITMP2,FRACTOL)
             RNSTACK(I) = ITMP
             RDSTACK(I) = ITMP2
          END DO
          DO I = 0, REG_SIZE-1
-            CALL DEC_TO_FRAC (real(CREG(I), wp),ITMP,ITMP2,FRACTOL)
+            CALL DEC_TO_FRAC (CREG(I)%RE,ITMP,ITMP2,FRACTOL)
             RNREG(I) = ITMP
             RDREG(I) = ITMP2
          END DO
-         CALL DEC_TO_FRAC (real(CLASTX, wp),ITMP,ITMP2,FRACTOL)
+         CALL DEC_TO_FRAC (CLASTX%RE,ITMP,ITMP2,FRACTOL)
          RNLASTX = ITMP
          RDLASTX = ITMP2
-         CALL DEC_TO_FRAC (real(CNN, wp),ITMP,ITMP2,FRACTOL)
+         CALL DEC_TO_FRAC (CNN%RE,ITMP,ITMP2,FRACTOL)
          RNNN = ITMP
          RDNN = ITMP2
-         CALL DEC_TO_FRAC (real(CSUMX, wp),ITMP,ITMP2,FRACTOL)
+         CALL DEC_TO_FRAC (CSUMX%RE,ITMP,ITMP2,FRACTOL)
          RNSUMX = ITMP
          RDSUMX = ITMP2
-         CALL DEC_TO_FRAC (real(CSUMX2, wp),ITMP,ITMP2,FRACTOL)
+         CALL DEC_TO_FRAC (CSUMX2%RE,ITMP,ITMP2,FRACTOL)
          RNSUMX2 = ITMP
          RDSUMX2 = ITMP2
-         CALL DEC_TO_FRAC (real(CSUMY, wp),ITMP,ITMP2,FRACTOL)
+         CALL DEC_TO_FRAC (CSUMY%RE,ITMP,ITMP2,FRACTOL)
          RNSUMY = ITMP
          RDSUMY = ITMP2
-         CALL DEC_TO_FRAC (real(CSUMY2, wp),ITMP,ITMP2,FRACTOL)
+         CALL DEC_TO_FRAC (CSUMY2%RE,ITMP,ITMP2,FRACTOL)
          RNSUMY2 = ITMP
          RDSUMY2 = ITMP2
-         CALL DEC_TO_FRAC (real(CSUMXY, wp),ITMP,ITMP2,FRACTOL)
+         CALL DEC_TO_FRAC (CSUMXY%RE,ITMP,ITMP2,FRACTOL)
          RNSUMXY = ITMP
          RDSUMXY = ITMP2
    END SELECT
@@ -2683,7 +2683,7 @@ case('RATIONAL')                                           ! RATIONAL
 case('RCORR')                                             ! RCORR
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
-         IF (real(CNN, wp) <= 1) THEN
+         IF (CNN%RE <= 1) THEN
             write(stderr, *) '  RCORR Error'
          ELSE
             CALL CLINREG (CTMPM,CTMPB,CTMPR)
@@ -2703,7 +2703,7 @@ case('RE')                                                 ! RE
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
          CLASTX = CSTACK(1)
-         CSTACK(1) = CMPLX(real(CSTACK(1), wp), kind=wp)
+         CSTACK(1) = CMPLX(CSTACK(1)%RE, kind=wp)
    END SELECT
 
 case('REAL')                                               ! REAL
@@ -2711,17 +2711,17 @@ case('REAL')                                               ! REAL
       CASE (2)
          DOMAIN_MODE = 1
 
-         STACK = real(CSTACK, wp)
+         STACK = CSTACK%RE
 
-         REG = real(CREG, wp)
+         REG = CREG%RE
 
-         LASTX = real(CLASTX, wp)
-         NN = real(CNN, wp)
-         SUMX = real(CSUMX, wp)
-         SUMX2 = real(CSUMX2, wp)
-         SUMY = real(CSUMY, wp)
-         SUMY2 = real(CSUMY2, wp)
-         SUMXY = real(CSUMXY, wp)
+         LASTX = CLASTX%RE
+         NN = CNN%RE
+         SUMX = CSUMX%RE
+         SUMX2 = CSUMX2%RE
+         SUMY = CSUMY%RE
+         SUMY2 = CSUMY2%RE
+         SUMXY = CSUMXY%RE
       CASE (3)
          CALL SWITCH_RAT_TO_REAL
    END SELECT
@@ -2738,10 +2738,10 @@ case('REARTH')                                             ! REARTH
 case('REDUCE')                                             ! REDUCE
    SELECT CASE (DOMAIN_MODE)
       CASE (2)
-         TMP = real(CSTACK(1), wp)
+         TMP = CSTACK(1)%RE
          CALL CDROP_STACK(1)
          CLASTX = CSTACK(1)
-         TMP2 = REDUCE(real(CSTACK(1), wp)*ANGLE_FACTOR,TMP*ANGLE_FACTOR) / ANGLE_FACTOR
+         TMP2 = REDUCE(CSTACK(1)%RE*ANGLE_FACTOR,TMP*ANGLE_FACTOR) / ANGLE_FACTOR
          CSTACK(1) = CMPLX(TMP2, kind=wp)
       CASE (1,3)
          if(domain_mode == 3) CALL SWITCH_RAT_TO_REAL
@@ -2824,8 +2824,8 @@ case('RI')                                                 ! RI
       CASE (1)
          STACK(1) = 0
       CASE (2)
-         TMP = real(CSTACK(1), wp)
-         TMP2 = AIMAG(CSTACK(1))
+         TMP = CSTACK(1)%RE
+         TMP2 = CSTACK(1)%IM
          CSTACK(1) = CMPLX(TMP2,TMP, wp)
       CASE (3)
          RNSTACK(1) = 0
@@ -2838,8 +2838,8 @@ case('ROUND')                                             ! ROUND
          LASTX = STACK(1)
          STACK(1) = ANINT(STACK(1))
       CASE (2)
-         TMP = ANINT(real(CSTACK(1), wp))
-         TMP2 = ANINT(AIMAG(CSTACK(1)))
+         TMP = ANINT(CSTACK(1)%RE)
+         TMP2 = ANINT(CSTACK(1)%IM)
          CLASTX = CSTACK(1)
          CSTACK(1) = CMPLX(TMP,TMP2, wp)
       CASE (3)
@@ -2980,16 +2980,16 @@ case('SGN')                                                ! SGN
          LASTX = STACK(1)
          STACK(1) = TMP
       CASE (2)
-         IF (real(CSTACK(1), wp) < 0) THEN
+         IF (CSTACK(1)%RE < 0) THEN
             TMP = -1
-         ELSE IF (isclose(real(CSTACK(1), wp), 0)) THEN
+         ELSE IF (isclose(CSTACK(1)%RE, 0)) THEN
             TMP = 0
          ELSE
             TMP = 1
          END IF
-         IF (AIMAG(CSTACK(1)) < 0) THEN
+         IF (CSTACK(1)%IM < 0) THEN
             TMP2 = -1
-         ELSE IF (isclose(AIMAG(CSTACK(1)), 0)) THEN
+         ELSE IF (isclose(CSTACK(1)%IM, 0)) THEN
             TMP2 = 0
          ELSE
             TMP2 = +1
@@ -3242,7 +3242,7 @@ case('X^')                                                 ! X^
             STACK(1) = (STACK(1)-TMPB)/TMPM
          END IF
       CASE (2)
-         IF (real(CNN, wp) <= 1) THEN
+         IF (CNN%RE <= 1) THEN
             write(stderr, *) '  X^ Error'
          ELSE
             CALL CLINREG (CTMPM,CTMPB,CTMPR)
@@ -3295,8 +3295,8 @@ case('XOR')                                                ! XOR
          STACK(1) = IEOR (INT(STACK(2)), INT(STACK(1)))
          CALL DROP_STACK(2)
       CASE (2)
-         TMP = IEOR (INT(real(CSTACK(2), wp)), INT(real(CSTACK(1), wp)))
-         TMP2 = IEOR (INT(AIMAG(CSTACK(2))), INT(AIMAG(CSTACK(1))))
+         TMP = IEOR (INT(CSTACK(2)%RE), INT(CSTACK(1)%RE))
+         TMP2 = IEOR (INT(CSTACK(2)%IM), INT(CSTACK(1)%IM))
          CLASTX = CSTACK(1)
          CSTACK(1) = CMPLX(TMP,TMP2, wp)
          CALL CDROP_STACK(2)
@@ -3333,7 +3333,7 @@ case('XS')                                                 ! XS
             CALL PUSH_STACK(TMP)
          END IF
       CASE (2)
-         IF (real(CNN, wp) <= 1) THEN
+         IF (CNN%RE <= 1) THEN
             write(stderr, *) '  XS Error'
          ELSE
             CTMP = SQRT((CSUMX2-CSUMX**2/CNN)/(CNN-1))
@@ -3359,7 +3359,7 @@ case('XSIG')                                               ! XSIG
             CALL PUSH_STACK(TMP)
          END IF
       CASE (2)
-         IF (real(CNN, wp) <= 1) THEN
+         IF (CNN%RE <= 1) THEN
             write(stderr, *) '  XSIG Error'
          ELSE
             CTMP = SQRT((CSUMX2-CSUMX**2/CNN)/CNN)
@@ -3405,7 +3405,7 @@ case('Y^')                                                 ! Y^
             STACK(1) = TMPM*STACK(1)+TMPB
          END IF
       CASE (2)
-         IF (real(CNN, wp) <= 1) THEN
+         IF (CNN%RE <= 1) THEN
             write(stderr, *) '  Y^ Error'
          ELSE
             CALL CLINREG (CTMPM,CTMPB,CTMPR)
@@ -3461,7 +3461,7 @@ case('YS')                                                 ! YS
             CALL PUSH_STACK(TMP)
          END IF
       CASE (2)
-         IF (real(CNN, wp) <= 1) THEN
+         IF (CNN%RE <= 1) THEN
             write(stderr, *) '  YS Error'
          ELSE
             CTMP = SQRT((CSUMY2-CSUMY**2/CNN)/(CNN-1))
@@ -3487,7 +3487,7 @@ case('YSIG')                                               ! YSIG
             CALL PUSH_STACK(TMP)
          END IF
       CASE (2)
-         IF (real(CNN, wp) <= 1) THEN
+         IF (CNN%RE <= 1) THEN
             write(stderr, *) '  YSIG Error'
          ELSE
             CTMP = SQRT((CSUMY2-CSUMY**2/CNN)/CNN)
