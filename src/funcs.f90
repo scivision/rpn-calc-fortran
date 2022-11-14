@@ -435,7 +435,7 @@ END FUNCTION RIEMANNZETA
 
 elemental real(wp) FUNCTION REDUCE (THETA, ANGLE_MIN) RESULT (RHO)
 
-real(wp), PARAMETER :: tau = 2*4._wp*atan(1._wp)
+real(wp), PARAMETER :: tau = 2*4*atan(1._wp)
 
 real(wp), INTENT(IN) :: THETA
 real(wp), INTENT(IN) :: ANGLE_MIN

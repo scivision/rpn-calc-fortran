@@ -14,7 +14,7 @@ Default size is 4.
 
 Authors:
 
-* Fortran 77 code: David G. Simpson
+* Fortran 77 code: [David G. Simpson](https://caps.gsfc.nasa.gov/simpson)
 * Fortran 2018 code: Michael Hirsch
 
 Build with CMake or Meson.
