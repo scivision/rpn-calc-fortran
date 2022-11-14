@@ -38,11 +38,11 @@ jobs:
 
     - uses: actions/checkout@v3
 
-    - run: cmake -Bbuild || cmake -Bbuild --log-level=DEBUG
+    - run: cmake --preset default
 
-    - run: cmake --build build --parallel
+    - run: cmake --build --preset default --parallel
 
-    - run: ctest --test-dir build --preset default
+    - run: ctest --preset default
 
 
   windows:
@@ -69,9 +69,9 @@ jobs:
 
     - uses: actions/checkout@v3
 
-    - run: cmake -B build -G Ninja
-    - run: cmake --build build --parallel
-    - run: ctest --test-dir build --preset default
+    - run: cmake --preset default -G Ninja
+    - run: cmake --build --preset default
+    - run: ctest --preset default
 
     - name: .exe for release
       uses: actions/upload-artifact@v3

@@ -35,7 +35,6 @@ if(${PROJECT_NAME}_BUILD_TESTING)
   if(Python_FOUND AND NOT DEFINED Scipy_ok)
     execute_process(COMMAND ${Python_EXECUTABLE} -c "import scipy; print('SciPy', scipy.__version__)"
     RESULT_VARIABLE ret
-    TIMEOUT 10
     )
     if(ret EQUAL 0)
       set(Scipy_ok true CACHE BOOL "Scipy OK")

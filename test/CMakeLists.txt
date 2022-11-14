@@ -14,12 +14,9 @@ set_property(TEST Value PROPERTY PASS_REGULAR_EXPRESSION "308 / 29")
 
 get_property(test_names DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY TESTS)
 
-set_property(TEST ${test_names} PROPERTY TIMEOUT 10)
-
 
 if(Scipy_ok)
   add_test(NAME FunctionEval
   COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_functions.py $<TARGET_FILE:rpncalc>
   )
-  set_property(TEST FunctionEval PROPERTY TIMEOUT 30)
 endif()
