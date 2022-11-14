@@ -49,17 +49,17 @@ contains
 !  Secant.
 !***********************************************************************************************************************************
 
-elemental real(wp) FUNCTION SEC_r (X) RESULT (sec)
+elemental real(wp) FUNCTION SEC_r (X) RESULT (r)
 real(wp), INTENT (IN) :: X
 
-sec = 1/COS(X)
+r = 1/COS(X)
 END FUNCTION SEC_r
 
 
-elemental complex(wp) FUNCTION SEC_c(Z) result(sec)
+elemental complex(wp) FUNCTION SEC_c(Z) result(r)
 COMPLEX(wp), INTENT(IN) :: Z
 
-SEC = 1/COS(Z)
+r = 1/COS(Z)
 END FUNCTION SEC_c
 
 
@@ -88,18 +88,17 @@ END FUNCTION ASEC_c
 !  Cosecant.
 !***********************************************************************************************************************************
 
-elemental real(wp) FUNCTION CSC_r(X) result(csc)
+elemental real(wp) FUNCTION CSC_r(X) result(r)
 real(wp), INTENT (IN) :: X
 
- CSC = 1/SIN(X)
+r = 1/SIN(X)
 END FUNCTION CSC_r
 
 
-elemental complex(wp) FUNCTION CSC_c(Z) result(csc)
+elemental complex(wp) FUNCTION CSC_c(Z) result(r)
 COMPLEX(wp), INTENT(IN) :: Z
 
- CSC = 1/SIN(Z)
-
+r = 1/SIN(Z)
 END FUNCTION CSC_c
 
 
@@ -109,18 +108,17 @@ END FUNCTION CSC_c
 !  Inverse cosecant.
 !***********************************************************************************************************************************
 
-elemental real(wp) FUNCTION ACSC_r(Y) result(acsc)
+elemental real(wp) FUNCTION ACSC_r(Y) result(r)
 real(wp), INTENT (IN) :: Y
 
-ACSC = ASIN(1/Y)
+r = ASIN(1/Y)
 END FUNCTION ACSC_r
 
 
-elemental complex(wp) FUNCTION ACSC_c(Z) RESULT(acsc)
+elemental complex(wp) FUNCTION ACSC_c(Z) RESULT(r)
 COMPLEX(wp), INTENT(IN) :: Z
 
-acsc = ASIN(1/Z)
-
+r = ASIN(1/Z)
 END FUNCTION ACSC_c
 
 
@@ -130,18 +128,17 @@ END FUNCTION ACSC_c
 !  Cotangent.
 !***********************************************************************************************************************************
 
-elemental real(wp) FUNCTION COT_r(X) result(cot)
+elemental real(wp) FUNCTION COT_r(X) result(r)
 real(wp), INTENT (IN) :: X
 
- COT = 1/TAN(X)
+r = 1/TAN(X)
 END FUNCTION COT_r
 
 
-elemental complex(wp) FUNCTION COT_c(Z) result(cot)
+elemental complex(wp) FUNCTION COT_c(Z) result(r)
 COMPLEX(wp), INTENT(IN) :: Z
 
- COT = COS(Z)/SIN(Z)
-
+r = COS(Z)/SIN(Z)
 END FUNCTION COT_c
 
 !***********************************************************************************************************************************
@@ -150,18 +147,17 @@ END FUNCTION COT_c
 !  Inverse cotangent.
 !***********************************************************************************************************************************
 
-elemental real(wp) FUNCTION ACOT_r (Y) result(acot)
+elemental real(wp) FUNCTION ACOT_r (Y) result(r)
 real(wp), INTENT (IN) :: Y
 
-ACOT = ATAN(1/Y)
-
+r = ATAN(1/Y)
 END FUNCTION ACOT_r
 
 
-elemental complex(wp) FUNCTION ACOT_c(Y) result (Acot)
+elemental complex(wp) FUNCTION ACOT_c(Y) result(r)
 complex(wp), INTENT (IN) :: Y
 
-ACOT = ATAN(1/Y)
+r = ATAN(1/Y)
 END FUNCTION ACOT_c
 
 !***********************************************************************************************************************************
@@ -399,19 +395,17 @@ END FUNCTION AHAV_c
 !  Chord (of Ptolemy).
 !***********************************************************************************************************************************
 
-elemental real(wp) FUNCTION CRD_r (X) result(crd)
+elemental real(wp) FUNCTION CRD_r (X) result(r)
 real(wp), INTENT (IN) :: X
 
- CRD = 2*SIN(0.5_wp*X)
-
+r = 2*SIN(0.5_wp*X)
 END FUNCTION CRD_r
 
 
-elemental complex(wp) FUNCTION CRD_c (Z) RESULT (crd)
+elemental complex(wp) FUNCTION CRD_c (Z) RESULT(r)
 COMPLEX(wp), INTENT(IN) :: Z
 
- CRD = 2*SIN(0.5_wp*Z)
-
+r = 2*SIN(0.5_wp*Z)
 END FUNCTION CRD_c
 
 
@@ -422,12 +416,10 @@ END FUNCTION CRD_c
 !  Inverse chord (of Ptolemy).
 !***********************************************************************************************************************************
 
-elemental real(wp) FUNCTION ACRD (Y) RESULT (X)
-
+elemental real(wp) FUNCTION ACRD(Y) RESULT(X)
 real(wp), INTENT (IN) :: Y
 
-X = 2*ASIN(0.5D0*Y)
-
+X = 2*ASIN(0.5_wp*Y)
 END FUNCTION ACRD
 !***********************************************************************************************************************************
 !  CACRD
@@ -435,12 +427,10 @@ END FUNCTION ACRD
 !  Complex inverse chord (of Ptolemy).
 !***********************************************************************************************************************************
 
-elemental complex(wp) FUNCTION CACRD (Y) RESULT (X)
-
+elemental complex(wp) FUNCTION CACRD(Y) RESULT(X)
 COMPLEX(wp), INTENT (IN) :: Y
 
-X = 2*asin(0.5D0*Y)
-
+X = 2*asin(0.5_wp*Y)
 END FUNCTION CACRD
 
 
