@@ -17,11 +17,11 @@ jobs:
 
   linux_macos:
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 10
 
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-22.04]
         gcc_version: [9, 10, 11]
         include:
         - os: macos-latest
@@ -37,10 +37,6 @@ jobs:
 
     - name: install pytest
       run: python -m pip install numpy scipy pytest
-
-    - name: install gfortran (linux)
-      if: runner.os == 'Linux'
-      run: sudo apt install gfortran-${{ matrix.gcc_version }}
 
     - uses: actions/checkout@v3
 
