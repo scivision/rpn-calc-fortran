@@ -11,6 +11,12 @@ option(${PROJECT_NAME}_BUILD_TESTING "build tests" on)
 
 include(cmake/compilers.cmake)
 
+# --- auto-ignore build directory
+if(NOT EXISTS ${PROJECT_BINARY_DIR}/.gitignore)
+  file(WRITE ${PROJECT_BINARY_DIR}/.gitignore "*")
+endif()
+
+
 set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include)
 
 add_executable(rpncalc app/main.f90 src/help.f90 src/eval.f90 src/ui.f90)
