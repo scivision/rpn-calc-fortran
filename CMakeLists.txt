@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.25)
+cmake_minimum_required(VERSION 3.14...3.25)
 
 project(RPNcalc
 LANGUAGES Fortran
@@ -22,7 +22,7 @@ set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include)
 add_executable(rpncalc app/main.f90 src/help.f90 src/eval.f90 src/ui.f90)
 target_include_directories(rpncalc PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-$<INSTALL_INTERFACE:include>
+$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_link_libraries(rpncalc PRIVATE assert hyper reg funcs)
 
@@ -30,7 +30,7 @@ target_link_libraries(rpncalc PRIVATE assert hyper reg funcs)
 add_library(assert OBJECT src/assert.f90)
 target_include_directories(assert PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-$<INSTALL_INTERFACE:include>
+$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 add_subdirectory(src)
@@ -54,12 +54,7 @@ endif()
 
 
 #--- install
-install(TARGETS rpncalc
-LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
+install(TARGETS rpncalc)
 
 install(FILES ${PROJECT_SOURCE_DIR}/README.md
   DESTINATION share/docs/${PROJECT_NAME})
