@@ -27,11 +27,12 @@ $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 target_link_libraries(rpncalc PRIVATE assert hyper reg funcs)
 
 #--- functions (usable in other programs too)
-add_library(assert OBJECT src/assert.f90)
+add_library(assert OBJECT src/assert.F90)
 target_include_directories(assert PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
+target_compile_definitions(assert PRIVATE $<$<NOT:$<BOOL:${f03ieee}>>:NO_IEEE>)
 
 add_subdirectory(src)
 
@@ -40,8 +41,10 @@ if(${PROJECT_NAME}_BUILD_TESTING)
 
   if(Python_FOUND AND NOT DEFINED Scipy_ok)
     execute_process(COMMAND ${Python_EXECUTABLE} -c "import scipy; print('SciPy', scipy.__version__)"
+    ERROR_VARIABLE err
     RESULT_VARIABLE ret
     )
+    message(VERBOSE "${ret} ${err}")
     if(ret EQUAL 0)
       set(Scipy_ok true CACHE BOOL "Scipy OK")
     else()
