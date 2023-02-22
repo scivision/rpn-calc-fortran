@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14...3.25)
+cmake_minimum_required(VERSION 3.14...3.26)
 
 project(RPNcalc
 LANGUAGES Fortran
@@ -11,10 +11,7 @@ option(${PROJECT_NAME}_BUILD_TESTING "build tests" on)
 
 include(cmake/compilers.cmake)
 
-# --- auto-ignore build directory
-if(NOT EXISTS ${PROJECT_BINARY_DIR}/.gitignore)
-  file(WRITE ${PROJECT_BINARY_DIR}/.gitignore "*")
-endif()
+file(GENERATE OUTPUT .gitignore CONTENT "*")
 
 
 set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include)
